@@ -1,0 +1,27 @@
+{
+  "name": "showsready-backend-ai",
+  "version": "2.0.0",
+  "description": "ShowsReady API with Real AI Image Staging",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "stripe": "^20.4.1",
+    "replicate": "^0.30.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": ["api", "stripe", "express", "ai", "image-staging"],
+  "author": "Mike",
+  "license": "UNLICENSED"
+}
