@@ -1451,7 +1451,7 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 // API endpoint - automatically detects environment
 const SR_API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:3001'
-  : 'https://showsready-backend.onrender.com';
+  : 'https://api.showsready.com';
 
 async function claude(prompt) {
   const controller = new AbortController();
