@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShowsReady — AI Walkthrough Videos for Real Estate Agents</title>
+<meta name="description" content="Create stunning 60-second listing walkthrough videos with AI staging in minutes. Built for real estate agents.">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:    #111010;
+  --char:   #1c1a18;
+  --surface:#232018;
+  --ivory:  #f9f6f0;
+  --cream:  #f1ece2;
+  --warm:   #e5ddd0;
+  --border: #d2cabc;
+  --mid:    #8c8274;
+  --gold:   #b8935a;
+  --gold-l: #d4af72;
+  --white:  #ffffff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Jost',sans-serif;background:var(--ivory);color:var(--ink);overflow-x:hidden;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;height:60px;background:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 48px;border-bottom:1px solid rgba(184,147,90,.2);}
+.logo-text{font-family:'Libre Baskerville',serif;font-size:1.15rem;letter-spacing:.04em;color:var(--ivory);}
+.logo-text span{color:var(--gold);}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.btn-nav-ghost{background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);font-family:'Jost',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;padding:8px 18px;border-radius:2px;cursor:pointer;transition:all .18s;text-decoration:none;display:inline-block;}
+.btn-nav-ghost:hover{border-color:rgba(255,255,255,.4);color:white;}
+.btn-nav-gold{background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:8px 18px;border-radius:2px;cursor:pointer;border:none;text-decoration:none;display:inline-block;transition:background .18s;}
+.btn-nav-gold:hover{background:var(--gold-l);}
+
+/* HERO */
+.hero{min-height:90vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 24px;background:var(--ink);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(184,147,90,.07) 0%,transparent 70%);}
+.hero-eyebrow{font-size:.6rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;}
+.hero-title{font-family:'Libre Baskerville',serif;font-size:clamp(2.4rem,5vw,4rem);font-weight:400;color:var(--ivory);line-height:1.2;margin-bottom:20px;max-width:720px;}
+.hero-title em{color:var(--gold);font-style:italic;}
+.hero-sub{font-size:1rem;font-weight:300;color:rgba(255,255,255,.5);line-height:1.75;max-width:520px;margin:0 auto 40px;}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn-hero-gold{background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:14px 32px;border-radius:2px;cursor:pointer;border:none;text-decoration:none;display:inline-block;transition:all .18s;}
+.btn-hero-gold:hover{background:var(--gold-l);transform:translateY(-1px);}
+.btn-hero-ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);font-family:'Jost',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:14px 32px;border-radius:2px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .18s;}
+.btn-hero-ghost:hover{border-color:rgba(255,255,255,.5);color:white;}
+.hero-note{font-size:.65rem;color:rgba(255,255,255,.22);margin-top:18px;letter-spacing:.05em;}
+
+/* HOW IT WORKS */
+.section{padding:88px 24px;}
+.section-inner{max-width:1040px;margin:0 auto;}
+.section-eyebrow{font-size:.58rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;text-align:center;}
+.section-title{font-family:'Libre Baskerville',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:400;text-align:center;margin-bottom:14px;}
+.section-sub{font-size:.88rem;font-weight:300;color:var(--mid);text-align:center;line-height:1.75;max-width:540px;margin:0 auto 56px;}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;}
+.step{text-align:center;}
+.step-num{width:44px;height:44px;border-radius:50%;border:1px solid rgba(184,147,90,.35);display:flex;align-items:center;justify-content:center;font-family:'Libre Baskerville',serif;font-size:1.1rem;color:var(--gold);margin:0 auto 18px;}
+.step-title{font-size:.88rem;font-weight:600;margin-bottom:8px;}
+.step-desc{font-size:.8rem;font-weight:300;color:var(--mid);line-height:1.7;}
+
+/* FEATURES */
+.features-bg{background:var(--cream);}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-top:48px;}
+.feat{background:var(--white);padding:32px 28px;}
+.feat-icon{font-size:1.4rem;margin-bottom:14px;}
+.feat-title{font-size:.9rem;font-weight:600;margin-bottom:7px;}
+.feat-desc{font-size:.78rem;font-weight:300;color:var(--mid);line-height:1.7;}
+
+/* PRICING */
+.pricing-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:48px;}
+.pcard{background:var(--white);border:1px solid var(--border);border-radius:4px;padding:28px 24px;position:relative;}
+.pcard.featured{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);}
+.pcard-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-size:.57rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:3px 12px;border-radius:1px;white-space:nowrap;}
+.pcard-name{font-size:.72rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);margin-bottom:10px;}
+.pcard-price{font-family:'Libre Baskerville',serif;font-size:2.2rem;color:var(--ink);margin-bottom:4px;}
+.pcard-price sub{font-family:'Jost',sans-serif;font-size:.75rem;font-weight:300;color:var(--mid);}
+.pcard-desc{font-size:.75rem;font-weight:300;color:var(--mid);margin-bottom:20px;line-height:1.6;}
+.pcard-feats{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:24px;}
+.pcard-feats li{font-size:.77rem;font-weight:300;color:var(--char);display:flex;align-items:flex-start;gap:7px;}
+.pcard-feats li::before{content:'✦';font-size:.5rem;color:var(--gold);margin-top:3px;flex-shrink:0;}
+.pcard-btn{width:100%;font-family:'Jost',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:11px;border-radius:2px;cursor:pointer;border:none;transition:all .18s;}
+.pcard-btn-dark{background:var(--ink);color:var(--ivory);}
+.pcard-btn-dark:hover{background:var(--char);}
+.pcard-btn-gold{background:var(--gold);color:var(--ink);}
+.pcard-btn-gold:hover{background:var(--gold-l);}
+.pcard-btn-ghost{background:transparent;border:1px solid var(--border);color:var(--mid);}
+.pcard-btn-ghost:hover{border-color:var(--ink);color:var(--ink);}
+
+/* CTA */
+.cta-section{background:var(--ink);padding:88px 24px;text-align:center;}
+.cta-title{font-family:'Libre Baskerville',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);color:var(--ivory);margin-bottom:14px;}
+.cta-sub{font-size:.9rem;font-weight:300;color:rgba(255,255,255,.45);margin-bottom:36px;line-height:1.7;}
+
+/* FOOTER */
+footer{background:var(--char);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.footer-logo{font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--ivory);}
+.footer-logo span{color:var(--gold);}
+.footer-links{display:flex;gap:24px;}
+.footer-links a{font-size:.7rem;font-weight:300;color:rgba(255,255,255,.3);text-decoration:none;letter-spacing:.05em;transition:color .15s;}
+.footer-links a:hover{color:rgba(255,255,255,.6);}
+.footer-copy{font-size:.65rem;color:rgba(255,255,255,.2);font-weight:300;}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:800;background:rgba(18,16,16,.88);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;padding:16px;}
+.overlay.on{opacity:1;pointer-events:all;}
+.modal{background:var(--white);border-radius:4px;width:100%;max-width:420px;padding:36px;position:relative;transform:translateY(14px);transition:transform .3s ease;box-shadow:0 24px 80px rgba(0,0,0,.45);}
+.overlay.on .modal{transform:translateY(0);}
+.modal-close{position:absolute;top:13px;right:13px;width:26px;height:26px;background:var(--cream);border:none;border-radius:50%;cursor:pointer;font-size:.65rem;color:var(--mid);}
+.m-eyebrow{font-size:.58rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
+.m-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;margin-bottom:5px;}
+.m-sub{font-size:.77rem;font-weight:300;color:var(--mid);margin-bottom:22px;line-height:1.6;}
+.m-field{margin-bottom:14px;}
+.m-label{display:block;font-size:.59rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);margin-bottom:5px;}
+.m-input{width:100%;font-family:'Jost',sans-serif;font-size:.86rem;font-weight:300;background:var(--ivory);border:1px solid var(--border);color:var(--ink);border-radius:2px;padding:10px 12px;outline:none;transition:border-color .2s;}
+.m-input:focus{border-color:var(--gold);}
+.m-plan-row{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.m-plan-opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:2px;cursor:pointer;transition:border-color .15s;}
+.m-plan-opt:hover{border-color:var(--gold);}
+.m-plan-opt.on{border-color:var(--ink);background:rgba(17,16,16,.03);}
+.m-plan-opt input{accent-color:var(--ink);}
+.m-plan-name{font-size:.82rem;font-weight:500;}
+.m-plan-price{font-size:.78rem;color:var(--mid);font-weight:300;margin-left:auto;}
+.m-submit{width:100%;font-family:'Jost',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;background:var(--gold);color:var(--ink);border:none;padding:13px;border-radius:2px;cursor:pointer;transition:background .18s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;}
+.m-submit:hover{background:var(--gold-l);}
+.m-submit:disabled{opacity:.4;cursor:not-allowed;}
+.m-note{text-align:center;font-size:.63rem;color:var(--mid);margin-top:9px;}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--char);color:var(--ivory);padding:10px 22px;border-radius:2px;font-size:.74rem;box-shadow:0 8px 28px rgba(0,0,0,.3);z-index:9999;transition:transform .3s,opacity .3s;opacity:0;border-bottom:2px solid var(--gold);}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1;}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(26,16,16,.2);border-top-color:var(--ink);border-radius:50%;animation:rot .6s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg)}}
+@media(max-width:640px){nav{padding:0 20px;}.hero{padding:60px 20px;}.section{padding:60px 20px;}footer{padding:24px 20px;flex-direction:column;gap:16px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo-text">Shows<span>Ready</span></div>
+  <div class="nav-right">
+    <a href="pricing.html" class="btn-nav-ghost">Pricing</a>
+    <a href="app.html" class="btn-nav-ghost">Sign In</a>
+    <a href="#" class="btn-nav-gold" onclick="openModal('free');return false;">Try Free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;">
+    <div class="hero-eyebrow">AI-Powered Real Estate Marketing</div>
+    <h1 class="hero-title">Your listings,<br><em>shows ready</em> in minutes.</h1>
+    <p class="hero-sub">Upload your listing photos, pick a staging style, and get a polished 60-second walkthrough video with your branded contact card — ready to share.</p>
+    <div class="hero-ctas">
+      <a href="#" class="btn-hero-gold" onclick="openModal('free');return false;">Create Free Walkthrough</a>
+      <a href="pricing.html" class="btn-hero-ghost">View Pricing →</a>
+    </div>
+    <div class="hero-note">No credit card required · Free plan includes 1 listing</div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-eyebrow">How It Works</div>
+    <h2 class="section-title">From photos to walkthrough in 5 steps.</h2>
+    <p class="section-sub">No video editing. No design skills. No waiting on a marketing team.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-title">Enter Your Listing</div><div class="step-desc">Address, price, property type. ShowsReady auto-detects your market and calibrates styles to local buyer trends.</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-title">Upload Room Photos</div><div class="step-desc">Drop in 1–3 photos per room. Exterior, living room, kitchen, master, bath, outdoor — all covered.</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-title">Pick Your Staging Style</div><div class="step-desc">AI suggests market-matched styles. Preview the before/after transformation on your actual photos instantly.</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-title">Add Your Branding</div><div class="step-desc">Your name, title, brokerage, phone, email — assembled into a polished agent end card.</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-title">Export Your Video</div><div class="step-desc">Download a 1280×720 walkthrough video with animated before/after reveals and your choice of background music.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section features-bg">
+  <div class="section-inner">
+    <div class="section-eyebrow">Built for Agents</div>
+    <h2 class="section-title">Everything you need, nothing you don't.</h2>
+    <p class="section-sub">ShowsReady is purpose-built for listing agents who need results fast.</p>
+    <div class="features">
+      <div class="feat"><div class="feat-icon">🗺️</div><div class="feat-title">Market-Matched Styles</div><div class="feat-desc">Staging styles are calibrated to your local market — SoCal Coastal, NYC Metro, Texas, Mountain West, and more.</div></div>
+      <div class="feat"><div class="feat-icon">↔️</div><div class="feat-title">Animated Before/After</div><div class="feat-desc">Every room slide features a smooth wipe reveal showing the staged transformation — not just a static image.</div></div>
+      <div class="feat"><div class="feat-icon">🎵</div><div class="feat-title">Background Music</div><div class="feat-desc">Choose from Ambient Luxury, Modern Lifestyle, or Classical Elegance — or export silent for your own audio.</div></div>
+      <div class="feat"><div class="feat-icon">💼</div><div class="feat-title">Branded End Card</div><div class="feat-desc">Your name, photo, contact info, and tagline close every walkthrough in a premium agent card.</div></div>
+      <div class="feat"><div class="feat-icon">⚡</div><div class="feat-title">Fast & Browser-Based</div><div class="feat-desc">No app to download. Works in any modern browser. Generate and export in under 5 minutes.</div></div>
+      <div class="feat"><div class="feat-icon">🔒</div><div class="feat-title">Your Files Stay Yours</div><div class="feat-desc">Photos are processed locally in your browser. Nothing is stored on our servers without your permission.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING PREVIEW -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-eyebrow">Simple Pricing</div>
+    <h2 class="section-title">Start free. Scale when you're ready.</h2>
+    <p class="section-sub">No annual contracts. Cancel anytime. 14-day money-back guarantee on paid plans.</p>
+    <div class="pricing-cards">
+      <div class="pcard">
+        <div class="pcard-name">Free</div>
+        <div class="pcard-price">$0</div>
+        <div class="pcard-desc">Try it on your first listing, no card needed.</div>
+        <ul class="pcard-feats">
+          <li>1 listing walkthrough</li>
+          <li>All 6 room types</li>
+          <li>All staging styles</li>
+          <li>ShowsReady watermark</li>
+        </ul>
+        <button class="pcard-btn pcard-btn-ghost" onclick="openModal('free')">Get Started Free</button>
+      </div>
+      <div class="pcard">
+        <div class="pcard-name">Per Listing</div>
+        <div class="pcard-price">$29<sub>.99</sub></div>
+        <div class="pcard-desc">One walkthrough, no subscription.</div>
+        <ul class="pcard-feats">
+          <li>1 listing walkthrough</li>
+          <li>No watermark</li>
+          <li>Full MP4 export</li>
+          <li>Branded end card</li>
+        </ul>
+        <button class="pcard-btn pcard-btn-dark" onclick="openModal('single')">Buy Single Listing</button>
+      </div>
+      <div class="pcard featured">
+        <div class="pcard-badge">Most Popular</div>
+        <div class="pcard-name">Pro Agent</div>
+        <div class="pcard-price">$49<sub>.99/mo</sub></div>
+        <div class="pcard-desc">For active listing agents.</div>
+        <ul class="pcard-feats">
+          <li>10 listings / 30 days</li>
+          <li>No watermark</li>
+          <li>Priority generation</li>
+          <li>Saved agent profile</li>
+        </ul>
+        <button class="pcard-btn pcard-btn-gold" onclick="openModal('pro')">Start Pro Agent</button>
+      </div>
+      <div class="pcard">
+        <div class="pcard-name">Elite Agent</div>
+        <div class="pcard-price">$99<sub>.99/mo</sub></div>
+        <div class="pcard-desc">For top producers and team leads.</div>
+        <ul class="pcard-feats">
+          <li>30 listings / 30 days</li>
+          <li>No watermark</li>
+          <li>Priority support</li>
+          <li>Custom style presets</li>
+        </ul>
+        <button class="pcard-btn pcard-btn-dark" onclick="openModal('elite')">Start Elite Agent</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title">Your next listing deserves a better first impression.</h2>
+  <p class="cta-sub">Join agents already using ShowsReady to win more showings.</p>
+  <a href="#" class="btn-hero-gold" onclick="openModal('free');return false;">Create Your First Walkthrough — Free</a>
+</section>
+
+<footer>
+  <div class="footer-logo">Shows<span>Ready</span></div>
+  <div class="footer-links">
+    <a href="pricing.html">Pricing</a>
+    <a href="app.html">App</a>
+    <a href="mailto:hello@showsready.com">Contact</a>
+  </div>
+  <div class="footer-copy">© 2025 ShowsReady. All rights reserved.</div>
+</footer>
+
+<!-- SIGNUP MODAL -->
+<div class="overlay" id="signupOverlay" onclick="closeBg(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="m-eyebrow">✦ Get Started</div>
+    <div class="m-title">Create Your Account</div>
+    <div class="m-sub">Free plan includes 1 full walkthrough — no card required.</div>
+    <div class="m-field"><label class="m-label">Full Name</label><input type="text" class="m-input" id="s_name" placeholder="Sarah Mitchell"></div>
+    <div class="m-field"><label class="m-label">Email</label><input type="email" class="m-input" id="s_email" placeholder="sarah@compass.com"></div>
+    <div class="m-field">
+      <label class="m-label">Plan</label>
+      <div class="m-plan-row">
+        <div class="m-plan-opt on" id="opt_free" onclick="setPlan('free')"><input type="radio" name="plan" checked> <span class="m-plan-name">Free Preview</span><span class="m-plan-price">$0</span></div>
+        <div class="m-plan-opt" id="opt_single" onclick="setPlan('single')"><input type="radio" name="plan"> <span class="m-plan-name">Per Listing</span><span class="m-plan-price">$29.99</span></div>
+        <div class="m-plan-opt" id="opt_pro" onclick="setPlan('pro')"><input type="radio" name="plan"> <span class="m-plan-name">Pro Agent</span><span class="m-plan-price">$49.99/mo</span></div>
+        <div class="m-plan-opt" id="opt_elite" onclick="setPlan('elite')"><input type="radio" name="plan"> <span class="m-plan-name">Elite Agent</span><span class="m-plan-price">$99.99/mo</span></div>
+      </div>
+    </div>
+    <button class="m-submit" id="s_btn" onclick="handleSignup()"><span id="s_btn_txt">Continue →</span></button>
+    <div class="m-note">🔒 Secured by Stripe · Cancel anytime</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = window.location.hostname.includes('localhost')
+  ? 'http://localhost:3001'
+  : 'https://api.showsready.com';
+
+let selectedPlan = 'free';
+
+function openModal(plan) {
+  selectedPlan = plan || 'free';
+  setPlan(selectedPlan);
+  document.getElementById('signupOverlay').classList.add('on');
+}
+function closeModal() { document.getElementById('signupOverlay').classList.remove('on'); }
+function closeBg(e) { if (e.target.id === 'signupOverlay') closeModal(); }
+
+function setPlan(plan) {
+  selectedPlan = plan;
+  ['free','single','pro','elite'].forEach(p => {
+    document.getElementById(`opt_${p}`)?.classList.toggle('on', p === plan);
+    const radio = document.querySelector(`#opt_${p} input`);
+    if (radio) radio.checked = (p === plan);
+  });
+}
+
+async function handleSignup() {
+  const name  = document.getElementById('s_name').value.trim();
+  const email = document.getElementById('s_email').value.trim();
+  if (!name || !email) { toast('Please enter your name and email.'); return; }
+
+  const btn = document.getElementById('s_btn');
+  btn.disabled = true;
+  document.getElementById('s_btn_txt').innerHTML = '<span class="spin"></span>&nbsp;Just a moment…';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, plan: selectedPlan })
+    });
+    const data = await res.json();
+
+    if (data.checkoutUrl) {
+      window.location.href = data.checkoutUrl;
+      return;
+    }
+    if (data.user || data.success) {
+      localStorage.setItem('sr_email', email);
+      localStorage.setItem('sr_name', name);
+      window.location.href = 'app.html';
+    }
+  } catch (err) {
+    toast('Something went wrong. Please try again.');
+    btn.disabled = false;
+    document.getElementById('s_btn_txt').textContent = 'Continue →';
+  }
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 3500);
+}
+</script>
+</body>
+</html>
