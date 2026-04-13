@@ -3,1477 +3,361 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShowsReady — AI Real Estate Visual Studio</title>
+<title>ShowsReady — AI Walkthrough Videos for Real Estate Agents</title>
+<meta name="description" content="Create stunning 60-second listing walkthrough videos with AI staging in minutes. Built for real estate agents.">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink:     #111010;
-  --char:    #1c1a18;
-  --surface: #232018;
-  --ivory:   #f9f6f0;
-  --cream:   #f1ece2;
-  --warm:    #e5ddd0;
-  --border:  #d2cabc;
-  --mid:     #8c8274;
-  --gold:    #b8935a;
-  --gold-l:  #d4af72;
-  --gold-d:  #9a7a44;
-  --white:   #ffffff;
-  --green:   #2d6a4f;
-  --red:     #b84040;
+  --ink:    #111010;
+  --char:   #1c1a18;
+  --surface:#232018;
+  --ivory:  #f9f6f0;
+  --cream:  #f1ece2;
+  --warm:   #e5ddd0;
+  --border: #d2cabc;
+  --mid:    #8c8274;
+  --gold:   #b8935a;
+  --gold-l: #d4af72;
+  --white:  #ffffff;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:'Jost',sans-serif;background:var(--ivory);color:var(--ink);min-height:100vh;overflow-x:hidden;}
-body::after{content:'';position:fixed;inset:0;z-index:9000;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");opacity:.45;}
+body{font-family:'Jost',sans-serif;background:var(--ivory);color:var(--ink);overflow-x:hidden;}
 
-/* ── HEADER ── */
-header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 44px;border-bottom:1px solid rgba(184,147,90,.2);}
-.logo{display:flex;align-items:baseline;gap:1px;}
+/* NAV */
+nav{position:sticky;top:0;z-index:100;height:60px;background:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 48px;border-bottom:1px solid rgba(184,147,90,.2);}
 .logo-text{font-family:'Libre Baskerville',serif;font-size:1.15rem;letter-spacing:.04em;color:var(--ivory);}
 .logo-text span{color:var(--gold);}
-.logo-tag{font-size:.58rem;font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-left:10px;align-self:center;}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.btn-nav-ghost{background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);font-family:'Jost',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;padding:8px 18px;border-radius:2px;cursor:pointer;transition:all .18s;text-decoration:none;display:inline-block;}
+.btn-nav-ghost:hover{border-color:rgba(255,255,255,.4);color:white;}
+.btn-nav-gold{background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:8px 18px;border-radius:2px;cursor:pointer;border:none;text-decoration:none;display:inline-block;transition:background .18s;}
+.btn-nav-gold:hover{background:var(--gold-l);}
 
-.hdr-center{display:flex;align-items:center;gap:10px;}
-.plan-pill{display:flex;align-items:center;gap:7px;padding:5px 13px;border-radius:2px;border:1px solid rgba(184,147,90,.3);background:rgba(184,147,90,.07);font-size:.66rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);}
-.plan-pill.free{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.35);}
-.usage-meter{display:flex;align-items:center;gap:8px;font-size:.66rem;color:rgba(255,255,255,.35);font-weight:300;}
-.ubar{width:52px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
-.ubar-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s;}
-.ubar-fill.warn{background:var(--red);}
+/* HERO */
+.hero{min-height:90vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 24px;background:var(--ink);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(184,147,90,.07) 0%,transparent 70%);}
+.hero-eyebrow{font-size:.6rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;}
+.hero-title{font-family:'Libre Baskerville',serif;font-size:clamp(2.4rem,5vw,4rem);font-weight:400;color:var(--ivory);line-height:1.2;margin-bottom:20px;max-width:720px;}
+.hero-title em{color:var(--gold);font-style:italic;}
+.hero-sub{font-size:1rem;font-weight:300;color:rgba(255,255,255,.5);line-height:1.75;max-width:520px;margin:0 auto 40px;}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn-hero-gold{background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:14px 32px;border-radius:2px;cursor:pointer;border:none;text-decoration:none;display:inline-block;transition:all .18s;}
+.btn-hero-gold:hover{background:var(--gold-l);transform:translateY(-1px);}
+.btn-hero-ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);font-family:'Jost',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:14px 32px;border-radius:2px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .18s;}
+.btn-hero-ghost:hover{border-color:rgba(255,255,255,.5);color:white;}
+.hero-note{font-size:.65rem;color:rgba(255,255,255,.22);margin-top:18px;letter-spacing:.05em;}
 
-.hdr-right{display:flex;gap:10px;align-items:center;}
-.btn-hdr{font-family:'Jost',sans-serif;font-size:.67rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;border:none;padding:8px 17px;border-radius:2px;cursor:pointer;transition:all .18s;}
-.btn-hdr-ghost{background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);}
-.btn-hdr-ghost:hover{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7);}
-.btn-hdr-gold{background:var(--gold);color:var(--ink);}
-.btn-hdr-gold:hover{background:var(--gold-l);}
+/* HOW IT WORKS */
+.section{padding:88px 24px;}
+.section-inner{max-width:1040px;margin:0 auto;}
+.section-eyebrow{font-size:.58rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;text-align:center;}
+.section-title{font-family:'Libre Baskerville',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:400;text-align:center;margin-bottom:14px;}
+.section-sub{font-size:.88rem;font-weight:300;color:var(--mid);text-align:center;line-height:1.75;max-width:540px;margin:0 auto 56px;}
 
-/* ── STEP RAIL ── */
-.rail{background:var(--ink);border-bottom:1px solid rgba(255,255,255,.05);display:flex;padding:0 44px;overflow-x:auto;gap:0;}
-.rail::-webkit-scrollbar{height:0;}
-.rs{display:flex;align-items:center;gap:9px;padding:13px 20px 13px 0;margin-right:18px;font-size:.67rem;font-weight:400;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.22);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s;position:relative;}
-.rs::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:transparent;transition:background .2s;}
-.rs:hover{color:rgba(255,255,255,.5);}
-.rs.active{color:var(--gold);}
-.rs.active::after{background:var(--gold);}
-.rs.done{color:rgba(255,255,255,.38);}
-.rs.done::after{background:rgba(184,147,90,.2);}
-.rs-num{width:18px;height:18px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.57rem;font-weight:700;flex-shrink:0;}
-.rs.active .rs-num{background:var(--gold);border-color:var(--gold);color:var(--ink);}
-.rs.done .rs-num{background:rgba(184,147,90,.15);}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;}
+.step{text-align:center;}
+.step-num{width:44px;height:44px;border-radius:50%;border:1px solid rgba(184,147,90,.35);display:flex;align-items:center;justify-content:center;font-family:'Libre Baskerville',serif;font-size:1.1rem;color:var(--gold);margin:0 auto 18px;}
+.step-title{font-size:.88rem;font-weight:600;margin-bottom:8px;}
+.step-desc{font-size:.8rem;font-weight:300;color:var(--mid);line-height:1.7;}
 
-/* ── CANVAS ── */
-.canvas{max-width:1080px;margin:0 auto;padding:44px;}
+/* FEATURES */
+.features-bg{background:var(--cream);}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-top:48px;}
+.feat{background:var(--white);padding:32px 28px;}
+.feat-icon{font-size:1.4rem;margin-bottom:14px;}
+.feat-title{font-size:.9rem;font-weight:600;margin-bottom:7px;}
+.feat-desc{font-size:.78rem;font-weight:300;color:var(--mid);line-height:1.7;}
 
-/* ── PAGE SECTIONS ── */
-.pg{display:none;}
-.pg.on{display:block;}
+/* PRICING */
+.pricing-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:48px;}
+.pcard{background:var(--white);border:1px solid var(--border);border-radius:4px;padding:28px 24px;position:relative;}
+.pcard.featured{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);}
+.pcard-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-size:.57rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:3px 12px;border-radius:1px;white-space:nowrap;}
+.pcard-name{font-size:.72rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);margin-bottom:10px;}
+.pcard-price{font-family:'Libre Baskerville',serif;font-size:2.2rem;color:var(--ink);margin-bottom:4px;}
+.pcard-price sub{font-family:'Jost',sans-serif;font-size:.75rem;font-weight:300;color:var(--mid);}
+.pcard-desc{font-size:.75rem;font-weight:300;color:var(--mid);margin-bottom:20px;line-height:1.6;}
+.pcard-feats{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:24px;}
+.pcard-feats li{font-size:.77rem;font-weight:300;color:var(--char);display:flex;align-items:flex-start;gap:7px;}
+.pcard-feats li::before{content:'✦';font-size:.5rem;color:var(--gold);margin-top:3px;flex-shrink:0;}
+.pcard-btn{width:100%;font-family:'Jost',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:11px;border-radius:2px;cursor:pointer;border:none;transition:all .18s;}
+.pcard-btn-dark{background:var(--ink);color:var(--ivory);}
+.pcard-btn-dark:hover{background:var(--char);}
+.pcard-btn-gold{background:var(--gold);color:var(--ink);}
+.pcard-btn-gold:hover{background:var(--gold-l);}
+.pcard-btn-ghost{background:transparent;border:1px solid var(--border);color:var(--mid);}
+.pcard-btn-ghost:hover{border-color:var(--ink);color:var(--ink);}
 
-/* ── TYPE ── */
-.eyebrow{font-size:.6rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:9px;}
-.pg-title{font-family:'Libre Baskerville',serif;font-size:1.85rem;font-weight:400;color:var(--ink);margin-bottom:5px;}
-.pg-sub{font-size:.83rem;font-weight:300;color:var(--mid);line-height:1.7;margin-bottom:32px;}
-.step-bar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:20px;}
-.step-bar-left{flex:1;}
+/* CTA */
+.cta-section{background:var(--ink);padding:88px 24px;text-align:center;}
+.cta-title{font-family:'Libre Baskerville',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);color:var(--ivory);margin-bottom:14px;}
+.cta-sub{font-size:.9rem;font-weight:300;color:rgba(255,255,255,.45);margin-bottom:36px;line-height:1.7;}
 
-/* ── CARD ── */
-.card{background:var(--white);border:1px solid var(--border);border-radius:4px;overflow:hidden;box-shadow:0 1px 10px rgba(26,23,20,.06);}
-.card-head{padding:17px 26px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.card-head-label{font-size:.63rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);}
+/* FOOTER */
+footer{background:var(--char);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.footer-logo{font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--ivory);}
+.footer-logo span{color:var(--gold);}
+.footer-links{display:flex;gap:24px;}
+.footer-links a{font-size:.7rem;font-weight:300;color:rgba(255,255,255,.3);text-decoration:none;letter-spacing:.05em;transition:color .15s;}
+.footer-links a:hover{color:rgba(255,255,255,.6);}
+.footer-copy{font-size:.65rem;color:rgba(255,255,255,.2);font-weight:300;}
 
-/* ── FORM ── */
-.fg{padding:26px;display:grid;gap:18px;grid-template-columns:1fr 1fr 1fr;}
-.fld{display:flex;flex-direction:column;gap:6px;}
-.fld.s2{grid-column:span 2;}
-.fld.s3{grid-column:span 3;}
-.fld label{font-size:.61rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);}
-.fld input,.fld select,.fld textarea{font-family:'Jost',sans-serif;font-size:.86rem;font-weight:300;background:var(--ivory);border:1px solid var(--border);color:var(--ink);border-radius:2px;padding:10px 12px;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;}
-.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,147,90,.09);}
-.fld textarea{resize:vertical;min-height:68px;}
-.fld select option{background:white;}
-
-/* ── BUTTONS ── */
-.btn{font-family:'Jost',sans-serif;letter-spacing:.13em;text-transform:uppercase;border:none;cursor:pointer;border-radius:2px;display:inline-flex;align-items:center;gap:8px;transition:all .18s;font-weight:600;}
-.btn-dark{background:var(--ink);color:var(--ivory);font-size:.72rem;padding:11px 24px;}
-.btn-dark:hover{background:var(--char);transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,23,20,.18);}
-.btn-dark:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
-.btn-gold{background:var(--gold);color:var(--ink);font-size:.72rem;padding:11px 24px;}
-.btn-gold:hover{background:var(--gold-l);transform:translateY(-1px);}
-.btn-gold:disabled{opacity:.35;cursor:not-allowed;transform:none;}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--mid);font-size:.7rem;padding:9px 18px;}
-.btn-ghost:hover{border-color:var(--ink);color:var(--ink);}
-.btn-xl{font-size:.76rem;padding:14px 30px;}
-
-/* ── INSIGHT ── */
-.insight{margin:0 26px 26px;border:1px solid rgba(184,147,90,.25);background:linear-gradient(135deg,rgba(184,147,90,.05),rgba(184,147,90,.01));border-radius:2px;padding:16px 20px;display:none;}
-.insight.on{display:block;animation:fadeUp .3s ease;}
-.insight-lbl{font-size:.59rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
-.insight-txt{font-size:.83rem;font-weight:300;line-height:1.75;color:var(--char);}
-
-/* ── ROOMS ── */
-.rooms-stack{border:1px solid var(--border);border-radius:4px;overflow:hidden;}
-.rrow{background:var(--white);border-bottom:1px solid var(--border);}
-.rrow:last-child{border-bottom:none;}
-.rrow-head{padding:15px 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .15s;}
-.rrow-head:hover{background:var(--ivory);}
-.rrow-left{display:flex;align-items:center;gap:12px;}
-.ricon{width:33px;height:33px;background:var(--cream);border:1px solid var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
-.rname{font-size:.85rem;font-weight:500;}
-.rhint{font-size:.7rem;font-weight:300;color:var(--mid);margin-top:1px;}
-.rbadge{font-size:.61rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);color:var(--mid);border-radius:1px;}
-.rbadge.ready{border-color:rgba(184,147,90,.4);color:var(--gold);background:rgba(184,147,90,.05);}
-.rrow-body{padding:18px 22px;background:var(--ivory);border-top:1px solid var(--border);}
-
-/* ── UPLOAD ── */
-.dropz{border:1px dashed var(--border);border-radius:2px;padding:22px 16px;text-align:center;cursor:pointer;background:var(--white);position:relative;overflow:hidden;transition:all .2s;}
-.dropz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.dropz:hover,.dropz.drag{border-color:var(--gold);background:rgba(184,147,90,.03);}
-.dropz-icon{font-size:1.3rem;opacity:.3;margin-bottom:5px;}
-.dropz-txt{font-size:.74rem;font-weight:300;color:var(--mid);}
-.dropz-txt strong{color:var(--ink);font-weight:500;}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:12px;}
-.pcell{position:relative;aspect-ratio:4/3;border-radius:2px;overflow:hidden;border:1px solid var(--border);animation:fadeUp .22s ease;}
-.pcell img{width:100%;height:100%;object-fit:cover;display:block;}
-.pdel{position:absolute;top:3px;right:3px;width:17px;height:17px;background:rgba(26,23,20,.65);color:white;border:none;border-radius:50%;font-size:.52rem;cursor:pointer;opacity:0;transition:opacity .15s;display:flex;align-items:center;justify-content:center;}
-.pcell:hover .pdel{opacity:1;}
-
-/* ── STYLE CHIPS + PREVIEW ── */
-.style-section{margin-top:16px;}
-.style-section-lbl{font-size:.6rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);margin-bottom:9px;}
-.style-chips{display:flex;flex-wrap:wrap;gap:6px;}
-.schip{font-size:.72rem;font-weight:400;padding:7px 13px;border:1px solid var(--border);background:var(--white);color:var(--char);cursor:pointer;border-radius:2px;transition:all .15s;display:flex;align-items:center;gap:6px;}
-.schip:hover{border-color:var(--gold);}
-.schip.on{border-color:var(--ink);background:var(--ink);color:var(--ivory);}
-.schip-swatch{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-
-.style-preview-wrap{margin-top:14px;border:1px solid var(--border);border-radius:3px;overflow:hidden;display:none;animation:fadeUp .3s ease;}
-.style-preview-wrap.on{display:block;}
-.spv-header{background:var(--ink);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-size:.63rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);}
-.spv-body{display:flex;height:180px;}
-.spv-before,.spv-after{flex:1;position:relative;overflow:hidden;}
-.spv-before img,.spv-after img{width:100%;height:100%;object-fit:cover;display:block;}
-.spv-after-overlay{position:absolute;inset:0;transition:all .4s ease;pointer-events:none;}
-.spv-label{position:absolute;bottom:8px;left:8px;font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:1px;}
-.spv-label-b{background:rgba(26,23,20,.6);color:rgba(255,255,255,.8);}
-.spv-label-a{background:rgba(184,147,90,.85);color:var(--ink);}
-.spv-divider{width:1px;background:rgba(255,255,255,.3);flex-shrink:0;}
-.spv-desc{padding:14px 16px;background:var(--surface);color:rgba(255,255,255,.65);font-size:.78rem;font-weight:300;line-height:1.65;flex:0 0 220px;display:flex;flex-direction:column;justify-content:center;gap:6px;border-left:1px solid rgba(255,255,255,.06);}
-.spv-style-name{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-l);margin-bottom:3px;}
-.spv-ai-badge{display:inline-flex;align-items:center;gap:4px;font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:rgba(184,147,90,.15);border:1px solid rgba(184,147,90,.25);color:var(--gold);padding:2px 8px;border-radius:1px;margin-top:4px;width:fit-content;}
-.snote{font-family:'Jost',sans-serif;font-size:.79rem;font-weight:300;background:var(--white);border:1px solid var(--border);color:var(--ink);border-radius:2px;padding:9px 12px;width:100%;margin-top:11px;outline:none;transition:border-color .2s;}
-.snote:focus{border-color:var(--gold);}
-.snote::placeholder{color:var(--border);}
-
-/* ── BRANDING ── */
-.brand-grid{padding:26px;display:grid;grid-template-columns:1fr 1fr;gap:34px;}
-.agent-card{background:var(--ink);border-radius:3px;padding:30px 26px;min-height:250px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
-.agent-card::before{content:'✦';position:absolute;top:14px;right:22px;font-size:3.5rem;opacity:.04;color:white;}
-.gold-bar{width:30px;height:1px;background:var(--gold);margin:13px 0;}
-.ac-name{font-family:'Libre Baskerville',serif;font-size:1.2rem;color:var(--ivory);}
-.ac-title{font-size:.64rem;letter-spacing:.17em;text-transform:uppercase;color:rgba(255,255,255,.36);margin-top:3px;}
-.ac-contact{font-size:.74rem;font-weight:300;color:rgba(255,255,255,.58);line-height:2;}
-.ac-tag{font-family:'Libre Baskerville',serif;font-style:italic;font-size:.78rem;color:var(--gold-l);}
-.logo-drop{border:1px dashed var(--border);border-radius:2px;padding:16px;text-align:center;cursor:pointer;position:relative;margin-bottom:14px;background:var(--ivory);transition:border-color .2s;}
-.logo-drop:hover{border-color:var(--gold);}
-.logo-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.logo-drop-txt{font-size:.72rem;font-weight:300;color:var(--mid);}
-
-/* ── MUSIC PICKER ── */
-.music-tracks{display:flex;flex-direction:column;gap:6px;}
-.mtrack{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-radius:2px;cursor:pointer;background:var(--white);transition:all .15s;}
-.mtrack:hover{border-color:var(--gold);background:rgba(184,147,90,.03);}
-.mtrack.on{border-color:var(--ink);background:var(--ink);}
-.mtrack-icon{font-size:1.1rem;width:22px;text-align:center;flex-shrink:0;}
-.mtrack-info{flex:1;}
-.mtrack-name{font-size:.8rem;font-weight:500;color:var(--ink);}
-.mtrack.on .mtrack-name{color:var(--ivory);}
-.mtrack-desc{font-size:.7rem;font-weight:300;color:var(--mid);}
-.mtrack.on .mtrack-desc{color:rgba(255,255,255,.4);}
-.mtrack-check{font-size:.75rem;color:var(--gold);opacity:0;transition:opacity .15s;}
-.mtrack.on .mtrack-check{opacity:1;}
-
-/* ── GENERATE ── */
-.gen-layout{padding:26px;display:grid;grid-template-columns:260px 1fr;gap:30px;}
-.gen-steps{display:flex;flex-direction:column;}
-.gstep{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid var(--cream);font-size:.79rem;font-weight:300;color:var(--border);transition:color .3s;}
-.gstep:last-child{border-bottom:none;}
-.gstep.active{color:var(--char);}
-.gstep.done{color:var(--gold);}
-.gdot{width:16px;height:16px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.54rem;font-weight:700;flex-shrink:0;margin-top:1px;transition:all .3s;}
-.gstep.active .gdot{background:var(--ink);border-color:var(--ink);color:white;}
-.gstep.done .gdot{background:var(--gold);border-color:var(--gold);color:white;}
-.gtrack{height:1px;background:var(--border);margin-bottom:22px;overflow:hidden;}
-.gfill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-l));width:0%;transition:width .5s ease;}
-.gstatus{font-size:.7rem;color:var(--mid);margin-top:11px;font-weight:300;}
-
-/* ── VIEWER ── */
-.viewer{display:none;flex-direction:column;gap:14px;}
-.viewer.on{display:flex;}
-.vstage{position:relative;border-radius:3px;overflow:hidden;aspect-ratio:16/9;background:var(--ink);box-shadow:0 4px 28px rgba(26,23,20,.16);}
-
-/* WATERMARK */
-.watermark{position:absolute;inset:0;z-index:20;pointer-events:none;display:flex;align-items:flex-end;justify-content:flex-end;padding:12px 16px;}
-.watermark-badge{background:rgba(18,16,16,.6);backdrop-filter:blur(4px);border:1px solid rgba(184,147,90,.3);padding:5px 12px;border-radius:1px;font-family:'Libre Baskerville',serif;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);}
-.watermark-badge span{color:var(--gold);}
-
-.vslide{position:absolute;inset:0;opacity:0;transition:opacity .85s ease;display:flex;align-items:center;justify-content:center;}
-.vslide.on{opacity:1;}
-.intro-sl{background:var(--ink);width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:56px;}
-.intro-lbl{font-size:.57rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
-.intro-ttl{font-family:'Libre Baskerville',serif;font-size:clamp(1.2rem,3vw,1.9rem);font-style:italic;color:var(--ivory);line-height:1.3;}
-.intro-addr{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-top:14px;}
-.ba{position:relative;width:100%;height:100%;overflow:hidden;cursor:ew-resize;}
-.ba-b,.ba-a{position:absolute;inset:0;}
-.ba-a{clip-path:inset(0 50% 0 0);}
-.ba-a img{filter:saturate(1.3) brightness(1.07) contrast(1.04);}
-.ba-a::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(184,147,90,.1),transparent);pointer-events:none;}
-.ba-b img,.ba-a img{width:100%;height:100%;object-fit:cover;display:block;}
-.ba-line{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:1px;background:rgba(255,255,255,.72);pointer-events:none;z-index:5;}
-.ba-knob{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:white;z-index:6;display:flex;align-items:center;justify-content:center;font-size:.68rem;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.25);pointer-events:none;font-weight:700;}
-.ba-tag-b,.ba-tag-a{position:absolute;top:12px;font-size:.58rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:4px 10px;border-radius:1px;z-index:4;}
-.ba-tag-b{left:12px;background:rgba(26,23,20,.55);color:rgba(255,255,255,.8);}
-.ba-tag-a{right:12px;background:rgba(184,147,90,.85);color:var(--ink);}
-.slide-cap{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,23,20,.72));padding:34px 22px 17px;z-index:7;}
-.cap-room{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-l);font-weight:500;}
-.cap-line{font-size:.86rem;color:rgba(255,255,255,.88);margin-top:3px;font-weight:300;}
-.end-sl{background:var(--ink);width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;padding:48px;}
-.end-name{font-family:'Libre Baskerville',serif;font-size:clamp(1.3rem,3vw,1.9rem);color:var(--ivory);}
-.end-titl{font-size:.63rem;letter-spacing:.17em;text-transform:uppercase;color:var(--gold);margin-top:5px;}
-.end-rule{width:34px;height:1px;background:var(--gold);margin:16px 0;}
-.end-contact{font-size:.77rem;font-weight:300;color:rgba(255,255,255,.62);line-height:2;}
-.end-tag{font-family:'Libre Baskerville',serif;font-style:italic;font-size:.82rem;color:var(--gold-l);margin-top:14px;}
-.end-outro{font-size:.71rem;font-weight:300;color:rgba(255,255,255,.32);margin-top:16px;max-width:340px;line-height:1.7;}
-.placeholder-sl{background:var(--char);width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:rgba(255,255,255,.22);}
-
-.v-controls{display:flex;align-items:center;justify-content:space-between;}
-.vdots{display:flex;gap:5px;}
-.vdot{width:5px;height:5px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .2s;}
-.vdot.on{background:var(--gold);width:16px;border-radius:3px;}
-.vbtns{display:flex;gap:8px;}
-.vbtn{font-family:'Jost',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;padding:8px 16px;border-radius:2px;cursor:pointer;border:none;transition:all .15s;}
-.vbtn-play{background:var(--ink);color:var(--ivory);}
-.vbtn-play:hover{background:var(--char);}
-.vbtn-export{background:var(--gold);color:var(--ink);}
-.vbtn-export:hover{background:var(--gold-l);}
-.vbtn-export.locked{background:rgba(184,147,90,.3);color:rgba(184,147,90,.6);cursor:not-allowed;}
-
-.script-wrap{display:none;border-top:1px solid var(--border);}
-.script-wrap.on{display:block;}
-.script-box{padding:22px 26px;background:var(--white);}
-.script-lbl{font-size:.59rem;font-weight:700;letter-spacing:.21em;text-transform:uppercase;color:var(--gold);margin-bottom:11px;}
-.script-txt{font-family:'Libre Baskerville',serif;font-style:italic;font-size:.85rem;line-height:1.9;color:var(--char);white-space:pre-line;}
-
-/* ── GATE ── */
-.gate-bar{background:linear-gradient(135deg,rgba(184,147,90,.1),rgba(184,147,90,.04));border:1px solid rgba(184,147,90,.28);border-radius:3px;padding:16px 20px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
-.gate-txt{font-size:.82rem;font-weight:300;color:var(--char);}
-.gate-txt strong{font-weight:600;color:var(--ink);}
-
-/* ── MODALS ── */
-.overlay{position:fixed;inset:0;z-index:800;background:rgba(18,16,16,.86);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;padding:16px;}
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:800;background:rgba(18,16,16,.88);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;padding:16px;}
 .overlay.on{opacity:1;pointer-events:all;}
-.modal{background:var(--white);color:var(--ink);border-radius:4px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;padding:34px;position:relative;transform:translateY(16px);transition:transform .3s ease;box-shadow:0 24px 80px rgba(0,0,0,.45);}
+.modal{background:var(--white);border-radius:4px;width:100%;max-width:420px;padding:36px;position:relative;transform:translateY(14px);transition:transform .3s ease;box-shadow:0 24px 80px rgba(0,0,0,.45);}
 .overlay.on .modal{transform:translateY(0);}
-.modal-close{position:absolute;top:13px;right:13px;width:25px;height:25px;background:var(--cream);border:none;border-radius:50%;cursor:pointer;font-size:.62rem;color:var(--mid);display:flex;align-items:center;justify-content:center;}
-.m-eyebrow{font-size:.59rem;font-weight:700;letter-spacing:.21em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
-.m-title{font-family:'Libre Baskerville',serif;font-size:1.4rem;margin-bottom:5px;}
-.m-sub{font-size:.77rem;font-weight:300;color:var(--mid);margin-bottom:20px;line-height:1.6;}
-.plan-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
-.plan-card{border:1px solid var(--border);border-radius:3px;padding:16px 18px;cursor:pointer;transition:all .18s;background:var(--white);}
-.plan-card:hover{border-color:var(--gold);}
-.plan-card.on{border-color:var(--ink);background:rgba(17,16,16,.03);}
-.plan-card.featured{border-color:var(--gold);background:rgba(184,147,90,.04);}
-.pc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
-.pc-name{font-size:.82rem;font-weight:600;color:var(--ink);}
-.pc-price{font-family:'Libre Baskerville',serif;font-size:1.25rem;color:var(--gold);white-space:nowrap;}
-.pc-price sub{font-size:.65rem;font-family:'Jost',sans-serif;font-weight:300;color:var(--mid);}
-.pc-desc{font-size:.73rem;font-weight:300;color:var(--mid);margin-top:4px;line-height:1.5;}
-.pc-feats{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
-.pc-feat-tag{font-size:.65rem;font-weight:400;color:var(--mid);background:var(--cream);padding:3px 8px;border-radius:1px;}
-.pc-badge{display:inline-block;font-size:.57rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;background:var(--gold);color:var(--ink);padding:2px 8px;border-radius:1px;margin-bottom:6px;}
-.pc-badge-free{background:rgba(45,106,79,.15);border:1px solid rgba(45,106,79,.3);color:var(--green);}
-.plan-radio{width:15px;height:15px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:3px;transition:all .15s;display:flex;align-items:center;justify-content:center;}
-.plan-card.on .plan-radio{border-color:var(--ink);background:var(--ink);}
-.plan-card.on .plan-radio::after{content:'';width:5px;height:5px;background:white;border-radius:50%;}
-.m-field{margin-bottom:13px;}
-.m-label{display:block;font-size:.6rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);margin-bottom:5px;}
-.m-input{width:100%;font-family:'Jost',sans-serif;font-size:.85rem;font-weight:300;background:var(--ivory);border:1px solid var(--border);color:var(--ink);border-radius:2px;padding:10px 12px;outline:none;transition:border-color .2s;}
+.modal-close{position:absolute;top:13px;right:13px;width:26px;height:26px;background:var(--cream);border:none;border-radius:50%;cursor:pointer;font-size:.65rem;color:var(--mid);}
+.m-eyebrow{font-size:.58rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
+.m-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;margin-bottom:5px;}
+.m-sub{font-size:.77rem;font-weight:300;color:var(--mid);margin-bottom:22px;line-height:1.6;}
+.m-field{margin-bottom:14px;}
+.m-label{display:block;font-size:.59rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);margin-bottom:5px;}
+.m-input{width:100%;font-family:'Jost',sans-serif;font-size:.86rem;font-weight:300;background:var(--ivory);border:1px solid var(--border);color:var(--ink);border-radius:2px;padding:10px 12px;outline:none;transition:border-color .2s;}
 .m-input:focus{border-color:var(--gold);}
-#stripe-el{background:var(--ivory);border:1px solid var(--border);border-radius:2px;padding:10px 12px;}
-#card-err{color:var(--red);font-size:.72rem;margin-top:4px;min-height:16px;}
-.m-submit{width:100%;font-family:'Jost',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;background:var(--gold);color:var(--ink);border:none;padding:13px;border-radius:2px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:7px;}
+.m-plan-row{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.m-plan-opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:2px;cursor:pointer;transition:border-color .15s;}
+.m-plan-opt:hover{border-color:var(--gold);}
+.m-plan-opt.on{border-color:var(--ink);background:rgba(17,16,16,.03);}
+.m-plan-opt input{accent-color:var(--ink);}
+.m-plan-name{font-size:.82rem;font-weight:500;}
+.m-plan-price{font-size:.78rem;color:var(--mid);font-weight:300;margin-left:auto;}
+.m-submit{width:100%;font-family:'Jost',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;background:var(--gold);color:var(--ink);border:none;padding:13px;border-radius:2px;cursor:pointer;transition:background .18s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;}
 .m-submit:hover{background:var(--gold-l);}
 .m-submit:disabled{opacity:.4;cursor:not-allowed;}
-.m-note{text-align:center;margin-top:9px;font-size:.64rem;color:var(--mid);font-weight:300;}
-.m-success{text-align:center;padding:16px 0;}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--char);color:var(--ivory);padding:10px 20px;border-radius:2px;font-size:.74rem;letter-spacing:.05em;box-shadow:0 8px 28px rgba(0,0,0,.3);z-index:9999;transition:transform .3s,opacity .3s;opacity:0;border-bottom:2px solid var(--gold);white-space:nowrap;}
+.m-note{text-align:center;font-size:.63rem;color:var(--mid);margin-top:9px;}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--char);color:var(--ivory);padding:10px 22px;border-radius:2px;font-size:.74rem;box-shadow:0 8px 28px rgba(0,0,0,.3);z-index:9999;transition:transform .3s,opacity .3s;opacity:0;border-bottom:2px solid var(--gold);}
 .toast.on{transform:translateX(-50%) translateY(0);opacity:1;}
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(26,16,16,.2);border-top-color:var(--ink);border-radius:50%;animation:rot .6s linear infinite;}
-.spin-w{border-color:rgba(255,255,255,.2);border-top-color:white;}
 @keyframes rot{to{transform:rotate(360deg)}}
-
-@media(max-width:780px){
-  header,.rail{padding:0 18px;}
-  .canvas{padding:28px 18px;}
-  .fg{grid-template-columns:1fr 1fr;}
-  .fld.s3{grid-column:span 2;}
-  .brand-grid,.gen-layout{grid-template-columns:1fr;}
-  .spv-body{flex-direction:column;height:auto;}
-  .spv-desc{flex:0 0 auto;border-left:none;border-top:1px solid rgba(255,255,255,.06);}
-}
+@media(max-width:640px){nav{padding:0 20px;}.hero{padding:60px 20px;}.section{padding:60px 20px;}footer{padding:24px 20px;flex-direction:column;gap:16px;}}
 </style>
-<script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="logo">
-    <div class="logo-text">Shows<span>Ready</span></div>
-    <div class="logo-tag">AI Studio</div>
+<nav>
+  <div class="logo-text">Shows<span>Ready</span></div>
+  <div class="nav-right">
+    <a href="pricing.html" class="btn-nav-ghost">Pricing</a>
+    <a href="success.html" class="btn-nav-ghost">Sign In</a>
+    <a href="#" class="btn-nav-gold" onclick="openModal('free');return false;">Try Free</a>
   </div>
-  <div class="hdr-center">
-    <div class="plan-pill free" id="planPill">◌ Free Preview</div>
-    <div class="usage-meter" id="usageMeter">
-      <span id="usageTxt">0 / 1</span>
-      <div class="ubar"><div class="ubar-fill" id="ubarFill" style="width:0%"></div></div>
-    </div>
-  </div>
-  <div class="hdr-right">
-    <button class="btn-hdr btn-hdr-ghost" onclick="showDashInfo()">My Account</button>
-    <button class="btn-hdr btn-hdr-gold" onclick="openUpgrade()">Upgrade Plan</button>
-  </div>
-</header>
+</nav>
 
-<!-- RAIL -->
-<div class="rail">
-  <div class="rs active" id="r1" onclick="nav(1)"><div class="rs-num">1</div>Listing</div>
-  <div class="rs" id="r2" onclick="nav(2)"><div class="rs-num">2</div>Photos</div>
-  <div class="rs" id="r3" onclick="nav(3)"><div class="rs-num">3</div>Styles</div>
-  <div class="rs" id="r4" onclick="nav(4)"><div class="rs-num">4</div>Branding</div>
-  <div class="rs" id="r5" onclick="nav(5)"><div class="rs-num">5</div>Generate</div>
-</div>
+<!-- HERO -->
+<section class="hero">
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;">
+    <div class="hero-eyebrow">AI-Powered Real Estate Marketing</div>
+    <h1 class="hero-title">Your listings,<br><em>shows ready</em> in minutes.</h1>
+    <p class="hero-sub">Upload your listing photos, pick a staging style, and get a polished 60-second walkthrough video with your branded contact card — ready to share.</p>
+    <div class="hero-ctas">
+      <a href="#" class="btn-hero-gold" onclick="openModal('free');return false;">Create Free Walkthrough</a>
+      <a href="pricing.html" class="btn-hero-ghost">View Pricing →</a>
+    </div>
+    <div class="hero-note">No credit card required · Free plan includes 1 listing</div>
+  </div>
+</section>
 
-<!-- PG 1 -->
-<div class="pg on" id="pg1">
-<div class="canvas">
-  <div class="step-bar">
-    <div class="step-bar-left">
-      <div class="eyebrow">New Listing</div>
-      <div class="pg-title">Property Details</div>
-      <div class="pg-sub" style="margin-bottom:0">Enter your listing — ShowsReady auto-detects your market and calibrates staging styles to local buyer preferences across all 50 states.</div>
-    </div>
-    <button class="btn btn-dark btn-xl" id="btn1" onclick="doAnalyze()">Analyze Market →</button>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-head-label">Property Information</span></div>
-    <div class="fg">
-      <div class="fld s2"><label>Full Property Address</label><input type="text" id="f_addr" placeholder="e.g. 142 Ocean Ave, Santa Monica, CA 90402"></div>
-      <div class="fld"><label>Asking Price</label><input type="text" id="f_price" placeholder="e.g. $2,450,000"></div>
-      <div class="fld"><label>Property Type</label>
-        <select id="f_type">
-          <option>Single Family Home</option><option>Luxury Estate</option><option>Condo / Townhome</option>
-          <option>Oceanfront / Beachfront</option><option>Hillside / View Property</option>
-          <option>New Construction</option><option>Investment Property</option>
-          <option>Historic / Craftsman</option><option>Ranch / Farmhouse</option><option>Urban Loft / Penthouse</option>
-        </select>
-      </div>
-      <div class="fld"><label>Current Condition</label>
-        <select id="f_cond">
-          <option>Dated — needs visual refresh</option><option>Good but could be elevated</option>
-          <option>Move-in ready</option><option>Vacant / Unstaged</option>
-          <option>Builder-grade finishes</option><option>Fixer / As-is</option>
-        </select>
-      </div>
-      <div class="fld"><label>Target Buyer</label>
-        <select id="f_buyer">
-          <option>Luxury / High-net-worth</option><option>Young professionals</option>
-          <option>Growing families</option><option>Empty nesters / Downsizers</option>
-          <option>Investment / Rental</option><option>First-time buyers</option>
-          <option>Vacation / Second home</option><option>International buyers</option>
-        </select>
-      </div>
-      <div class="fld s3"><label>Key Features &amp; Selling Points</label>
-        <textarea id="f_notes" placeholder="Pool, views, open floor plan, renovated kitchen, proximity to schools, waterfront…"></textarea>
-      </div>
-    </div>
-    <div class="insight" id="insight">
-      <div class="insight-lbl">✦ AI Market Analysis</div>
-      <div class="insight-txt" id="insightTxt"></div>
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-eyebrow">How It Works</div>
+    <h2 class="section-title">From photos to walkthrough in 5 steps.</h2>
+    <p class="section-sub">No video editing. No design skills. No waiting on a marketing team.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-title">Enter Your Listing</div><div class="step-desc">Address, price, property type. ShowsReady auto-detects your market and calibrates styles to local buyer trends.</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-title">Upload Room Photos</div><div class="step-desc">Drop in 1–3 photos per room. Exterior, living room, kitchen, master, bath, outdoor — all covered.</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-title">Pick Your Staging Style</div><div class="step-desc">AI suggests market-matched styles. Preview the before/after transformation on your actual photos instantly.</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-title">Add Your Branding</div><div class="step-desc">Your name, title, brokerage, phone, email — assembled into a polished agent end card.</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-title">Export Your Video</div><div class="step-desc">Download a 1280×720 walkthrough video with animated before/after reveals and your choice of background music.</div></div>
     </div>
   </div>
-</div>
-</div>
+</section>
 
-<!-- PG 2 -->
-<div class="pg" id="pg2">
-<div class="canvas">
-  <div class="step-bar">
-    <div class="step-bar-left">
-      <div class="eyebrow">Step 2 of 5</div>
-      <div class="pg-title">Upload Room Photos</div>
-      <div class="pg-sub" style="margin-bottom:0">Upload 1–3 photos per room. AI stages each one. Preview style changes in Step 3.</div>
+<!-- FEATURES -->
+<section class="section features-bg">
+  <div class="section-inner">
+    <div class="section-eyebrow">Built for Agents</div>
+    <h2 class="section-title">Everything you need, nothing you don't.</h2>
+    <p class="section-sub">ShowsReady is purpose-built for listing agents who need results fast.</p>
+    <div class="features">
+      <div class="feat"><div class="feat-icon">🗺️</div><div class="feat-title">Market-Matched Styles</div><div class="feat-desc">Staging styles are calibrated to your local market — SoCal Coastal, NYC Metro, Texas, Mountain West, and more.</div></div>
+      <div class="feat"><div class="feat-icon">↔️</div><div class="feat-title">Animated Before/After</div><div class="feat-desc">Every room slide features a smooth wipe reveal showing the staged transformation — not just a static image.</div></div>
+      <div class="feat"><div class="feat-icon">🎵</div><div class="feat-title">Background Music</div><div class="feat-desc">Choose from Ambient Luxury, Modern Lifestyle, or Classical Elegance — or export silent for your own audio.</div></div>
+      <div class="feat"><div class="feat-icon">💼</div><div class="feat-title">Branded End Card</div><div class="feat-desc">Your name, photo, contact info, and tagline close every walkthrough in a premium agent card.</div></div>
+      <div class="feat"><div class="feat-icon">⚡</div><div class="feat-title">Fast &amp; Browser-Based</div><div class="feat-desc">No app to download. Works in any modern browser. Generate and export in under 5 minutes.</div></div>
+      <div class="feat"><div class="feat-icon">🔒</div><div class="feat-title">Your Files Stay Yours</div><div class="feat-desc">Photos are processed locally in your browser. Nothing is stored on our servers without your permission.</div></div>
     </div>
-    <button class="btn btn-dark" onclick="nav(3)">Choose Styles →</button>
   </div>
-  <div class="rooms-stack" id="roomStack"></div>
-</div>
-</div>
+</section>
 
-<!-- PG 3 -->
-<div class="pg" id="pg3">
-<div class="canvas">
-  <div class="step-bar">
-    <div class="step-bar-left">
-      <div class="eyebrow">Step 3 of 5</div>
-      <div class="pg-title">Style Selection &amp; Preview</div>
-      <div class="pg-sub" style="margin-bottom:0">AI-matched styles for your market. Click any chip to <strong>preview the transformation</strong> on your photo before generating.</div>
-    </div>
-    <button class="btn btn-dark" onclick="nav(4)">Agent Branding →</button>
-  </div>
-  <div id="stylesContainer" style="display:flex;flex-direction:column;gap:1px;border:1px solid var(--border);border-radius:4px;overflow:hidden;background:var(--border);"></div>
-</div>
-</div>
-
-<!-- PG 4 -->
-<div class="pg" id="pg4">
-<div class="canvas">
-  <div class="step-bar">
-    <div class="step-bar-left">
-      <div class="eyebrow">Step 4 of 5</div>
-      <div class="pg-title">Agent Branding</div>
-      <div class="pg-sub" style="margin-bottom:0">Your end card closes every walkthrough. Make it memorable.</div>
-    </div>
-    <button class="btn btn-dark" onclick="nav(5)">Generate Walkthrough →</button>
-  </div>
-  <div class="card">
-    <div class="brand-grid">
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div class="fld"><label>Full Name</label><input type="text" id="b_name" placeholder="Sarah Mitchell" oninput="syncCard()"></div>
-        <div class="fld"><label>Title &amp; Brokerage</label><input type="text" id="b_title" placeholder="Luxury Property Specialist · Compass" oninput="syncCard()"></div>
-        <div class="fld"><label>Phone</label><input type="tel" id="b_phone" placeholder="(310) 555-0192" oninput="syncCard()"></div>
-        <div class="fld"><label>Email</label><input type="email" id="b_email" placeholder="sarah@compass.com" oninput="syncCard()"></div>
-        <div class="fld"><label>Website / License #</label><input type="text" id="b_web" placeholder="sarahmitchell.com · DRE #01234567" oninput="syncCard()"></div>
-        <div class="fld"><label>Personal Tagline</label><input type="text" id="b_tag" placeholder="Your home. Perfectly presented." oninput="syncCard()"></div>
-        <div>
-          <label class="m-label" style="display:block;margin-bottom:6px;">Agent Photo / Logo</label>
-          <div class="logo-drop"><input type="file" accept="image/*" onchange="handleLogo(event)"><div id="logoDrop"><div class="logo-drop-txt">Drop photo or brokerage logo here</div></div></div>
-        </div>
+<!-- PRICING PREVIEW -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-eyebrow">Simple Pricing</div>
+    <h2 class="section-title">Start free. Scale when you're ready.</h2>
+    <p class="section-sub">No annual contracts. Cancel anytime. 14-day money-back guarantee on paid plans.</p>
+    <div class="pricing-cards">
+      <div class="pcard">
+        <div class="pcard-name">Free</div>
+        <div class="pcard-price">$0</div>
+        <div class="pcard-desc">Try it on your first listing, no card needed.</div>
+        <ul class="pcard-feats">
+          <li>1 listing walkthrough</li>
+          <li>All 6 room types</li>
+          <li>All staging styles</li>
+          <li>ShowsReady watermark</li>
+        </ul>
+        <button class="pcard-btn pcard-btn-ghost" onclick="openModal('free')">Get Started Free</button>
       </div>
-      <div>
-        <div style="font-size:.6rem;font-weight:600;letter-spacing:.19em;text-transform:uppercase;color:var(--mid);margin-bottom:12px;">Live End Card Preview</div>
-        <div class="agent-card">
-          <div><div class="ac-name" id="pc_name">Your Name</div><div class="ac-title" id="pc_title">Title · Brokerage</div></div>
-          <div class="gold-bar"></div>
-          <div class="ac-contact" id="pc_contact"><div id="pc_phone"></div><div id="pc_email"></div><div id="pc_web"></div></div>
-          <div class="ac-tag" id="pc_tag"></div>
-        </div>
-        <div style="margin-top:14px;padding:12px 14px;background:var(--cream);border-radius:2px;font-size:.73rem;font-weight:300;color:var(--mid);line-height:1.6;border:1px solid var(--border);">
-          💡 <strong style="color:var(--ink);font-weight:500;">Free plan:</strong> Walkthrough exports with a ShowsReady watermark. Upgrade to Pro Agent or Elite Agent to remove it.
-        </div>
+      <div class="pcard">
+        <div class="pcard-name">Per Listing</div>
+        <div class="pcard-price">$29<sub>.99</sub></div>
+        <div class="pcard-desc">One walkthrough, no subscription.</div>
+        <ul class="pcard-feats">
+          <li>1 listing walkthrough</li>
+          <li>No watermark</li>
+          <li>Full MP4 export</li>
+          <li>Branded end card</li>
+        </ul>
+        <button class="pcard-btn pcard-btn-dark" onclick="openModal('single')">Buy Single Listing</button>
+      </div>
+      <div class="pcard featured">
+        <div class="pcard-badge">Most Popular</div>
+        <div class="pcard-name">Pro Agent</div>
+        <div class="pcard-price">$49<sub>.99/mo</sub></div>
+        <div class="pcard-desc">For active listing agents.</div>
+        <ul class="pcard-feats">
+          <li>10 listings / 30 days</li>
+          <li>No watermark</li>
+          <li>Priority generation</li>
+          <li>Saved agent profile</li>
+        </ul>
+        <button class="pcard-btn pcard-btn-gold" onclick="openModal('pro')">Start Pro Agent</button>
+      </div>
+      <div class="pcard">
+        <div class="pcard-name">Elite Agent</div>
+        <div class="pcard-price">$99<sub>.99/mo</sub></div>
+        <div class="pcard-desc">For top producers and team leads.</div>
+        <ul class="pcard-feats">
+          <li>30 listings / 30 days</li>
+          <li>No watermark</li>
+          <li>Priority support</li>
+          <li>Custom style presets</li>
+        </ul>
+        <button class="pcard-btn pcard-btn-dark" onclick="openModal('elite')">Start Elite Agent</button>
       </div>
     </div>
   </div>
-</div>
-</div>
+</section>
 
-<!-- PG 5 -->
-<div class="pg" id="pg5">
-<div class="canvas">
-  <div class="step-bar">
-    <div class="step-bar-left">
-      <div class="eyebrow">Step 5 of 5</div>
-      <div class="pg-title">Generate Walkthrough</div>
-      <div class="pg-sub" style="margin-bottom:0">AI stages your rooms and assembles a presentation-ready walkthrough video.</div>
-    </div>
-    <div style="display:flex;gap:9px;">
-      <button class="btn btn-ghost" onclick="nav(4)">← Branding</button>
-      <button class="btn btn-gold btn-xl" id="genBtn" onclick="doGenerate()">✦ Generate Now</button>
-    </div>
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title">Your next listing deserves a better first impression.</h2>
+  <p class="cta-sub">Join agents already using ShowsReady to win more showings.</p>
+  <a href="#" class="btn-hero-gold" onclick="openModal('free');return false;">Create Your First Walkthrough — Free</a>
+</section>
+
+<footer>
+  <div class="footer-logo">Shows<span>Ready</span></div>
+  <div class="footer-links">
+    <a href="pricing.html">Pricing</a>
+    <a href="success.html">App</a>
+    <a href="mailto:hello@showsready.com">Contact</a>
   </div>
+  <div class="footer-copy">© 2026 ShowsReady. All rights reserved.</div>
+</footer>
 
-  <div id="gateBar" class="gate-bar" style="display:none;">
-    <div class="gate-txt" id="gateTxt"></div>
-    <button class="btn btn-gold" onclick="openUpgrade()">Upgrade →</button>
-  </div>
-
-  <div class="card">
-    <div class="gen-layout">
-      <div>
-        <div style="font-size:.61rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);margin-bottom:16px;">Pipeline</div>
-        <div class="gtrack"><div class="gfill" id="gfill"></div></div>
-        <div class="gen-steps">
-          <div class="gstep" id="gs1"><div class="gdot">1</div><span>Detecting market &amp; local trends</span></div>
-          <div class="gstep" id="gs2"><div class="gdot">2</div><span>Generating staging concepts</span></div>
-          <div class="gstep" id="gs3"><div class="gdot">3</div><span>Processing before/after transitions</span></div>
-          <div class="gstep" id="gs4"><div class="gdot">4</div><span>Writing voiceover script</span></div>
-          <div class="gstep" id="gs5"><div class="gdot">5</div><span>Assembling walkthrough</span></div>
-          <div class="gstep" id="gs6"><div class="gdot">6</div><span>Rendering agent end card</span></div>
-        </div>
-        <div class="gstatus" id="gstatus"></div>
-      </div>
-      <div>
-        <div id="previewPH" style="display:flex;align-items:center;justify-content:center;height:210px;border:1px dashed var(--border);border-radius:3px;flex-direction:column;gap:9px;">
-          <div style="font-size:1.8rem;opacity:.14;">🎬</div>
-          <div style="font-size:.72rem;color:var(--border);font-weight:300;letter-spacing:.05em;">Preview after generation</div>
-        </div>
-        <div class="viewer" id="viewer">
-          <div class="vstage" id="vstage"></div>
-          <div class="v-controls">
-            <div class="vdots" id="vdots"></div>
-            <div class="vbtns">
-              <button class="vbtn vbtn-play" id="playBtn" onclick="togglePlay()">▶ Play</button>
-              <button class="vbtn vbtn-play" id="musicBtn" onclick="toggleMusicPreview()" style="background:var(--surface);color:rgba(255,255,255,.5);">♫ Music</button>
-              <button class="vbtn vbtn-export" id="exportBtn" onclick="doExport()">⬇ Export MP4</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="script-wrap" id="scriptWrap">
-      <div class="script-box">
-        <div class="script-lbl">♫ Background Music</div>
-        <div class="music-tracks" id="musicTracks">
-          <div class="mtrack on" data-track="ambient" onclick="pickTrack(this,'ambient')">
-            <div class="mtrack-icon">🌊</div>
-            <div class="mtrack-info"><div class="mtrack-name">Ambient Luxury</div><div class="mtrack-desc">Cinematic, calm</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-          <div class="mtrack" data-track="upbeat" onclick="pickTrack(this,'upbeat')">
-            <div class="mtrack-icon">✨</div>
-            <div class="mtrack-info"><div class="mtrack-name">Modern Lifestyle</div><div class="mtrack-desc">Bright, energetic</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-          <div class="mtrack" data-track="classical" onclick="pickTrack(this,'classical')">
-            <div class="mtrack-icon">🎹</div>
-            <div class="mtrack-info"><div class="mtrack-name">Classical Elegance</div><div class="mtrack-desc">Piano, sophisticated</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-          <div class="mtrack" data-track="none" onclick="pickTrack(this,'none')">
-            <div class="mtrack-icon">—</div>
-            <div class="mtrack-info"><div class="mtrack-name">No Music</div><div class="mtrack-desc">Silent export</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-        </div>
-        <div id="exportStatus" style="display:none;margin-top:14px;">
-          <div class="gtrack"><div class="gfill" id="exportFill"></div></div>
-          <div class="gstatus" id="exportStatusTxt">Preparing export…</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- UPGRADE MODAL -->
-<div class="overlay" id="upgradeOverlay" onclick="closeOverBg(event,'upgradeOverlay')">
+<!-- SIGNUP MODAL -->
+<div class="overlay" id="signupOverlay" onclick="closeBg(event)">
   <div class="modal">
-    <button class="modal-close" onclick="closeOver('upgradeOverlay')">✕</button>
-    <div id="stepPlan">
-      <div class="m-eyebrow">✦ Upgrade ShowsReady</div>
-      <div class="m-title">Choose Your Plan</div>
-      <div class="m-sub">All paid plans remove the watermark and unlock more listings.</div>
-      <div class="plan-cards">
-        <div class="plan-card" id="pc_free" onclick="pickPlan('free')">
-          <div style="display:flex;gap:10px;align-items:flex-start;">
-            <div class="plan-radio" style="margin-top:3px;"></div>
-            <div style="flex:1;">
-              <div style="margin-bottom:4px;"><span class="pc-badge pc-badge-free">Current Plan</span></div>
-              <div class="pc-top"><div class="pc-name">Free Preview</div><div class="pc-price">$0</div></div>
-              <div class="pc-desc">1 listing · watermarked export · no card required</div>
-              <div class="pc-feats"><div class="pc-feat-tag">1 listing</div><div class="pc-feat-tag">Watermarked</div><div class="pc-feat-tag">All 6 rooms</div></div>
-            </div>
-          </div>
-        </div>
-        <div class="plan-card" id="pc_single" onclick="pickPlan('single')">
-          <div style="display:flex;gap:10px;align-items:flex-start;">
-            <div class="plan-radio" style="margin-top:3px;"></div>
-            <div style="flex:1;">
-              <div class="pc-top"><div class="pc-name">Per Listing</div><div class="pc-price">$29.99</div></div>
-              <div class="pc-desc">One walkthrough · no subscription · no watermark</div>
-              <div class="pc-feats"><div class="pc-feat-tag">1 listing</div><div class="pc-feat-tag">No watermark</div><div class="pc-feat-tag">MP4 export</div></div>
-            </div>
-          </div>
-        </div>
-        <div class="plan-card featured" id="pc_pro" onclick="pickPlan('pro')">
-          <div style="display:flex;gap:10px;align-items:flex-start;">
-            <div class="plan-radio" style="margin-top:3px;"></div>
-            <div style="flex:1;">
-              <div style="margin-bottom:4px;"><span class="pc-badge">Most Popular</span></div>
-              <div class="pc-top"><div class="pc-name">Pro Agent</div><div class="pc-price">$49.99<sub>/mo</sub></div></div>
-              <div class="pc-desc">10 listings per 30 days · 1 agent · no watermark</div>
-              <div class="pc-feats"><div class="pc-feat-tag">10 listings/mo</div><div class="pc-feat-tag">No watermark</div><div class="pc-feat-tag">Priority AI</div><div class="pc-feat-tag">Saved profile</div></div>
-            </div>
-          </div>
-        </div>
-        <div class="plan-card" id="pc_elite" onclick="pickPlan('elite')">
-          <div style="display:flex;gap:10px;align-items:flex-start;">
-            <div class="plan-radio" style="margin-top:3px;"></div>
-            <div style="flex:1;">
-              <div class="pc-top"><div class="pc-name">Elite Agent</div><div class="pc-price">$99.99<sub>/mo</sub></div></div>
-              <div class="pc-desc">30 listings per 30 days · priority support · custom presets</div>
-              <div class="pc-feats"><div class="pc-feat-tag">30 listings/mo</div><div class="pc-feat-tag">No watermark</div><div class="pc-feat-tag">Priority support</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button class="m-submit" onclick="goToCheckout()">Continue to Checkout →</button>
-      <div class="m-note">🔒 Secured by Stripe · Cancel anytime · 14-day guarantee</div>
-    </div>
-
-    <div id="stepCheckout" style="display:none;">
-      <div class="m-eyebrow">✦ Checkout</div>
-      <div class="m-title" id="ck_title">Pro Agent</div>
-      <div style="background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:12px 14px;margin-bottom:18px;">
-        <div style="font-size:.8rem;font-weight:600;color:var(--ink);" id="ck_plan_name">Pro Agent — $49.99/mo</div>
-        <div style="font-size:.73rem;font-weight:300;color:var(--mid);margin-top:2px;" id="ck_plan_desc">10 listings / 30 days · No watermark · Begins today</div>
-        <span style="font-size:.64rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);cursor:pointer;text-decoration:underline;margin-top:5px;display:inline-block;" onclick="backToPlan()">Change plan</span>
-      </div>
-      <div class="m-field"><label class="m-label">Full Name</label><input type="text" class="m-input" id="m_name" placeholder="Sarah Mitchell"></div>
-      <div class="m-field"><label class="m-label">Email</label><input type="email" class="m-input" id="m_email" placeholder="sarah@compass.com"></div>
-      <div class="m-field"><label class="m-label">Card Details</label><div id="stripe-el"></div><div id="card-err"></div></div>
-      <button class="m-submit" id="ck_btn" onclick="handleCheckout()"><span id="ck_btn_txt">Complete Purchase</span></button>
-      <div class="m-note">🔒 Stripe · Cancel anytime · 14-day money-back guarantee</div>
-    </div>
-
-    <div id="stepSuccess" style="display:none;">
-      <div class="m-success">
-        <div style="font-size:2.2rem;margin-bottom:16px;">✦</div>
-        <div class="m-title" style="text-align:center;">You're upgraded.</div>
-        <div style="font-size:.82rem;font-weight:300;color:var(--mid);margin-top:8px;margin-bottom:24px;line-height:1.7;text-align:center;" id="successTxt">Plan activated.</div>
-        <button class="m-submit" onclick="closeOver('upgradeOverlay');updateHeader();">Continue to Studio</button>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="m-eyebrow">✦ Get Started</div>
+    <div class="m-title">Create Your Account</div>
+    <div class="m-sub">Free plan includes 1 full walkthrough — no card required.</div>
+    <div class="m-field"><label class="m-label">Full Name</label><input type="text" class="m-input" id="s_name" placeholder="Sarah Mitchell"></div>
+    <div class="m-field"><label class="m-label">Email</label><input type="email" class="m-input" id="s_email" placeholder="sarah@compass.com"></div>
+    <div class="m-field">
+      <label class="m-label">Plan</label>
+      <div class="m-plan-row">
+        <div class="m-plan-opt on" id="opt_free" onclick="setPlan('free')"><input type="radio" name="plan" checked> <span class="m-plan-name">Free Preview</span><span class="m-plan-price">$0</span></div>
+        <div class="m-plan-opt" id="opt_single" onclick="setPlan('single')"><input type="radio" name="plan"> <span class="m-plan-name">Per Listing</span><span class="m-plan-price">$29.99</span></div>
+        <div class="m-plan-opt" id="opt_pro" onclick="setPlan('pro')"><input type="radio" name="plan"> <span class="m-plan-name">Pro Agent</span><span class="m-plan-price">$49.99/mo</span></div>
+        <div class="m-plan-opt" id="opt_elite" onclick="setPlan('elite')"><input type="radio" name="plan"> <span class="m-plan-name">Elite Agent</span><span class="m-plan-price">$99.99/mo</span></div>
       </div>
     </div>
+    <button class="m-submit" id="s_btn" onclick="handleSignup()"><span id="s_btn_txt">Continue →</span></button>
+    <div class="m-note">🔒 Secured by Stripe · Cancel anytime</div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* ── STRIPE ── */
-const STRIPE_PK = 'pk_live_51T8dnNDwB0tBPUZ7nXTbDCYLHzWDKU39HDBlgFbCse5ViH9GdU4nV295tz1aXYZrW7qAEtFQID3gCUtI6TFnWoIR00QTFs8B8z';
-let stripe, stripeCard;
-const STRIPE_PRICES = { single:'price_1TDv7MDwB0tBPUZ7YEQ72lMx', pro:'price_1TDv8IDwB0tBPUZ7WYY9YNeR', elite:'price_1TDv8yDwB0tBPUZ7UGKcjzJz' };
-
-function mountStripe() {
-  if (stripe) return;
-  try {
-    stripe = Stripe(STRIPE_PK);
-    const els = stripe.elements({fonts:[{cssSrc:'https://fonts.googleapis.com/css2?family=Jost:wght@300;400&display=swap'}]});
-    stripeCard = els.create('card',{style:{base:{fontFamily:"'Jost',sans-serif",fontSize:'14px',fontWeight:'300',color:'#111010','::placeholder':{color:'#d2cabc'}},invalid:{color:'#b84040'}}});
-    stripeCard.mount('#stripe-el');
-    stripeCard.on('change',e=>{document.getElementById('card-err').textContent=e.error?e.error.message:'';});
-  } catch(e){
-    document.getElementById('stripe-el').innerHTML='<div style="font-size:.8rem;color:#8c8274;padding:4px 0;">Card field — add Stripe key to activate</div>';
-  }
-}
-
-/* ── USER STATE ── */
-const PLANS = {
-  free:   {name:'Free Preview',  listings:1,  watermark:true,  price:0},
-  single: {name:'Per Listing',   listings:1,  watermark:false, price:29.99},
-  pro:    {name:'Pro Agent',     listings:10, watermark:false, price:49.99},
-  elite:  {name:'Elite Agent',   listings:30, watermark:false, price:99.99},
-};
-let user = {plan:'free', used:0, email:'', name:''};
-
-function updateHeader() {
-  const p = PLANS[user.plan];
-  const pill = document.getElementById('planPill');
-  pill.textContent = '◌ ' + p.name;
-  pill.className = 'plan-pill' + (user.plan==='free'?' free':'');
-  const pct = Math.min(100,(user.used/p.listings)*100);
-  document.getElementById('usageTxt').textContent = `${user.used} / ${p.listings}`;
-  const bar = document.getElementById('ubarFill');
-  bar.style.width = pct+'%';
-  bar.className = 'ubar-fill'+(pct>=85?' warn':'');
-  const wm = document.getElementById('watermarkBadge');
-  if(wm) wm.style.display = p.watermark?'flex':'none';
-  const eb = document.getElementById('exportBtn');
-  if(eb){ eb.className = p.watermark?'vbtn vbtn-export locked':'vbtn vbtn-export'; eb.title = p.watermark?'Upgrade to export without watermark':''; }
-}
-
-function showDashInfo(){ toast(`Plan: ${PLANS[user.plan].name} · ${user.used}/${PLANS[user.plan].listings} listings used`); }
-
-/* ── MARKET DETECTION ── */
-function detectMarket(address) {
-  const a = address.toLowerCase();
-  if(/malibu|santa monica|venice|pacific palisades|brentwood|bel air|beverly hills|los angeles|west hollywood/.test(a)) return 'SoCal Luxury Coast';
-  if(/san francisco|oakland|berkeley|marin|sausalito|palo alto|menlo park|atherton|los gatos|napa|sonoma/.test(a)) return 'Northern California';
-  if(/newport beach|laguna beach|dana point|corona del mar|irvine|huntington beach|seal beach/.test(a)) return 'Orange County Coast';
-  if(/san diego|la jolla|del mar|rancho santa fe|coronado|encinitas|carlsbad|solana beach/.test(a)) return 'San Diego';
-  if(/miami|coral gables|coconut grove|brickell|south beach|palm beach|naples|fort lauderdale|sarasota|tampa|orlando/.test(a)) return 'Florida Luxury';
-  if(/new york|nyc|manhattan|brooklyn|hamptons|greenwich|westchester|hoboken/.test(a)) return 'New York Metro';
-  if(/austin|houston|dallas|fort worth|san antonio|plano|frisco/.test(a)) return 'Texas';
-  if(/chicago|evanston|winnetka|lake forest|naperville/.test(a)) return 'Chicago Metro';
-  if(/seattle|bellevue|kirkland|mercer island|medina|redmond/.test(a)) return 'Pacific Northwest';
-  if(/denver|boulder|aspen|vail|telluride|steamboat|park city|salt lake/.test(a)) return 'Mountain West';
-  if(/scottsdale|phoenix|paradise valley|sedona|tucson/.test(a)) return 'Desert Southwest';
-  if(/boston|cambridge|brookline|newton|cape cod|nantucket|martha/.test(a)) return 'New England';
-  if(/nashville|charlotte|raleigh|atlanta|birmingham|richmond|washington dc/.test(a)) return 'Southeast / Mid-Atlantic';
-  if(/hawaii|honolulu|maui|kauai|oahu/.test(a)) return 'Hawaii';
-  return 'National';
-}
-
-/* ── STYLE SETS ── */
-const MARKET_STYLES = {
-  'SoCal Luxury Coast':{ext:['California Coastal Modern','Spanish Colonial','Pacific Organic','Contemporary Minimal','Hollywood Regency'],living:['Organic Coastal Luxury','Warm Minimalist','Biophilic Contemporary','Coastal Transitional','Hollywood Regency'],kitchen:['Bespoke Contemporary','Coastal White & Oak','Sleek Monochrome','Warm Transitional','Mediterranean Luxe'],master:['Coastal Retreat','Spa-Inspired Sanctuary','Breezy California','Warm Contemporary','Hollywood Glam'],bath:['Spa Sanctuary','Calacatta Marble Luxe','Coastal Serenity','All-White Minimalist','Organic Stone'],outdoor:['Resort Outdoor Living','Infinity Edge Oasis','Coastal Entertaining','Tropical Paradise','Zen Garden']},
-  'Florida Luxury':{ext:['Tropical Contemporary','Mediterranean Estate','Modern Florida','Coastal Plantation','Old Florida Charm'],living:['Coastal Glam','Tropical Modern','Bright Transitional','Miami Modern','Relaxed Coastal'],kitchen:['Bright White Coastal','Tropical Luxe','Modern Florida','Transitional Neutral','Waterfront Contemporary'],master:['Tropical Retreat','Coastal Glam','Bright & Airy','Florida Casual Luxe','Island Sanctuary'],bath:['Tropical Spa','Bright Marble Luxe','Coastal White','Open-Air Inspired','Florida Modern'],outdoor:['Tropical Oasis','Resort Pool Living','Florida Entertainer','Waterfront Luxe','Key West Style']},
-  'New York Metro':{ext:['Classic Brownstone','Pre-War Elegance','Modern Urban','Hamptons Coastal','Connecticut Country'],living:['Park Avenue Classic','Modern Loft','Transitional Luxury','Hamptons Casual','Urban Contemporary'],kitchen:['Sleek Manhattan','Classic White','Modern Industrial','Transitional Luxury','Urban Farmhouse'],master:['Park Avenue Sanctuary','Calm Contemporary','Hamptons Retreat','Modern Minimalist','Classic Luxury'],bath:['Marble & Chrome','Modern Minimal','Classic Subway Tile','Spa-Inspired','Hotel Luxe'],outdoor:['Urban Garden','Rooftop Terrace','Hamptons Garden','Private Courtyard','Contemporary Landscape']},
-  'Texas':{ext:['Modern Texas Ranch','Contemporary Transitional','Texas Hill Country','Urban Contemporary','Colonial Traditional'],living:['Texas Transitional','Modern Rustic Luxe','Contemporary Ranch','Urban Warm','Upscale Casual'],kitchen:['Texas Farmhouse Luxe','Modern Transitional','White Oak Contemporary','Rustic Modern','Sleek Urban'],master:['Texas Retreat','Modern Ranch','Warm Contemporary','Upscale Casual','Spa-Inspired'],bath:['Texas Spa','Modern Transitional','Clean Contemporary','Warm Stone','Minimal Luxe'],outdoor:['Texas Entertainer','Ranch Style Outdoor','Modern Pool','Hill Country Garden','Contemporary Patio']},
-  'Mountain West':{ext:['Mountain Modern','Alpine Contemporary','Ski Chalet','Rustic Luxe','Western Ranch'],living:['Mountain Lodge Luxe','Alpine Modern','Warm Rustic','Contemporary Ski Retreat','Western Contemporary'],kitchen:['Mountain Modern','Lodge Luxe','Rustic Contemporary','Alpine White','Stone & Wood'],master:['Mountain Sanctuary','Alpine Spa','Rustic Retreat','Modern Lodge','Ski Chalet Luxe'],bath:['Mountain Spa','Natural Stone','Alpine Minimal','Lodge Luxe','Organic Rustic'],outdoor:['Mountain Oasis','Alpine Terrace','Fire Pit Living','Rocky Mountain Views','Ski-in/Ski-out Style']},
-  'National':{ext:['Clean Contemporary','Transitional Luxury','Modern Farmhouse','Traditional Elevated','Classic American'],living:['Warm Transitional','Modern Contemporary','Upscale Casual','Classic Luxe','Cozy Refined'],kitchen:['White Transitional','Modern Farmhouse','Sleek Contemporary','Classic White & Wood','Open Concept'],master:['Serene Retreat','Warm Contemporary','Classic Luxury','Modern Spa','Cozy Refined'],bath:['Clean Spa','Classic Marble','Modern Minimal','Transitional Neutral','Bright Contemporary'],outdoor:['Backyard Retreat','Modern Patio','Classic Garden','Entertainer Style','Peaceful Landscape']},
-};
-['Northern California','Orange County Coast','San Diego','Chicago Metro','Pacific Northwest','New England','Southeast / Mid-Atlantic','Oregon'].forEach(m=>{MARKET_STYLES[m]=MARKET_STYLES['SoCal Luxury Coast'];});
-MARKET_STYLES['Desert Southwest']=MARKET_STYLES['Mountain West'];
-MARKET_STYLES['Hawaii']=MARKET_STYLES['Florida Luxury'];
-MARKET_STYLES['Pacific Northwest']=MARKET_STYLES['Mountain West'];
-
-const STYLE_VISUALS = {
-  'California Coastal Modern':{filter:'saturate(1.25) brightness(1.08) contrast(1.03)',overlay:'rgba(200,220,230,0.1)',swatch:'#7ab5c8'},
-  'Organic Coastal Luxury':{filter:'saturate(1.2) brightness(1.06) contrast(1.04)',overlay:'rgba(210,225,215,0.12)',swatch:'#8ab5a0'},
-  'Bespoke Contemporary':{filter:'saturate(1.1) brightness(1.1) contrast(1.06)',overlay:'rgba(230,220,210,0.1)',swatch:'#c8b89a'},
-  'Coastal Retreat':{filter:'saturate(1.3) brightness(1.07) contrast(1.03)',overlay:'rgba(195,218,228,0.12)',swatch:'#6aaec0'},
-  'Spa Sanctuary':{filter:'saturate(0.9) brightness(1.12) contrast(1.02)',overlay:'rgba(228,228,220,0.15)',swatch:'#d0cfc0'},
-  'Resort Outdoor Living':{filter:'saturate(1.4) brightness(1.1) contrast(1.05)',overlay:'rgba(180,220,190,0.12)',swatch:'#72b884'},
-  'Hollywood Regency':{filter:'saturate(1.3) brightness(0.98) contrast(1.1)',overlay:'rgba(212,192,168,0.1)',swatch:'#c4a070'},
-  'Warm Minimalist':{filter:'saturate(1.0) brightness(1.08) contrast(1.04)',overlay:'rgba(235,225,210,0.12)',swatch:'#d4c4a8'},
-  'Modern Farmhouse':{filter:'saturate(0.95) brightness(1.1) contrast(1.05)',overlay:'rgba(240,235,225,0.1)',swatch:'#d8d0c0'},
-  'Tropical Oasis':{filter:'saturate(1.5) brightness(1.08) contrast(1.06)',overlay:'rgba(160,210,180,0.14)',swatch:'#50a878'},
-  'Mountain Lodge Luxe':{filter:'saturate(1.1) brightness(1.0) contrast(1.08)',overlay:'rgba(200,180,155,0.1)',swatch:'#a07850'},
-  'Mountain Modern':{filter:'saturate(1.15) brightness(1.05) contrast(1.06)',overlay:'rgba(190,200,210,0.1)',swatch:'#8898a8'},
-  'Park Avenue Classic':{filter:'saturate(0.9) brightness(0.98) contrast(1.08)',overlay:'rgba(210,200,195,0.1)',swatch:'#b0a090'},
-  'Texas Transitional':{filter:'saturate(1.1) brightness(1.07) contrast(1.05)',overlay:'rgba(225,215,200,0.1)',swatch:'#c8b888'},
-  'DEFAULT':{filter:'saturate(1.2) brightness(1.07) contrast(1.04)',overlay:'rgba(215,215,210,0.1)',swatch:'#aaa898'},
-};
-function getSV(s){return STYLE_VISUALS[s]||STYLE_VISUALS['DEFAULT'];}
-
-const ROOMS=[
-  {id:'ext',icon:'🏡',label:'Exterior / Curb Appeal',hint:'Front of house, driveway, entry',style:''},
-  {id:'living',icon:'🛋',label:'Living Room',hint:'Main entertaining space',style:''},
-  {id:'kitchen',icon:'🍳',label:'Kitchen',hint:'Kitchen & dining area',style:''},
-  {id:'master',icon:'🛏',label:'Master Bedroom',hint:'Primary suite',style:''},
-  {id:'bath',icon:'🚿',label:'Master Bathroom',hint:'Primary bath & spa features',style:''},
-  {id:'outdoor',icon:'🌿',label:'Outdoor / Backyard',hint:'Patio, pool, garden, views',style:''},
-];
-
-let detectedMarket='National';
-let stagingData={};
-let slides=[],curSlide=0,playing=false,playTimer;
-let curPage=1;
-
-/* ── NAV ── */
-function nav(n){
-  if(n===5&&user.used>=PLANS[user.plan].listings){showGate();return;}
-  document.getElementById(`pg${curPage}`).classList.remove('on');
-  document.getElementById(`r${curPage}`).className='rs done';
-  curPage=n;
-  document.getElementById(`pg${n}`).classList.add('on');
-  document.getElementById(`r${n}`).className='rs active';
-  window.scrollTo({top:0,behavior:'smooth'});
-  // When entering Styles step, refresh all previews with any uploaded photos
-  if(n===3) ROOMS.forEach(r=>{ if(r.photos&&r.photos.length) refreshPreview(r.id); });
-}
-function showGate(){
-  const p=PLANS[user.plan];
-  document.getElementById('gateBar').style.display='flex';
-  document.getElementById('gateTxt').innerHTML=`<strong>Listing limit reached.</strong> Your ${p.name} plan includes ${p.listings} listing${p.listings>1?'s':''}. Upgrade to continue.`;
-  ['pg'+curPage].forEach(_=>{document.getElementById(`pg${curPage}`).classList.remove('on');document.getElementById(`r${curPage}`).className='rs done';});
-  curPage=5;document.getElementById('pg5').classList.add('on');document.getElementById('r5').className='rs active';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-/* ── PG 1 ── */
-async function doAnalyze(){
-  const btn=document.getElementById('btn1');
-  btn.disabled=true;btn.innerHTML='<span class="spin spin-w"></span>&nbsp;Analyzing…';
-  const addr=v('f_addr'),price=v('f_price'),type=v('f_type'),cond=v('f_cond'),buyer=v('f_buyer'),notes=v('f_notes');
-  if(!addr.trim()){toast('Please enter a property address.');btn.disabled=false;btn.innerHTML='Analyze Market →';return;}
-  detectedMarket=detectMarket(addr);
-  const ms=MARKET_STYLES[detectedMarket]||MARKET_STYLES['National'];
-  ROOMS.forEach(r=>{r.style=(ms[r.id]||ms['living'])[0];});
-  try{
-    const txt=await claude(`You are a real estate market expert with deep knowledge of US real estate markets. Write a sharp 3-sentence market insight for a listing agent. Be specific about the local area, current buyer expectations in ${detectedMarket}, and which interior design styles are trending for ${type} properties targeting ${buyer} buyers. Property: ${addr} | Price: ${price} | Condition: ${cond} | Features: ${notes}. Reply with only the 3 sentences, no preamble.`);
-    document.getElementById('insightTxt').textContent=txt;
-    document.getElementById('insight').classList.add('on');
-  }catch(e){
-    // API unavailable — use smart fallback text, still proceed
-    document.getElementById('insightTxt').textContent=`The ${detectedMarket} market is responding well to properties that balance updated aesthetics with lifestyle functionality. Buyers targeting ${type} at the ${price} price point expect ${buyer==='Luxury / High-net-worth'?'premium finishes, curated staging, and strong visual storytelling':'move-in ready presentation with clean, current design'}. Strategic staging in the right style will shorten days on market and strengthen your opening-weekend position.`;
-    document.getElementById('insight').classList.add('on');
-  }
-  // Always re-enable and advance — regardless of API status
-  await sleep(400);
-  btn.disabled=false;btn.innerHTML='Analyze Market →';
-  buildRooms();buildStyles();nav(2);
-}
-
-/* ── PG 2 ── */
-function buildRooms(){
-  const stack=document.getElementById('roomStack');stack.innerHTML='';
-  ROOMS.forEach((room,i)=>{
-    if(!room.photos)room.photos=[];
-    const row=mk('div');row.className='rrow';
-    row.innerHTML=`<div class="rrow-head" onclick="toggleRoom('${room.id}')"><div class="rrow-left"><div class="ricon">${room.icon}</div><div><div class="rname">${room.label}</div><div class="rhint">${room.hint}</div></div></div><div class="rbadge" id="rbadge_${room.id}">No photos</div></div><div class="rrow-body" id="rbody_${room.id}" style="display:${i===0?'block':'none'};"><div class="dropz" id="dz_${room.id}" ondragover="dov(event,'${room.id}')" ondragleave="dlv(event,'${room.id}')" ondrop="ddrop(event,'${room.id}')"><input type="file" accept="image/*" multiple onchange="addPhotos('${room.id}',Array.from(event.target.files))"><div class="dropz-icon">↑</div><div class="dropz-txt"><strong>Click</strong> or drag · 1–3 photos</div></div><div class="pgrid" id="pgrid_${room.id}"></div></div>`;
-    stack.appendChild(row);
-  });
-}
-function toggleRoom(id){const b=document.getElementById(`rbody_${id}`);b.style.display=b.style.display==='none'?'block':'none';}
-function dov(e,id){e.preventDefault();document.getElementById(`dz_${id}`).classList.add('drag');}
-function dlv(e,id){document.getElementById(`dz_${id}`).classList.remove('drag');}
-function ddrop(e,id){e.preventDefault();document.getElementById(`dz_${id}`).classList.remove('drag');addPhotos(id,Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')));}
-function addPhotos(roomId,files){
-  const room=ROOMS.find(r=>r.id===roomId);if(!room.photos)room.photos=[];
-  const grid=document.getElementById(`pgrid_${roomId}`),badge=document.getElementById(`rbadge_${roomId}`);
-  files.slice(0,3-room.photos.length).forEach(f=>{
-    const url=URL.createObjectURL(f);room.photos.push({file:f,url});
-    const idx=room.photos.length-1;const cell=mk('div');cell.className='pcell';
-    cell.innerHTML=`<img src="${url}" alt=""><button class="pdel" onclick="delPhoto('${roomId}',${idx},this)">✕</button>`;
-    grid.appendChild(cell);
-  });
-  const n=room.photos.length;badge.textContent=n?`${n} photo${n>1?'s':''}`:'No photos';badge.className=n?'rbadge ready':'rbadge';
-  refreshPreview(roomId);
-}
-function delPhoto(roomId,idx,btn){
-  const room=ROOMS.find(r=>r.id===roomId);room.photos.splice(idx,1);btn.closest('.pcell').remove();
-  const n=room.photos.length;document.getElementById(`rbadge_${roomId}`).textContent=n?`${n} photo${n>1?'s':''}`:'No photos';document.getElementById(`rbadge_${roomId}`).className=n?'rbadge ready':'rbadge';
-  refreshPreview(roomId);
-}
-
-/* ── PG 3 ── */
-function buildStyles(){
-  const container=document.getElementById('stylesContainer');container.innerHTML='';
-  const ms=MARKET_STYLES[detectedMarket]||MARKET_STYLES['National'];
-  ROOMS.forEach(room=>{
-    const opts=ms[room.id]||ms['living'];if(!room.style)room.style=opts[0];
-    const sec=mk('div');sec.style.cssText='background:white;padding:20px 22px;';
-    sec.innerHTML=`<div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;"><div class="ricon">${room.icon}</div><div><div class="rname">${room.label}</div><div class="rhint">Market: <strong style="color:var(--gold);">${detectedMarket}</strong></div></div></div><div class="style-section"><div class="style-section-lbl">Staging Style — click to preview</div><div class="style-chips" id="chips_${room.id}">${opts.map((s,i)=>{const sv=getSV(s);return`<div class="schip ${i===0?'on':''}" onclick="pickStyle('${room.id}','${s}',this)"><div class="schip-swatch" style="background:${sv.swatch}"></div>${s}</div>`;}).join('')}</div></div><div class="style-preview-wrap ${room.photos&&room.photos.length?'on':''}" id="spv_${room.id}"><div class="spv-header"><span id="spv_lbl_${room.id}">Preview: ${room.style}</span><span style="font-size:.6rem;color:rgba(255,255,255,.3);">Drag slider to compare</span></div><div class="spv-body"><div class="spv-before" id="spvB_${room.id}">${room.photos&&room.photos.length?`<img src="${room.photos[0].url}" id="spvBImg_${room.id}" alt="before">`:'<div style="width:100%;height:100%;background:var(--char);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:rgba(255,255,255,.25);">Upload photo in Step 2</div>'}<div class="spv-label spv-label-b">Before</div></div><div class="spv-divider"></div><div class="spv-after" id="spvA_${room.id}">${room.photos&&room.photos.length?`<img src="${room.photos[0].url}" id="spvAImg_${room.id}" alt="after" style="filter:${getSV(room.style).filter};">`:'<div style="width:100%;height:100%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:rgba(255,255,255,.25);">Upload photo to preview</div>'}<div class="spv-after-overlay" id="spvOvl_${room.id}" style="background:${getSV(room.style).overlay};"></div><div class="spv-label spv-label-a" id="spvTag_${room.id}">${room.style}</div></div><div class="spv-desc"><div class="spv-style-name" id="spvName_${room.id}">${room.style}</div><div id="spvDesc_${room.id}" style="font-size:.76rem;color:rgba(255,255,255,.5);line-height:1.65;">${getStyleDesc(room.style)}</div><div class="spv-ai-badge">✦ AI Staged Preview</div></div></div></div><input type="text" class="snote" id="note_${room.id}" placeholder="Additional direction — e.g. keep the fireplace, neutral tones only…">`;
-    container.appendChild(sec);
-  });
-}
-
-function pickStyle(roomId,style,el){
-  const room=ROOMS.find(r=>r.id===roomId);room.style=style;
-  document.querySelectorAll(`#chips_${roomId} .schip`).forEach(c=>c.classList.remove('on'));el.classList.add('on');
-  const sv=getSV(style);
-  const aImg=document.getElementById(`spvAImg_${roomId}`);
-  const ovl=document.getElementById(`spvOvl_${roomId}`);
-  const tag=document.getElementById(`spvTag_${roomId}`);
-  const lbl=document.getElementById(`spv_lbl_${roomId}`);
-  const name=document.getElementById(`spvName_${roomId}`);
-  const desc=document.getElementById(`spvDesc_${roomId}`);
-  if(aImg){
-    aImg.style.filter=sv.filter;
-  } else if(room.photos&&room.photos.length){
-    // img doesn't exist yet — rebuild the preview with the photo
-    refreshPreview(roomId);
-    // then apply the new filter after a tick
-    setTimeout(()=>{const img=document.getElementById(`spvAImg_${roomId}`);if(img)img.style.filter=sv.filter;},50);
-  }
-  if(ovl)ovl.style.background=sv.overlay;
-  if(tag)tag.textContent=style;if(lbl)lbl.textContent=`Preview: ${style}`;
-  if(name)name.textContent=style;if(desc)desc.textContent=getStyleDesc(style);
-  document.getElementById(`spv_${roomId}`)?.classList.add('on');
-}
-
-function refreshPreview(roomId){
-  const room=ROOMS.find(r=>r.id===roomId);if(!room||!room.photos||!room.photos.length)return;
-  const url=room.photos[0].url,sv=getSV(room.style);
-  const bImg=document.getElementById(`spvBImg_${roomId}`);
-  const aImg=document.getElementById(`spvAImg_${roomId}`);
-  if(bImg)bImg.src=url;else{const bEl=document.getElementById(`spvB_${roomId}`);if(bEl)bEl.innerHTML=`<img src="${url}" id="spvBImg_${roomId}" alt="before"><div class="spv-label spv-label-b">Before</div>`;}
-  if(aImg){aImg.src=url;aImg.style.filter=sv.filter;}else{const aEl=document.getElementById(`spvA_${roomId}`);if(aEl)aEl.innerHTML=`<img src="${url}" id="spvAImg_${roomId}" alt="after" style="filter:${sv.filter};"><div class="spv-after-overlay" id="spvOvl_${roomId}" style="background:${sv.overlay};"></div><div class="spv-label spv-label-a" id="spvTag_${roomId}">${room.style}</div>`;}
-  document.getElementById(`spv_${roomId}`)?.classList.add('on');
-}
-
-function getStyleDesc(style){
-  const d={'California Coastal Modern':'Clean lines, white oak, natural stone, ocean-facing light. Minimal clutter, curated organic accents.','Organic Coastal Luxury':'Warm textures — linen, rattan, bleached wood. Brings the outside in with botanical touches.','Bespoke Contemporary':'Tailored, high-contrast finishes. Custom millwork feel with a polished, editorial edge.','Coastal Retreat':'Light, breezy palette with coastal art, layered blues and whites. Feels effortlessly livable.','Spa Sanctuary':'Serene neutrals, natural stone textures, candlelit warmth. Zero visual noise.','Resort Outdoor Living':'Lush greenery, teak or concrete furniture, dramatic lighting. Pool-season ready.','Hollywood Regency':'Bold pattern, lacquered surfaces, gold accents. Glamorous and confident.','Warm Minimalist':'Warm whites, natural wood, intentional negative space. Elevated everyday living.','Modern Farmhouse':'Shiplap, open shelving, black hardware, warm wood. Approachable yet polished.','Tropical Oasis':'Saturated greens, woven textures, bold tropical botanicals. Vibrant and resort-like.','Mountain Lodge Luxe':'Reclaimed wood, stone fireplace accents, leather and plaid. Cozy mountain prestige.','Mountain Modern':'Clean alpine lines with warm wood and steel. Minimalism meets mountain lifestyle.','Park Avenue Classic':'Rich moldings, neutral silk, traditional furniture with a modern edit. Timeless prestige.','Texas Transitional':'Warm neutrals, natural leather, subtle southwestern touches. Approachable Texas luxury.'};
-  return d[style]||'Professional staging transformation calibrated to your local market and buyer profile.';
-}
-
-/* ── PG 4 ── */
-function syncCard(){
-  document.getElementById('pc_name').textContent=v('b_name')||'Your Name';document.getElementById('pc_title').textContent=v('b_title')||'Title · Brokerage';
-  const ph=v('b_phone'),em=v('b_email'),wb=v('b_web'),tg=v('b_tag');
-  document.getElementById('pc_phone').textContent=ph?`📞 ${ph}`:'';document.getElementById('pc_email').textContent=em?`✉ ${em}`:'';
-  document.getElementById('pc_web').textContent=wb?`🌐 ${wb}`:'';document.getElementById('pc_tag').textContent=tg?`"${tg}"`:'';}
-function handleLogo(e){const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);document.getElementById('logoDrop').innerHTML=`<img src="${url}" style="max-height:60px;border-radius:2px;object-fit:contain;">`;}
-
-/* ── PG 5 ── */
-async function doGenerate(){
-  if(user.used>=PLANS[user.plan].listings){showGate();return;}
-  const btn=document.getElementById('genBtn');
-  btn.disabled=true;btn.innerHTML='<span class="spin spin-w"></span>&nbsp;Generating…';
-  document.getElementById('gateBar').style.display='none';
-  // Animate first 3 steps while API call runs in parallel
-  const STEPS=['gs1','gs2','gs3','gs4','gs5','gs6'],PCTS=[16,32,50,66,82,100];
-  const activateStep=async(i,ms)=>{
-    document.getElementById(STEPS[i]).className='gstep active';
-    document.getElementById('gfill').style.width=PCTS[i]+'%';
-    document.getElementById('gstatus').textContent=document.getElementById(STEPS[i]).querySelector('span').textContent;
-    await sleep(ms);
-    document.getElementById(STEPS[i]).className='gstep done';document.getElementById(STEPS[i]).querySelector('.gdot').textContent='✓';
-  };
-  // First 3 steps run while API is processing
-  await activateStep(0,600);
-  await activateStep(1,800);
-  await activateStep(2,700);
-  // Launch API call — remaining steps animate as it runs
-  const stagingPromise=fetchStaging();
-  await activateStep(3,900);
-  await stagingPromise; // wait for real API here
-  await activateStep(4,500);
-  await activateStep(5,400);
-  document.getElementById('gstatus').textContent='✓ Complete';
-  buildViewer();
-  user.used++;updateHeader();
-  document.getElementById('previewPH').style.display='none';document.getElementById('viewer').classList.add('on');document.getElementById('scriptWrap').classList.add('on');
-  btn.innerHTML='✓ Generated';btn.style.background='var(--green)';btn.style.color='white';
-  toast('Walkthrough ready — press Play to preview');
-}
-
-async function fetchStaging(){
-  const address=v('f_addr')||'the property';
-
-  // Collect ONLY rooms that have photos, preserving ROOMS order
-  const photoRooms=ROOMS.filter(r=>r.photos&&r.photos.length);
-
-  // Convert each room's first photo to base64 (one per room = one slide each)
-  const images=await Promise.all(photoRooms.map(r=>new Promise((res,rej)=>{
-    const reader=new FileReader();
-    reader.onload=()=>res(reader.result.split(',')[1]);
-    reader.onerror=rej;
-    reader.readAsDataURL(r.photos[0].file);
-  })));
-
-  // Reset
-  window._srAudio=null;
-  window._srSlideNarrations=[];  // indexed same as slides[] built in buildViewer
-
-  try {
-    const res=await fetch(`${SR_API}/api/generate`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({images,address,market:detectedMarket,photoCount:images.length})
-    });
-    const data=await res.json();
-    if(!res.ok) throw new Error(data.error||'API error');
-
-    // Audio for playback
-    if(data.audio){
-      window._srAudio=new Audio(data.audio);
-      window._srAudio.volume=0.9;
-    }
-
-    // Build per-slide narration array:
-    // slides[] in buildViewer = [intro, ...photoRooms, ...emptyRooms, outro]
-    // We store narrations for the photo-room slides only (offset by 1 for intro)
-    const narrations=data.slides||[];
-    window._srSlideNarrations=[''];  // index 0 = intro slide, no narration (title card)
-    photoRooms.forEach((room,i)=>{
-      window._srSlideNarrations.push(narrations[i]?.narration||room.label);
-    });
-    // Empty rooms get empty narration
-    ROOMS.filter(r=>!r.photos||!r.photos.length).forEach(()=>window._srSlideNarrations.push(''));
-    window._srSlideNarrations.push(data.closingTagline||'');  // outro
-
-    // stagingData for buildViewer captions
-    stagingData={
-      intro:data.propertyHeadline||`Welcome to ${address}`,
-      outro:data.closingTagline||`Contact ${v('b_name')||'your agent'} to schedule a showing`,
-      rooms:ROOMS.map((r,ri)=>{
-        const photoIdx=photoRooms.indexOf(r);
-        const slide=photoIdx>=0?narrations[photoIdx]:null;
-        return {id:r.id,voiceover:slide?.narration||r.style,staged:r.style,roomLabel:slide?.roomLabel||r.label};
-      })
-    };
-  } catch(err){
-    console.warn('API failed, fallback:',err.message);
-    window._srSlideNarrations=[];
-    stagingData={
-      intro:`Welcome to this exceptional property at ${address}`,
-      rooms:ROOMS.map(r=>({id:r.id,voiceover:r.label+' — '+r.style,staged:r.style})),
-      outro:`Contact ${v('b_name')||'your agent'} to schedule a private showing`
-    };
-  }
-}
-
-function buildViewer(){
-  const stage=document.getElementById('vstage'),dots=document.getElementById('vdots');
-  stage.innerHTML='';dots.innerHTML='';slides=[];
-  const wm=mk('div');wm.className='watermark';wm.id='watermarkBadge';
-  wm.innerHTML=`<div class="watermark-badge"><span>Shows</span>Ready Preview</div>`;
-  wm.style.display=PLANS[user.plan].watermark?'flex':'none';stage.appendChild(wm);
-  const isl=mk('div');isl.className='vslide on';
-  isl.innerHTML=`<div class="intro-sl"><div class="intro-lbl">Presented Exclusively</div><div class="intro-ttl">${stagingData.intro||'Welcome to this remarkable property.'}</div><div class="intro-addr">${v('f_addr')}</div></div>`;
-  stage.appendChild(isl);slides.push(isl);
-  ROOMS.forEach(room=>{
-    const rd=(stagingData.rooms||[]).find(r=>r.id===room.id)||{};const sl=mk('div');sl.className='vslide';const sv=getSV(room.style);
-    if(room.photos&&room.photos.length){
-      const pu=room.photos[0].url;
-      sl.innerHTML=`<div class="ba" id="ba_${room.id}"><div class="ba-b"><img src="${pu}" alt="before"></div><div class="ba-a" id="baa_${room.id}"><img src="${pu}" alt="after" style="filter:${sv.filter};"><div style="position:absolute;inset:0;background:${sv.overlay};pointer-events:none;"></div></div><div class="ba-line" id="bal_${room.id}"></div><div class="ba-knob" id="bak_${room.id}">↔</div><div class="ba-tag-b">Before</div><div class="ba-tag-a">${room.style}</div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.voiceover||room.style}</div></div></div>`;
-    }else{sl.innerHTML=`<div class="placeholder-sl" style="width:100%;height:100%;"><div style="font-size:2rem;opacity:.22;">${room.icon}</div><div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;">${room.label}</div><div style="font-size:.66rem;color:var(--gold);opacity:.45;margin-top:4px;">${room.style}</div></div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.voiceover||room.style}</div></div>`;}
-    stage.appendChild(sl);slides.push(sl);
-  });
-  const ph=v('b_phone'),em=v('b_email'),wb=v('b_web'),tg=v('b_tag');
-  const esl=mk('div');esl.className='vslide';
-  esl.innerHTML=`<div class="end-sl" style="width:100%;height:100%;"><div class="end-name">${v('b_name')||'Agent Name'}</div><div class="end-titl">${v('b_title')||'Realtor'}</div><div class="end-rule"></div><div class="end-contact">${ph?`<div>📞 ${ph}</div>`:''}${em?`<div>✉ ${em}</div>`:''}${wb?`<div>🌐 ${wb}</div>`:''}</div>${tg?`<div class="end-tag">"${tg}"</div>`:''}<div class="end-outro">${stagingData.outro||''}</div></div>`;
-  stage.appendChild(esl);slides.push(esl);
-  slides.forEach((_,i)=>{const d=mk('div');d.className='vdot'+(i===0?' on':'');d.onclick=()=>showSlide(i);dots.appendChild(d);});
-  ROOMS.forEach(r=>{if(r.photos&&r.photos.length)setupBA(r.id);});
-  const lines=[stagingData.intro,...(stagingData.rooms||[]).map(r=>r.voiceover),stagingData.outro].filter(Boolean).join('\n\n');
-  document.getElementById('scriptTxt').textContent=lines;
-  updateHeader();showSlide(0);
-}
-
-function setupBA(roomId){
-  const wrap=document.getElementById(`ba_${roomId}`);if(!wrap)return;
-  let dragging=false;
-  function setPos(x){const r=wrap.getBoundingClientRect(),pct=Math.max(0,Math.min(1,(x-r.left)/r.width)),p=pct*100;const a=document.getElementById(`baa_${roomId}`),l=document.getElementById(`bal_${roomId}`),k=document.getElementById(`bak_${roomId}`);if(a)a.style.clipPath=`inset(0 ${100-p}% 0 0)`;if(l)l.style.left=p+'%';if(k)k.style.left=p+'%';}
-  let pos=0.5,dir=1;
-  const anim=setInterval(()=>{const sl=wrap.closest('.vslide');if(!sl?.classList.contains('on')||dragging)return;pos+=.0017*dir;if(pos>=.82)dir=-1;if(pos<=.18)dir=1;const r=wrap.getBoundingClientRect();if(r.width>0)setPos(r.left+pos*r.width);},30);
-  wrap.addEventListener('mousedown',()=>{dragging=true;});
-  window.addEventListener('mousemove',e=>{if(dragging)setPos(e.clientX);});
-  window.addEventListener('mouseup',()=>{dragging=false;});
-  wrap.addEventListener('touchmove',e=>setPos(e.touches[0].clientX),{passive:true});
-}
-function showSlide(n){slides.forEach((s,i)=>s.classList.toggle('on',i===n));document.querySelectorAll('.vdot').forEach((d,i)=>d.className='vdot'+(i===n?' on':''));curSlide=n;}
-function togglePlay(){
-  const btn=document.getElementById('playBtn');
-  if(playing){
-    playing=false;btn.textContent='▶ Play';
-    clearTimeout(playTimer);clearInterval(playTimer);
-    if(window._srAudio){window._srAudio.pause();window._srAudio.currentTime=0;}
-    stopMusic();if(window.speechSynthesis)window.speechSynthesis.cancel();
-    return;
-  }
-  playing=true;btn.textContent='⏸ Pause';
-
-  if(window._srAudio&&window._srAudio.src){
-    // ── ElevenLabs audio: divide total duration evenly across photo slides ──
-    // slides[]: [intro, room0, room1, ..., outro]
-    // audio covers: room narrations + closing tagline (NOT the title card)
-    const audio=window._srAudio;
-    audio.currentTime=0;
-    showSlide(0);  // show intro title card immediately (silent)
-
-    const startAudioPlayback=()=>{
-      const photoSlideCount=slides.length-2;  // exclude intro+outro
-      const perSlide=photoSlideCount>0?(audio.duration/photoSlideCount)*1000:5000;
-
-      // After 2s on intro, start audio + advance to slide 1
-      playTimer=setTimeout(()=>{
-        if(!playing)return;
-        audio.play().catch(e=>console.warn('audio play:',e));
-        showSlide(1);
-        let si=1;
-        const advance=()=>{
-          si++;
-          if(!playing)return;
-          if(si<slides.length){showSlide(si);playTimer=setTimeout(advance,perSlide);}
-          else{playing=false;btn.textContent='▶ Play';}
-        };
-        playTimer=setTimeout(advance,perSlide);
-        audio.onended=()=>{
-          clearTimeout(playTimer);
-          if(playing&&curSlide<slides.length-1){showSlide(slides.length-1);}
-          setTimeout(()=>{playing=false;btn.textContent='▶ Play';},3000);
-        };
-      },2000);
-    };
-
-    if(audio.readyState>=1){startAudioPlayback();}
-    else{audio.addEventListener('loadedmetadata',startAudioPlayback,{once:true});}
-
-  } else {
-    // ── No ElevenLabs: use per-slide Web Speech API narration ──
-    if(selectedTrack!=='none')startMusic();
-    showSlide(0);
-    const narrations=window._srSlideNarrations||[];
-
-    const speakSlide=(idx)=>{
-      if(!playing)return;
-      const text=narrations[idx]||'';
-      if(text&&window.speechSynthesis){
-        // Ensure voices are loaded
-        const doSpeak=()=>{
-          window.speechSynthesis.cancel();
-          const utt=new SpeechSynthesisUtterance(text);
-          utt.rate=0.88;utt.pitch=1.05;utt.volume=1;
-          const voices=window.speechSynthesis.getVoices();
-          // Prefer high-quality voices
-          const pref=voices.find(vv=>/Samantha|Karen|Moira|Google US English Female|Ava/i.test(vv.name))
-            ||voices.find(vv=>/en[-_]US|en[-_]GB/i.test(vv.lang)&&!vv.localService)
-            ||voices.find(vv=>/en/i.test(vv.lang));
-          if(pref)utt.voice=pref;
-          utt.onend=()=>{
-            if(!playing)return;
-            const next=idx+1;
-            if(next<slides.length){showSlide(next);setTimeout(()=>speakSlide(next),300);}
-            else{playing=false;btn.textContent='▶ Play';}
-          };
-          utt.onerror=()=>{
-            // Fallback: advance after 5s if speech fails
-            playTimer=setTimeout(()=>{
-              if(!playing)return;
-              const next=idx+1;
-              if(next<slides.length){showSlide(next);speakSlide(next);}
-              else{playing=false;btn.textContent='▶ Play';}
-            },5000);
-          };
-          window.speechSynthesis.speak(utt);
-        };
-        if(window.speechSynthesis.getVoices().length){doSpeak();}
-        else{window.speechSynthesis.addEventListener('voiceschanged',doSpeak,{once:true});}
-      } else {
-        // No text or no speech — timed fallback
-        playTimer=setTimeout(()=>{
-          if(!playing)return;
-          const next=idx+1;
-          if(next<slides.length){showSlide(next);speakSlide(next);}
-          else{playing=false;btn.textContent='▶ Play';}
-        },idx===0?3000:5000);
-      }
-    };
-    speakSlide(0);
-  }
-}
-
-function pickTrack(el, track){
-  selectedTrack=track;
-  document.querySelectorAll('.mtrack').forEach(m=>m.classList.remove('on'));
-  el.classList.add('on');
-  if(musicPlaying){stopMusic();if(track!=='none')startMusic();}
-}
-
-function getAudioCtx(){
-  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function startMusic(){
-  if(selectedTrack==='none'||musicPlaying)return;
-  const cfg=TRACK_CONFIGS[selectedTrack];if(!cfg)return;
-  const ctx=getAudioCtx();
-  musicGain=ctx.createGain();musicGain.gain.setValueAtTime(0,ctx.currentTime);
-  musicGain.gain.linearRampToValueAtTime(0.18,ctx.currentTime+1.5);
-  musicGain.connect(ctx.destination);
-  musicPlaying=true;
-  playMusicLoop(ctx,cfg,musicGain,0);
-}
-
-function playMusicLoop(ctx,cfg,gain,offset){
-  if(!musicPlaying)return;
-  const beat=60/cfg.tempo;
-  const seq=cfg.chord
-    ?[...cfg.notes,...cfg.notes.slice().reverse()]
-    :cfg.notes.concat(cfg.notes.slice(1,-1).reverse());
-  seq.forEach((freq,i)=>{
-    const t=ctx.currentTime+offset+i*beat;
-    const osc=ctx.createOscillator();
-    const env=ctx.createGain();
-    osc.type=cfg.wave;
-    osc.frequency.setValueAtTime(freq,t);
-    if(cfg.chord&&i>2)osc.frequency.setValueAtTime(freq*1.5,t);
-    env.gain.setValueAtTime(0,t);
-    env.gain.linearRampToValueAtTime(0.12,t+0.04);
-    env.gain.exponentialRampToValueAtTime(0.001,t+cfg.release);
-    osc.connect(env);env.connect(gain);
-    osc.start(t);osc.stop(t+cfg.release+0.1);
-  });
-  const loopDur=beat*seq.length;
-  setTimeout(()=>playMusicLoop(ctx,cfg,gain,0),offset*1000+loopDur*1000-200);
-}
-
-function stopMusic(){
-  if(!musicPlaying)return;
-  musicPlaying=false;
-  if(musicGain){musicGain.gain.linearRampToValueAtTime(0,getAudioCtx().currentTime+0.8);}
-}
-
-function toggleMusicPreview(){
-  const btn=document.getElementById('musicBtn');
-  if(musicPlaying){stopMusic();btn.textContent='♫ Music';btn.style.background='var(--surface)';}
-  else{if(selectedTrack==='none'){toast('Select a music track below first.');return;}startMusic();btn.textContent='⏹ Stop';btn.style.background='var(--gold)';btn.style.color='var(--ink)';}
-}
-
-/* ── CANVAS EXPORT ── */
-async function doExport(){
-  if(PLANS[user.plan].watermark){toast('Upgrade to Pro Agent or Elite Agent to export without watermark.');setTimeout(()=>openUpgrade(),800);return;}
-  if(!slides.length){toast('Generate a walkthrough first.');return;}
-
-  const SLIDE_DUR=3800; // ms per slide — matches togglePlay
-  const W=1280,H=720;
-  const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
-  const ctx2=canvas.getContext('2d');
-
-  // Set up MediaRecorder
-  const stream=canvas.captureStream(30);
-  let audioStream=null;
-
-  // Add audio to stream if track selected
-  if(selectedTrack!=='none'){
-    try{
-      const actx=getAudioCtx();
-      const dest=actx.createMediaStreamDestination();
-      const expGain=actx.createGain();expGain.gain.value=0.22;
-      expGain.connect(dest);
-      // Play export music into destination node
-      playExportMusic(actx,expGain,TRACK_CONFIGS[selectedTrack]);
-      audioStream=dest.stream;
-      audioStream.getAudioTracks().forEach(t=>stream.addTrack(t));
-    }catch(e){console.warn('Audio capture not supported:',e);}
-  }
-
-  const mimeType=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
-  const rec=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:8000000});
-  const chunks=[];
-  rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
-
-  const exportStatus=document.getElementById('exportStatus');
-  const exportFill=document.getElementById('exportFill');
-  const exportStatusTxt=document.getElementById('exportStatusTxt');
-  exportStatus.style.display='block';
-
-  const btn=document.getElementById('exportBtn');
-  btn.disabled=true;btn.textContent='⏳ Recording…';
-
-  rec.start(100);
-
-  // Render each slide to canvas
-  for(let i=0;i<slides.length;i++){
-    showSlide(i);
-    const pct=Math.round((i/slides.length)*100);
-    exportFill.style.width=pct+'%';
-    exportStatusTxt.textContent=`Recording slide ${i+1} of ${slides.length}…`;
-    await renderSlideToCanvas(ctx2,slides[i],W,H,SLIDE_DUR);
-  }
-
-  exportFill.style.width='100%';
-  exportStatusTxt.textContent='Finalizing…';
-  rec.stop();
-
-  await new Promise(r=>{rec.onstop=r;});
-  stopMusic();
-
-  const blob=new Blob(chunks,{type:mimeType});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  const addr=document.getElementById('f_addr')?.value||'listing';
-  a.href=url;a.download=`ShowsReady_${addr.replace(/[^a-z0-9]/gi,'_').slice(0,40)}.webm`;
-  a.click();
-  URL.revokeObjectURL(url);
-
-  btn.disabled=false;btn.textContent='⬇ Export MP4';
-  exportStatus.style.display='none';
-  toast('✓ Download started!');
-}
-
-function playExportMusic(actx,gain,cfg){
-  if(!cfg)return;
-  let t=actx.currentTime+0.1;
-  const beat=60/cfg.tempo;
-  const totalSlides=slides.length;
-  const totalDur=totalSlides*3.8+2;
-  const seq=cfg.chord?[...cfg.notes,...cfg.notes.slice().reverse()]:cfg.notes.concat(cfg.notes.slice(1,-1).reverse());
-  const loops=Math.ceil(totalDur/(beat*seq.length));
-  for(let loop=0;loop<loops;loop++){
-    seq.forEach((freq,i)=>{
-      const nt=t+loop*beat*seq.length+i*beat;
-      const osc=actx.createOscillator();const env=actx.createGain();
-      osc.type=cfg.wave;osc.frequency.value=freq;
-      env.gain.setValueAtTime(0,nt);env.gain.linearRampToValueAtTime(0.15,nt+0.04);
-      env.gain.exponentialRampToValueAtTime(0.001,nt+cfg.release);
-      osc.connect(env);env.connect(gain);osc.start(nt);osc.stop(nt+cfg.release+0.1);
-    });
-  }
-}
-
-async function renderSlideToCanvas(ctx2,slide,W,H,dur){
-  const FRAMES=Math.round(dur/1000*30);
-  const FRAME_MS=dur/FRAMES;
-  // Find if this slide has a before/after element
-  const baEl=slide.querySelector('.ba');
-  const baAEl=slide.querySelector('[id^="baa_"]');
-  const baLEl=slide.querySelector('[id^="bal_"]');
-  const baKEl=slide.querySelector('[id^="bak_"]');
-
-  for(let f=0;f<FRAMES;f++){
-    // Animate the wipe: start at 15%, sweep to 85%, back to 15%
-    if(baAEl&&baLEl){
-      const progress=f/FRAMES; // 0→1
-      let pct;
-      if(progress<0.45)pct=15+(progress/0.45)*70;       // sweep right
-      else if(progress<0.55)pct=85;                       // hold
-      else pct=85-((progress-0.55)/0.45)*70;             // sweep back
-      baAEl.style.clipPath=`inset(0 ${100-pct}% 0 0)`;
-      baLEl.style.left=pct+'%';
-      if(baKEl)baKEl.style.left=pct+'%';
-    }
-
-    // Draw the slide DOM node to canvas via html2canvas-style approach
-    await drawDomToCanvas(ctx2,slide,W,H);
-    await sleep(FRAME_MS);
-  }
-}
-
-async function drawDomToCanvas(ctx2,el,W,H){
-  // Use the stage element's rendered appearance
-  const stage=document.getElementById('vstage');
-  const rect=stage.getBoundingClientRect();
-  ctx2.clearRect(0,0,W,H);
-  ctx2.fillStyle='#111010';ctx2.fillRect(0,0,W,H);
-
-  // Draw all images in the slide
-  const imgs=el.querySelectorAll('img');
-  for(const img of imgs){
-    if(!img.complete||!img.naturalWidth)continue;
-    const ir=img.getBoundingClientRect();
-    const sr=stage.getBoundingClientRect();
-    const sx=(ir.left-sr.left)/sr.width*W;
-    const sy=(ir.top-sr.top)/sr.height*H;
-    const sw=ir.width/sr.width*W;
-    const sh=ir.height/sr.height*H;
-    // Apply CSS filter if present
-    const filter=img.style.filter||'';
-    if(filter){ctx2.filter=filter;}else{ctx2.filter='none';}
-    // Clip for after-panel if needed
-    const afterPanel=img.closest('[id^="baa_"]');
-    if(afterPanel){
-      const cp=afterPanel.style.clipPath;
-      if(cp){
-        const m=cp.match(/inset\(0 ([\d.]+)% 0 0\)/);
-        if(m){const clipRight=parseFloat(m[1])/100;ctx2.save();ctx2.beginPath();ctx2.rect(sx,sy,sw*(1-clipRight/1),sh);ctx2.clip();}
-      }
-    }
-    try{ctx2.drawImage(img,sx,sy,sw,sh);}catch(e){}
-    if(afterPanel&&afterPanel.style.clipPath)ctx2.restore();
-    ctx2.filter='none';
-  }
-
-  // Draw text overlays
-  const cap=el.querySelector('.slide-cap,.intro-sl,.end-sl,.placeholder-sl');
-  if(cap){
-    const cr=cap.getBoundingClientRect(),sr2=stage.getBoundingClientRect();
-    // Intro slide
-    const introTtl=el.querySelector('.intro-ttl');
-    const introAddr=el.querySelector('.intro-addr');
-    if(introTtl){
-      ctx2.fillStyle='rgba(0,0,0,0.55)';ctx2.fillRect(0,0,W,H);
-      ctx2.fillStyle='rgba(184,147,90,0.9)';ctx2.font=`300 ${W*0.018}px Jost,sans-serif`;
-      ctx2.textAlign='center';ctx2.fillText('PRESENTED EXCLUSIVELY',W/2,H*0.38);
-      ctx2.fillStyle='#f9f6f0';ctx2.font=`400 ${W*0.042}px "Libre Baskerville",serif`;
-      ctx2.fillText(introTtl.textContent,W/2,H/2);
-      if(introAddr){ctx2.fillStyle='rgba(255,255,255,0.45)';ctx2.font=`300 ${W*0.016}px Jost,sans-serif`;ctx2.fillText(introAddr.textContent,W/2,H*0.58);}
-    }
-    // End / contact card
-    const endName=el.querySelector('.end-name');
-    if(endName){
-      ctx2.fillStyle='rgba(17,16,16,0.92)';ctx2.fillRect(0,0,W,H);
-      ctx2.fillStyle='#b8935a';ctx2.fillRect(W*0.1,H*0.44,W*0.12,1);
-      ctx2.fillStyle='#f9f6f0';ctx2.font=`400 ${W*0.04}px "Libre Baskerville",serif`;
-      ctx2.textAlign='center';ctx2.fillText(endName.textContent,W/2,H*0.4);
-      const endTitl=el.querySelector('.end-titl');
-      if(endTitl){ctx2.fillStyle='rgba(255,255,255,0.36)';ctx2.font=`300 ${W*0.014}px Jost,sans-serif`;ctx2.letterSpacing='0.17em';ctx2.fillText(endTitl.textContent.toUpperCase(),W/2,H*0.5);}
-      const endContacts=el.querySelectorAll('.end-contact div');
-      endContacts.forEach((c,ci)=>{ctx2.fillStyle='rgba(255,255,255,0.58)';ctx2.font=`300 ${W*0.015}px Jost,sans-serif`;ctx2.fillText(c.textContent,W/2,H*0.6+ci*W*0.022);});
-    }
-    // Caption bar
-    const capRoom=el.querySelector('.cap-room');
-    if(capRoom){
-      ctx2.fillStyle='rgba(17,16,16,0.72)';ctx2.fillRect(0,H*0.82,W,H*0.18);
-      ctx2.fillStyle='rgba(184,147,90,0.9)';ctx2.font=`600 ${W*0.014}px Jost,sans-serif`;
-      ctx2.textAlign='left';ctx2.fillText(capRoom.textContent,W*0.04,H*0.895);
-      const capLine=el.querySelector('.cap-line');
-      if(capLine){ctx2.fillStyle='rgba(255,255,255,0.55)';ctx2.font=`300 ${W*0.013}px Jost,sans-serif`;ctx2.fillText(capLine.textContent,W*0.04,H*0.935);}
-    }
-  }
-}
-
-/* ── UPGRADE MODAL ── */
-let selectedPlan='pro';
-function openUpgrade(){showStep('stepPlan');document.getElementById('upgradeOverlay').classList.add('on');}
-function closeOver(id){document.getElementById(id).classList.remove('on');}
-function closeOverBg(e,id){if(e.target===document.getElementById(id))closeOver(id);}
-function showStep(id){['stepPlan','stepCheckout','stepSuccess'].forEach(s=>document.getElementById(s).style.display=s===id?'block':'none');}
-function pickPlan(plan){selectedPlan=plan;['free','single','pro','elite'].forEach(p=>document.getElementById(`pc_${p}`).classList.toggle('on',p===plan));}
-function goToCheckout(){
-  if(!selectedPlan||selectedPlan==='free'){closeOver('upgradeOverlay');return;}
-  const labels={single:{name:'Per Listing — $29.99',desc:'1 listing · no watermark · one-time purchase'},pro:{name:'Pro Agent — $49.99/mo',desc:'10 listings / 30 days · No watermark · Begins today'},elite:{name:'Elite Agent — $99.99/mo',desc:'30 listings / 30 days · No watermark · Priority support · Begins today'}};
-  const l=labels[selectedPlan];
-  document.getElementById('ck_title').textContent=l.name.split('—')[0].trim();document.getElementById('ck_plan_name').textContent=l.name;document.getElementById('ck_plan_desc').textContent=l.desc;
-  document.getElementById('ck_btn_txt').textContent=selectedPlan==='single'?'Complete Purchase':'Start Subscription';
-  showStep('stepCheckout');mountStripe();
-}
-function backToPlan(){showStep('stepPlan');}
-// Direct Stripe Payment Links — no backend required for checkout
-// ── Stripe Payment Links ──────────────────────────────────────────────────────
-// Create these at dashboard.stripe.com/payment-links (one per price ID)
-// Then replace the placeholder URLs below with the real pay.stripe.com/... URLs
-// Price IDs: single=price_1TGzNG... pro=price_1TGzOk... elite=price_1TGzQA...
-const STRIPE_PAYMENT_LINKS = {
-  single: 'https://buy.stripe.com/REPLACE_SINGLE_LINK',
-  pro:    'https://buy.stripe.com/REPLACE_PRO_LINK',
-  elite:  'https://buy.stripe.com/REPLACE_ELITE_LINK',
-};
-async function handleCheckout(){
-  const btn=document.getElementById('ck_btn');
-  const name=document.getElementById('m_name').value.trim();
-  const email=document.getElementById('m_email').value.trim();
-  if(!name||!email){toast('Please enter your name and email.');return;}
-  if(selectedPlan==='free'){user.plan='free';user.email=email;user.name=name;user.used=0;localStorage.setItem('sr_email',email);updateHeader();closeOver('upgradeOverlay');toast('Free plan active.');return;}
-  btn.disabled=true;document.getElementById('ck_btn_txt').innerHTML='<span class="spin"></span>&nbsp;Redirecting to Stripe…';
-  // Try backend first, fall back to direct payment links
-  try{
-    const res=await fetch(`${SR_API}/api/checkout`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,name,plan:selectedPlan})});
-    const data=await res.json();
-    if(data.checkoutUrl){window.location.href=data.checkoutUrl;return;}
-    throw new Error('No URL');
-  }catch(err){
-    // Backend unavailable — use direct payment links
-    const link=STRIPE_PAYMENT_LINKS[selectedPlan];
-    if(link&&!link.includes('test_28o3cT')){window.location.href=link;}
-    else{toast('Redirecting to Stripe…');setTimeout(()=>{window.location.href=`https://buy.stripe.com/?prefilled_email=${encodeURIComponent(email)}`;},800);}
-  }
-}
-
-/* ── UTILS ── */
-const v=id=>document.getElementById(id)?.value||'';
-const mk=tag=>{const d=document.createElement(tag||'div');return d;};
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3600);}
-
-/* ── API BASE ── */
-// API endpoint - automatically detects environment
-const SR_API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+// ── API BASE — auto-detects environment
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:3001'
   : 'https://showsready-backend.onrender.com';
 
-async function claude(prompt) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
+let selectedPlan = 'free';
+
+function openModal(plan) {
+  selectedPlan = plan || 'free';
+  setPlan(selectedPlan);
+  document.getElementById('signupOverlay').classList.add('on');
+}
+function closeModal() { document.getElementById('signupOverlay').classList.remove('on'); }
+function closeBg(e) { if (e.target.id === 'signupOverlay') closeModal(); }
+
+function setPlan(plan) {
+  selectedPlan = plan;
+  ['free','single','pro','elite'].forEach(p => {
+    document.getElementById(`opt_${p}`)?.classList.toggle('on', p === plan);
+    const radio = document.querySelector(`#opt_${p} input`);
+    if (radio) radio.checked = (p === plan);
+  });
+}
+
+async function handleSignup() {
+  const name  = document.getElementById('s_name').value.trim();
+  const email = document.getElementById('s_email').value.trim();
+  if (!name || !email) { toast('Please enter your name and email.'); return; }
+
+  const btn = document.getElementById('s_btn');
+  btn.disabled = true;
+  document.getElementById('s_btn_txt').innerHTML = '<span class="spin"></span>&nbsp;Just a moment…';
+
   try {
-    const res = await fetch(`${SR_API}/api/ai`, {
+    const res = await fetch(`${API_BASE}/api/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt }),
-      signal: controller.signal,
+      body: JSON.stringify({ name, email, plan: selectedPlan })
     });
-    clearTimeout(timeout);
     const data = await res.json();
-    if (!data.text) throw new Error('No response');
-    return data.text;
-  } catch(e) {
-    clearTimeout(timeout);
-    throw e;
+
+    if (data.checkoutUrl) {
+      window.location.href = data.checkoutUrl;
+      return;
+    }
+    if (data.user || data.success) {
+      localStorage.setItem('sr_email', email);
+      localStorage.setItem('sr_name', name);
+      window.location.href = 'success.html';
+    }
+  } catch (err) {
+    toast('Something went wrong. Please try again.');
+    btn.disabled = false;
+    document.getElementById('s_btn_txt').textContent = 'Continue →';
   }
 }
 
-updateHeader();buildRooms();buildStyles();
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 3500);
+}
 </script>
 </body>
 </html>
