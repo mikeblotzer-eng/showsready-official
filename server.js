@@ -1,226 +1,63 @@
 // ============================================================
-// ShowsReady Backend — WITH REAL AI STAGING
-// Node.js + Express + Stripe + Replicate (for AI staging)
+// ShowsReady Backend — server.js
+// Node.js + Express + Stripe + Anthropic AI
+//
+// SETUP:
+//   npm install express stripe cors dotenv @anthropic-ai/sdk
+//   node server.js
+//
+// .env file:
+//   STRIPE_SECRET_KEY=sk_live_...
+//   STRIPE_WEBHOOK_SECRET=whsec_...
+//   ANTHROPIC_API_KEY=sk-ant-...
+//   PORT=3001
+//   CLIENT_URL=https://showsready.com
 // ============================================================
 
 require('dotenv').config();
 const express = require('express');
 const stripe  = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const cors    = require('cors');
-const Replicate = require('replicate');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
 
-// Initialize Replicate for AI image staging
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
+// ── CORS — allow production domain + any Netlify preview URL
+const ALLOWED_ORIGINS = [
+  'https://showsready.com',
+  'https://www.showsready.com',
+  /^https:\/\/[a-z0-9-]+--showsready\.netlify\.app$/,
+  /^https:\/\/deploy-preview-\d+--showsready\.netlify\.app$/,
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:5500',
+  'http://127.0.0.1:3000',
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (curl, Postman, server-to-server)
+    if (!origin) return callback(null, true);
+    const allowed = ALLOWED_ORIGINS.some(o =>
+      typeof o === 'string' ? o === origin : o.test(origin)
+    );
+    if (allowed) return callback(null, true);
+    console.warn('[cors] Blocked origin:', origin);
+    callback(new Error('Not allowed by CORS'));
+  },
+  methods:     ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
 
 // ── Stripe webhook MUST receive raw body — register BEFORE express.json()
 app.use('/webhook', express.raw({ type: 'application/json' }));
-app.use(express.json({ limit: '50mb' })); // Increased for base64 images
-app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight for all routes
+app.use(express.json());
 
 // ============================================================
-// STAGING STYLE PROMPTS
-// These define how each style transforms the images
-// ============================================================
-const STYLE_PROMPTS = {
-  modern: {
-    prompt: 'modern minimalist interior design, clean lines, neutral colors, contemporary furniture, bright natural lighting, professional real estate photography',
-    negative: 'cluttered, dark, old furniture, poor lighting, messy',
-    strength: 0.75
-  },
-  coastal: {
-    prompt: 'coastal beach house interior, light blue and white colors, natural textures, beach-inspired decor, bright airy atmosphere, nautical accents, professional staging',
-    negative: 'dark colors, heavy furniture, cluttered, landlocked aesthetic',
-    strength: 0.75
-  },
-  rustic: {
-    prompt: 'rustic farmhouse interior, warm wood tones, vintage furniture, cozy atmosphere, natural materials, country charm, professionally staged',
-    negative: 'modern, sterile, plastic, artificial, urban',
-    strength: 0.75
-  },
-  industrial: {
-    prompt: 'industrial loft interior, exposed brick, metal accents, urban modern design, open space, professional staging, high-end finishes',
-    negative: 'traditional, ornate, cluttered, suburban',
-    strength: 0.75
-  },
-  luxury: {
-    prompt: 'luxury high-end interior, elegant furniture, marble surfaces, sophisticated color palette, designer finishes, professional luxury real estate staging',
-    negative: 'cheap, cluttered, outdated, worn, budget',
-    strength: 0.8
-  },
-  minimalist: {
-    prompt: 'minimalist scandinavian interior, white walls, simple clean furniture, uncluttered space, natural light, professional minimal staging',
-    negative: 'busy, ornate, colorful, cluttered, maximalist',
-    strength: 0.7
-  }
-};
-
-// ============================================================
-// AI IMAGE STAGING ENDPOINT
-// Takes an image and style, returns AI-staged version
-// ============================================================
-app.post('/api/stage-image', async (req, res) => {
-  try {
-    const { imageBase64, style, roomType } = req.body;
-    
-    if (!imageBase64 || !style) {
-      return res.status(400).json({ error: 'imageBase64 and style are required' });
-    }
-
-    if (!STYLE_PROMPTS[style]) {
-      return res.status(400).json({ error: 'Invalid style. Choose: modern, coastal, rustic, industrial, luxury, or minimalist' });
-    }
-
-    console.log(`[stage-image] Processing ${roomType || 'room'} in ${style} style...`);
-
-    const styleConfig = STYLE_PROMPTS[style];
-    
-    // Add room-specific context to prompt
-    const roomContext = roomType ? `${roomType} room, ` : '';
-    const fullPrompt = `${roomContext}${styleConfig.prompt}`;
-
-    // Use Replicate's Stable Diffusion XL for image-to-image transformation
-    const output = await replicate.run(
-      "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
-      {
-        input: {
-          image: imageBase64,
-          prompt: fullPrompt,
-          negative_prompt: styleConfig.negative,
-          num_inference_steps: 25,
-          guidance_scale: 7.5,
-          strength: styleConfig.strength,
-          scheduler: "DPMSolverMultistep"
-        }
-      }
-    );
-
-    // Replicate returns an array of image URLs
-    const stagedImageUrl = Array.isArray(output) ? output[0] : output;
-
-    console.log(`[stage-image] ✓ Staged successfully`);
-
-    res.json({
-      success: true,
-      stagedImageUrl,
-      style,
-      roomType: roomType || 'unknown'
-    });
-
-  } catch (err) {
-    console.error('[stage-image] Error:', err);
-    res.status(500).json({ 
-      error: 'Image staging failed',
-      details: err.message 
-    });
-  }
-});
-
-// ============================================================
-// BATCH STAGING ENDPOINT
-// Stages multiple images at once (for entire listing)
-// ============================================================
-app.post('/api/stage-listing', async (req, res) => {
-  try {
-    const { images, style, listingInfo } = req.body;
-    
-    if (!images || !Array.isArray(images)) {
-      return res.status(400).json({ error: 'images array is required' });
-    }
-
-    if (!style || !STYLE_PROMPTS[style]) {
-      return res.status(400).json({ error: 'Valid style is required' });
-    }
-
-    console.log(`[stage-listing] Processing ${images.length} images in ${style} style...`);
-
-    const stagedImages = [];
-    
-    // Process images sequentially to avoid rate limits
-    for (let i = 0; i < images.length; i++) {
-      const img = images[i];
-      
-      try {
-        console.log(`[stage-listing] Processing image ${i + 1}/${images.length}: ${img.roomType || 'room'}`);
-        
-        const styleConfig = STYLE_PROMPTS[style];
-        const roomContext = img.roomType ? `${img.roomType} room, ` : '';
-        const fullPrompt = `${roomContext}${styleConfig.prompt}`;
-
-        const output = await replicate.run(
-          "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
-          {
-            input: {
-              image: img.imageBase64,
-              prompt: fullPrompt,
-              negative_prompt: styleConfig.negative,
-              num_inference_steps: 25,
-              guidance_scale: 7.5,
-              strength: styleConfig.strength,
-              scheduler: "DPMSolverMultistep"
-            }
-          }
-        );
-
-        const stagedImageUrl = Array.isArray(output) ? output[0] : output;
-
-        stagedImages.push({
-          originalId: img.id,
-          roomType: img.roomType,
-          originalUrl: img.originalUrl,
-          stagedUrl: stagedImageUrl,
-          style
-        });
-
-        console.log(`[stage-listing] ✓ Image ${i + 1} staged successfully`);
-        
-        // Small delay to avoid rate limits
-        if (i < images.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-      } catch (imgErr) {
-        console.error(`[stage-listing] Failed to stage image ${i + 1}:`, imgErr);
-        
-        // Add failed image with error
-        stagedImages.push({
-          originalId: img.id,
-          roomType: img.roomType,
-          originalUrl: img.originalUrl,
-          stagedUrl: null,
-          error: imgErr.message,
-          style
-        });
-      }
-    }
-
-    const successCount = stagedImages.filter(img => img.stagedUrl).length;
-    console.log(`[stage-listing] ✓ Completed: ${successCount}/${images.length} successful`);
-
-    res.json({
-      success: true,
-      style,
-      totalImages: images.length,
-      successfulImages: successCount,
-      stagedImages,
-      listingInfo
-    });
-
-  } catch (err) {
-    console.error('[stage-listing] Error:', err);
-    res.status(500).json({ 
-      error: 'Batch staging failed',
-      details: err.message 
-    });
-  }
-});
-
-// ============================================================
-// PLAN CONFIG (from original)
+// PLAN CONFIG
 // ============================================================
 const PLANS = {
   free: {
@@ -228,7 +65,6 @@ const PLANS = {
     price_cents:  0,
     listings:     1,
     watermark:    true,
-    aiStaging:    true, // Allow AI staging on free tier (with watermark)
     stripe_price: null,
     type:         'free',
   },
@@ -237,8 +73,7 @@ const PLANS = {
     price_cents:  2999,
     listings:     1,
     watermark:    false,
-    aiStaging:    true,
-    stripe_price: process.env.STRIPE_PRICE_SINGLE || 'price_SINGLE_LISTING_ID',
+    stripe_price: process.env.STRIPE_PRICE_SINGLE || 'price_1TDv7MDwB0tBPUZ7YEQ72lMx',
     type:         'payment',
   },
   pro: {
@@ -246,8 +81,7 @@ const PLANS = {
     price_cents:  4999,
     listings:     10,
     watermark:    false,
-    aiStaging:    true,
-    stripe_price: process.env.STRIPE_PRICE_PRO || 'price_PRO_AGENT_MONTHLY_ID',
+    stripe_price: process.env.STRIPE_PRICE_PRO || 'price_1TDv8IDwB0tBPUZ7WYY9YNeR',
     type:         'subscription',
   },
   elite: {
@@ -255,13 +89,14 @@ const PLANS = {
     price_cents:  9999,
     listings:     30,
     watermark:    false,
-    aiStaging:    true,
-    stripe_price: process.env.STRIPE_PRICE_ELITE || 'price_ELITE_AGENT_MONTHLY_ID',
+    stripe_price: process.env.STRIPE_PRICE_ELITE || 'price_1TDv8yDwB0tBPUZ7UGKcjzJz',
     type:         'subscription',
   },
 };
 
-// USER STORE (same as before - in-memory)
+// ============================================================
+// USER STORE (in-memory — swap for Supabase in production)
+// ============================================================
 const users = new Map();
 
 function getUser(email) {
@@ -298,19 +133,129 @@ function publicUser(user) {
 }
 
 // ============================================================
-// EXISTING ROUTES (kept from original server.js)
+// AI HELPER — Anthropic Claude
+// ============================================================
+async function callClaude(prompt, maxTokens = 400) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:  'POST',
+    headers: {
+      'Content-Type':      'application/json',
+      'x-api-key':         apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model:      'claude-haiku-4-5-20251001',
+      max_tokens: maxTokens,
+      messages:   [{ role: 'user', content: prompt }],
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Anthropic API error ${res.status}: ${err}`);
+  }
+
+  const data = await res.json();
+  return data.content?.[0]?.text || '';
+}
+
+// ============================================================
+// ROUTES
 // ============================================================
 
+// Health check
 app.get('/health', (_req, res) => {
   res.json({
     status:    'ok',
     service:   'showsready-api',
     timestamp: new Date().toISOString(),
     stripe:    !!process.env.STRIPE_SECRET_KEY,
-    replicate: !!process.env.REPLICATE_API_TOKEN,
+    ai:        !!process.env.ANTHROPIC_API_KEY,
   });
 });
 
+// ─────────────────────────────────────────────────────────
+// POST /api/ai — Market analysis prompt
+// Body: { prompt }
+// Returns: { text }
+// ─────────────────────────────────────────────────────────
+app.post('/api/ai', async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt) return res.status(400).json({ error: 'prompt is required.' });
+
+    const text = await callClaude(prompt, 300);
+    res.json({ text });
+  } catch (err) {
+    console.error('[api/ai]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+// POST /api/generate — Full walkthrough script generation
+// Body: { address, price, type, condition, buyer, notes, market, rooms }
+// Returns: { intro, rooms: [...], outro, script }
+// ─────────────────────────────────────────────────────────
+app.post('/api/generate', async (req, res) => {
+  try {
+    const { address, price, type, condition, buyer, notes, market, rooms = [] } = req.body;
+    if (!address) return res.status(400).json({ error: 'address is required.' });
+
+    const roomList = rooms.map(r => `${r.label} (${r.style})`).join(', ');
+
+    const prompt = `You are a luxury real estate marketing copywriter. Write a polished walkthrough video script for the following listing.
+
+Property: ${address}
+Price: ${price}
+Type: ${type}
+Condition: ${condition}
+Target Buyer: ${buyer}
+Key Features: ${notes}
+Market: ${market}
+Rooms being showcased: ${roomList}
+
+Write in this exact JSON format (no markdown, no code fences, just raw JSON):
+{
+  "intro": "One compelling opening sentence welcoming viewers to this property (15-20 words)",
+  "rooms": [
+    {"id": "ext", "voiceover": "One vivid sentence about the exterior (12-16 words)"},
+    {"id": "living", "voiceover": "One vivid sentence about the living room (12-16 words)"},
+    {"id": "kitchen", "voiceover": "One vivid sentence about the kitchen (12-16 words)"},
+    {"id": "master", "voiceover": "One vivid sentence about the master bedroom (12-16 words)"},
+    {"id": "bath", "voiceover": "One vivid sentence about the bathroom (12-16 words)"},
+    {"id": "outdoor", "voiceover": "One vivid sentence about the outdoor space (12-16 words)"}
+  ],
+  "outro": "One closing call-to-action sentence (12-16 words)"
+}
+
+Only include room IDs that are in the showcased rooms list. Be evocative, specific to this property's market and buyer profile. No generic phrases.`;
+
+    const raw  = await callClaude(prompt, 600);
+    const json = JSON.parse(raw.trim());
+
+    // Build flat script text
+    const lines = [
+      json.intro,
+      ...(json.rooms || []).map(r => r.voiceover),
+      json.outro,
+    ].filter(Boolean);
+    json.script = lines.join('\n\n');
+
+    res.json(json);
+  } catch (err) {
+    console.error('[api/generate]', err.message);
+    // Return a graceful fallback so the frontend never crashes
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+// POST /api/signup
+// ─────────────────────────────────────────────────────────
 app.post('/api/signup', async (req, res) => {
   try {
     const { name, email, plan = 'free' } = req.body;
@@ -331,6 +276,9 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────────────────
+// POST /api/checkout
+// ─────────────────────────────────────────────────────────
 app.post('/api/checkout', async (req, res) => {
   try {
     const { name, email, plan } = req.body;
@@ -353,6 +301,9 @@ app.post('/api/checkout', async (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────────────────
+// GET /api/user
+// ─────────────────────────────────────────────────────────
 app.get('/api/user', (req, res) => {
   const { email } = req.query;
   if (!email) return res.status(400).json({ error: 'email query param required.' });
@@ -363,6 +314,9 @@ app.get('/api/user', (req, res) => {
   res.json({ user: publicUser(user) });
 });
 
+// ─────────────────────────────────────────────────────────
+// POST /api/listing/use
+// ─────────────────────────────────────────────────────────
 app.post('/api/listing/use', (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: 'email is required.' });
@@ -392,21 +346,23 @@ app.post('/api/listing/use', (req, res) => {
   });
 });
 
+// ─────────────────────────────────────────────────────────
+// POST /api/cancel
+// ─────────────────────────────────────────────────────────
 app.post('/api/cancel', async (req, res) => {
   try {
     const { email } = req.body;
     const user = getUser(email);
 
-    if (!user || !user.stripe_subscription_id) {
-      return res.status(404).json({ error: 'No active subscription found.' });
-    }
+    if (!user)                       return res.status(404).json({ error: 'User not found.' });
+    if (!user.stripe_subscription_id) return res.status(400).json({ error: 'No active subscription.' });
 
     await stripe.subscriptions.update(user.stripe_subscription_id, {
       cancel_at_period_end: true,
     });
 
     upsertUser(email, { cancel_at_period_end: true });
-    res.json({ success: true, message: 'Subscription will cancel at period end.' });
+    res.json({ success: true, message: 'Your plan will not renew. Access continues until period end.' });
 
   } catch (err) {
     console.error('[cancel]', err.message);
@@ -414,6 +370,9 @@ app.post('/api/cancel', async (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────────────────
+// POST /api/portal
+// ─────────────────────────────────────────────────────────
 app.post('/api/portal', async (req, res) => {
   try {
     const { email } = req.body;
@@ -437,11 +396,11 @@ app.post('/api/portal', async (req, res) => {
 });
 
 // ============================================================
-// STRIPE WEBHOOK (same as before)
+// STRIPE WEBHOOK
 // ============================================================
 app.post('/webhook', (req, res) => {
-  const sig     = req.headers['stripe-signature'];
-  const secret  = process.env.STRIPE_WEBHOOK_SECRET;
+  const sig    = req.headers['stripe-signature'];
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
 
   let event;
   try {
@@ -454,6 +413,7 @@ app.post('/webhook', (req, res) => {
   console.log(`[webhook] ${event.type}`);
 
   switch (event.type) {
+
     case 'checkout.session.completed': {
       const session = event.data.object;
       const email   = session.customer_details?.email || session.metadata?.email;
@@ -491,7 +451,6 @@ app.post('/webhook', (req, res) => {
           const now = new Date();
           const end = new Date(now);
           end.setDate(end.getDate() + 30);
-
           upsertUser(email, {
             listings_used:        0,
             plan_start:           now.toISOString(),
@@ -513,7 +472,6 @@ app.post('/webhook', (req, res) => {
     case 'customer.subscription.deleted': {
       const sub   = event.data.object;
       const email = sub.metadata?.email || sub.customer_email;
-
       if (email) {
         upsertUser(email, {
           plan:                   'free',
@@ -524,7 +482,7 @@ app.post('/webhook', (req, res) => {
           cancel_at_period_end:   false,
           plan_end:               new Date().toISOString(),
         });
-        console.log(`[webhook] Subscription cancelled, downgraded to free: ${email}`);
+        console.log(`[webhook] Downgraded to free: ${email}`);
       }
       break;
     }
@@ -533,7 +491,6 @@ app.post('/webhook', (req, res) => {
       const pi    = event.data.object;
       const email = pi.metadata?.email;
       const plan  = pi.metadata?.plan;
-
       if (email && plan === 'single') {
         const user = getUser(email);
         upsertUser(email, {
@@ -554,7 +511,7 @@ app.post('/webhook', (req, res) => {
 });
 
 // ============================================================
-// CHECKOUT SESSION FACTORY (same as before)
+// CHECKOUT SESSION FACTORY
 // ============================================================
 async function createCheckoutSession({ email, name, plan, user }) {
   const planData = PLANS[plan];
@@ -572,7 +529,7 @@ async function createCheckoutSession({ email, name, plan, user }) {
 
   const BASE_URL   = process.env.CLIENT_URL || 'https://showsready.com';
   const successUrl = `${BASE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`;
-  const cancelUrl  = `${BASE_URL}/pricing`;
+  const cancelUrl  = `${BASE_URL}/pricing.html`;
 
   const config = {
     customer:                   customerId,
@@ -591,7 +548,7 @@ async function createCheckoutSession({ email, name, plan, user }) {
         unit_amount:  planData.price_cents,
         product_data: {
           name:        `ShowsReady — ${planData.name}`,
-          description: '1 listing walkthrough video · No watermark · AI staging · Branded end card',
+          description: '1 listing walkthrough video · No watermark · Branded end card',
         },
       },
       quantity: 1,
@@ -599,9 +556,7 @@ async function createCheckoutSession({ email, name, plan, user }) {
   } else {
     config.mode = 'subscription';
     config.line_items = [{ price: planData.stripe_price, quantity: 1 }];
-    config.subscription_data = {
-      metadata: { plan, email },
-    };
+    config.subscription_data = { metadata: { plan, email } };
   }
 
   return await stripe.checkout.sessions.create(config);
@@ -612,15 +567,13 @@ async function createCheckoutSession({ email, name, plan, user }) {
 // ============================================================
 app.listen(PORT, () => {
   console.log(`
-  ✦ ShowsReady API with AI Staging
+  ✦ ShowsReady API
   ─────────────────────────────────
   Running on:    http://localhost:${PORT}
   Health check:  http://localhost:${PORT}/health
-  
-  Integrations:
-  Stripe:        ${process.env.STRIPE_SECRET_KEY ? '✓ configured' : '✗ MISSING'}
-  Replicate AI:  ${process.env.REPLICATE_API_TOKEN ? '✓ configured' : '✗ MISSING'}
-  
+  Stripe key:    ${process.env.STRIPE_SECRET_KEY ? '✓ configured' : '✗ MISSING'}
+  Webhook secret:${process.env.STRIPE_WEBHOOK_SECRET ? '✓ configured' : '✗ MISSING'}
+  Anthropic key: ${process.env.ANTHROPIC_API_KEY ? '✓ configured' : '✗ MISSING — AI features disabled'}
   Client URL:    ${process.env.CLIENT_URL || 'https://showsready.com'}
   ─────────────────────────────────
   `);
