@@ -24,8 +24,7 @@ const stripe  = process.env.STRIPE_SECRET_KEY
 const app  = express();
 const PORT = process.env.PORT || 3001;
 
-const app  = express();
-const PORT = process.env.PORT || 3001;
+
 
 // ── CORS — allow production domain + any Netlify preview URL
 const ALLOWED_ORIGINS = [
