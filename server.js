@@ -53,7 +53,7 @@ const corsOptions = {
 // ── Stripe webhook MUST receive raw body — register BEFORE express.json()
 app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight for all routes
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // ============================================================
