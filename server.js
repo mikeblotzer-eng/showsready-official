@@ -15,10 +15,14 @@
 // ============================================================
 
 require('dotenv').config();
-// NEW (works with or without key)
+const express = require('express');
+const cors    = require('cors');
 const stripe  = process.env.STRIPE_SECRET_KEY 
   ? require('stripe')(process.env.STRIPE_SECRET_KEY)
   : null;
+
+const app  = express();
+const PORT = process.env.PORT || 3001;
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
