@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 3001;
 const PROD_ORIGINS = [
   'https://showsready.com',
   'https://www.showsready.com',
+  'https://showsready.netlify.app',
   /^https:\/\/[a-z0-9-]+--showsready\.netlify\.app$/,
   /^https:\/\/deploy-preview-\d+--showsready\.netlify\.app$/,
 ];
