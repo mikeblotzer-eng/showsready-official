@@ -15,7 +15,7 @@ services:
       - key: PORT
         value: 3001
       - key: CLIENT_URL
-        value: https://showsready.netlify.app
+        value: https://showsready.com
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_WEBHOOK_SECRET

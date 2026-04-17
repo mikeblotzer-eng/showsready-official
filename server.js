@@ -49,7 +49,7 @@ const corsOptions = {
 // Stripe webhook MUST receive raw body — register BEFORE express.json()
 app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 // ── PLAN CONFIG ───────────────────────────────────────────────────────────────
 const PLANS = {
@@ -180,6 +180,20 @@ app.get('/health', (_req, res) => {
   });
 });
 
+app.get('/api/session', async (req, res) => {
+  try {
+    const { session_id } = req.query;
+    if (!session_id) return res.status(400).json({ error: 'session_id required.' });
+    if (!stripe) return res.status(503).json({ error: 'Stripe not configured.' });
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    const email = session.customer_details?.email || session.customer_email || null;
+    res.json({ email });
+  } catch (err) {
+    console.error('[api/session]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/api/ai', async (req, res) => {
   try {
     const { prompt } = req.body;
@@ -194,9 +208,31 @@ app.post('/api/ai', async (req, res) => {
 
 app.post('/api/generate', async (req, res) => {
   try {
-    const { address, price, type, condition, buyer, notes, market, rooms = [] } = req.body;
+    const { address, price, type, condition, buyer, notes, market, rooms = [], images, photoCount } = req.body;
     if (!address) return res.status(400).json({ error: 'address is required.' });
 
+    // New format: image-based walkthrough generation
+    if (images && Array.isArray(images)) {
+      const n = images.length || photoCount || 1;
+      const prompt = `You are a luxury real estate marketing copywriter. Generate a walkthrough video script for a property at ${address} in the ${market || 'US'} market. The video has ${n} photo slide${n !== 1 ? 's' : ''}.
+
+Return ONLY raw JSON (no markdown, no code fences):
+{
+  "propertyHeadline": "One compelling 12-18 word opening sentence welcoming viewers",
+  "closingTagline": "One 10-14 word call-to-action closing sentence",
+  "slides": [
+    {"narration": "One vivid 12-16 word sentence describing this room/space", "roomLabel": "Room Name"}
+  ]
+}
+
+Generate exactly ${n} slide object${n !== 1 ? 's' : ''}. Vary the room labels naturally (e.g. Living Room, Kitchen, Master Suite, Primary Bath, Outdoor Terrace, etc.). Be evocative and specific to the ${market || 'local'} market. No filler phrases.`;
+
+      const raw  = await callClaude(prompt, 600);
+      const json = JSON.parse(raw.trim());
+      return res.json(json);
+    }
+
+    // Legacy format: text-only script generation
     const roomList = rooms.map(r => `${r.label} (${r.style})`).join(', ');
     const prompt = `You are a luxury real estate marketing copywriter. Write a polished walkthrough video script for the following listing.
 
