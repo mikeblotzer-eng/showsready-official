@@ -239,6 +239,8 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 .ba-tag-b,.ba-tag-a{position:absolute;top:12px;font-size:.58rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:4px 10px;border-radius:1px;z-index:4;}
 .ba-tag-b{left:12px;background:rgba(26,23,20,.55);color:rgba(255,255,255,.8);}
 .ba-tag-a{right:12px;background:rgba(184,147,90,.85);color:var(--ink);}
+.photo-sl{position:relative;width:100%;height:100%;background:var(--ink);overflow:hidden;}
+.photo-sl img{width:100%;height:100%;object-fit:cover;display:block;}
 .slide-cap{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,23,20,.72));padding:34px 22px 17px;z-index:7;}
 .cap-room{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-l);font-weight:500;}
 .cap-line{font-size:.86rem;color:rgba(255,255,255,.88);margin-top:3px;font-weight:300;}
@@ -358,9 +360,9 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 <div class="rail">
   <div class="rs active" id="r1" onclick="nav(1)"><div class="rs-num">1</div>Listing</div>
   <div class="rs" id="r2" onclick="nav(2)"><div class="rs-num">2</div>Photos</div>
-  <div class="rs" id="r3" onclick="nav(3)"><div class="rs-num">3</div>Styles</div>
-  <div class="rs" id="r4" onclick="nav(4)"><div class="rs-num">4</div>Branding</div>
-  <div class="rs" id="r5" onclick="nav(5)"><div class="rs-num">5</div>Generate</div>
+  <div class="rs" id="r3" onclick="nav(3)" style="display:none;"><div class="rs-num">3</div>Styles</div>
+  <div class="rs" id="r4" onclick="nav(4)"><div class="rs-num">3</div>Branding</div>
+  <div class="rs" id="r5" onclick="nav(5)"><div class="rs-num">4</div>Generate</div>
 </div>
 
 <!-- PG 1 -->
@@ -370,7 +372,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
     <div class="step-bar-left">
       <div class="eyebrow">New Listing</div>
       <div class="pg-title">Property Details</div>
-      <div class="pg-sub" style="margin-bottom:0">Enter your listing — ShowsReady auto-detects your market and calibrates staging styles to local buyer preferences across all 50 states.</div>
+      <div class="pg-sub" style="margin-bottom:0">Enter your listing details so ShowsReady can assemble the walkthrough captions and end card.</div>
     </div>
     <button class="btn btn-dark btn-xl" id="btn1" onclick="doAnalyze()">Analyze Market →</button>
   </div>
@@ -421,9 +423,9 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
     <div class="step-bar-left">
       <div class="eyebrow">Step 2 of 5</div>
       <div class="pg-title">Upload Room Photos</div>
-      <div class="pg-sub" style="margin-bottom:0">Upload 1–3 photos per room. AI stages each one. Preview style changes in Step 3.</div>
+      <div class="pg-sub" style="margin-bottom:0">Upload 1-3 photos per room. Click a thumbnail to choose which photo appears in the walkthrough.</div>
     </div>
-    <button class="btn btn-dark" onclick="nav(3)">Choose Styles →</button>
+    <button class="btn btn-dark" onclick="nav(4)">Agent Branding →</button>
   </div>
   <div class="rooms-stack" id="roomStack"></div>
 </div>
@@ -435,8 +437,8 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
   <div class="step-bar">
     <div class="step-bar-left">
       <div class="eyebrow">Step 3 of 5</div>
-      <div class="pg-title">Style Selection &amp; Preview</div>
-      <div class="pg-sub" style="margin-bottom:0">AI-matched styles for your market. Click any chip to <strong>preview the transformation</strong> on your photo before generating.</div>
+      <div class="pg-title">Step Temporarily Disabled</div>
+      <div class="pg-sub" style="margin-bottom:0">This step is temporarily removed.</div>
     </div>
     <button class="btn btn-dark" onclick="nav(4)">Agent Branding →</button>
   </div>
@@ -449,7 +451,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 <div class="canvas">
   <div class="step-bar">
     <div class="step-bar-left">
-      <div class="eyebrow">Step 4 of 5</div>
+      <div class="eyebrow">Step 3 of 4</div>
       <div class="pg-title">Agent Branding</div>
       <div class="pg-sub" style="margin-bottom:0">Your end card closes every walkthrough. Make it memorable.</div>
     </div>
@@ -499,9 +501,9 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 <div class="canvas">
   <div class="step-bar">
     <div class="step-bar-left">
-      <div class="eyebrow">Step 5 of 5</div>
+      <div class="eyebrow">Step 4 of 4</div>
       <div class="pg-title">Generate Walkthrough</div>
-      <div class="pg-sub" style="margin-bottom:0">AI stages your rooms and assembles a presentation-ready walkthrough video.</div>
+      <div class="pg-sub" style="margin-bottom:0">ShowsReady assembles your selected photos, captions, music, and branded end card.</div>
     </div>
     <div style="display:flex;gap:9px;">
       <button class="btn btn-ghost" onclick="nav(4)">← Branding</button>
@@ -521,9 +523,9 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
         <div class="gtrack"><div class="gfill" id="gfill"></div></div>
         <div class="gen-steps">
           <div class="gstep" id="gs1"><div class="gdot">1</div><span>Detecting market &amp; local trends</span></div>
-          <div class="gstep" id="gs2"><div class="gdot">2</div><span>Generating staging concepts</span></div>
-          <div class="gstep" id="gs3"><div class="gdot">3</div><span>Processing before/after transitions</span></div>
-          <div class="gstep" id="gs4"><div class="gdot">4</div><span>Writing voiceover script</span></div>
+          <div class="gstep" id="gs2"><div class="gdot">2</div><span>Preparing selected photos</span></div>
+          <div class="gstep" id="gs3"><div class="gdot">3</div><span>Building walkthrough slides</span></div>
+          <div class="gstep" id="gs4"><div class="gdot">4</div><span>Writing listing captions</span></div>
           <div class="gstep" id="gs5"><div class="gdot">5</div><span>Assembling walkthrough</span></div>
           <div class="gstep" id="gs6"><div class="gdot">6</div><span>Rendering agent end card</span></div>
         </div>
@@ -548,7 +550,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
     </div>
     <div class="script-wrap" id="scriptWrap">
       <div class="script-box">
-        <div class="script-lbl">Voiceover Script</div>
+        <div class="script-lbl">Listing Captions</div>
         <div class="script-txt" id="scriptTxt"></div>
         <div id="exportStatus" style="display:none;margin-top:14px;">
           <div class="gtrack"><div class="gfill" id="exportFill"></div></div>
@@ -784,8 +786,6 @@ function nav(n){
   document.getElementById(`pg${n}`).classList.add('on');
   document.getElementById(`r${n}`).className='rs active';
   window.scrollTo({top:0,behavior:'smooth'});
-  // When entering Styles step, refresh all previews with any uploaded photos
-  if(n===3) ROOMS.forEach(r=>{ if(r.photos&&r.photos.length) refreshPreview(r.id); });
 }
 function showGate(){
   const p=PLANS[user.plan];
@@ -817,7 +817,7 @@ async function doAnalyze(){
   // Always re-enable and advance — regardless of API status
   await sleep(400);
   btn.disabled=false;btn.innerHTML='Analyze Market →';
-  buildRooms();buildStyles();nav(2);
+  buildRooms();nav(2);
 }
 
 /* ── PG 2 ── */
@@ -844,7 +844,6 @@ function addPhotos(roomId,files){
   if(room.selectedPhotoIndex==null||room.selectedPhotoIndex>=room.photos.length)room.selectedPhotoIndex=0;
   renderPhotoGrid(roomId);
   const n=room.photos.length;badge.textContent=n?`${n} photo${n>1?'s':''}`:'No photos';badge.className=n?'rbadge ready':'rbadge';
-  refreshPreview(roomId);
 }
 function delPhoto(roomId,idx,btn){
   if(window.event)window.event.stopPropagation();
@@ -852,7 +851,6 @@ function delPhoto(roomId,idx,btn){
   if(room.selectedPhotoIndex>=room.photos.length)room.selectedPhotoIndex=Math.max(0,room.photos.length-1);
   renderPhotoGrid(roomId);
   const n=room.photos.length;document.getElementById(`rbadge_${roomId}`).textContent=n?`${n} photo${n>1?'s':''}`:'No photos';document.getElementById(`rbadge_${roomId}`).className=n?'rbadge ready':'rbadge';
-  refreshPreview(roomId);
 }
 function renderPhotoGrid(roomId){
   const room=ROOMS.find(r=>r.id===roomId),grid=document.getElementById(`pgrid_${roomId}`);
@@ -867,7 +865,7 @@ function renderPhotoGrid(roomId){
 }
 function selectPhoto(roomId,idx){
   const room=ROOMS.find(r=>r.id===roomId);if(!room||!room.photos?.[idx])return;
-  room.selectedPhotoIndex=idx;renderPhotoGrid(roomId);refreshPreview(roomId);
+  room.selectedPhotoIndex=idx;renderPhotoGrid(roomId);
 }
 function getRoomPhoto(room){
   if(!room||!room.photos||!room.photos.length)return null;
@@ -1001,10 +999,6 @@ async function fetchStaging(){
     reader.readAsDataURL(getRoomPhoto(r).file);
   })));
 
-  // Reset
-  window._srAudio=null;
-  window._srSlideNarrations=[];  // indexed same as slides[] built in buildViewer
-
   try {
     const res=await fetch(`${SR_API}/api/generate`,{
       method:'POST',
@@ -1014,23 +1008,7 @@ async function fetchStaging(){
     const data=await res.json();
     if(!res.ok) throw new Error(data.error||'API error');
 
-    // Audio for playback
-    if(data.audio){
-      window._srAudio=new Audio(data.audio);
-      window._srAudio.volume=0.9;
-    }
-
-    // Build per-slide narration array:
-    // slides[] in buildViewer = [intro, ...photoRooms, ...emptyRooms, outro]
-    // We store narrations for the photo-room slides only (offset by 1 for intro)
     const narrations=data.slides||[];
-    window._srSlideNarrations=[''];  // index 0 = intro slide, no narration (title card)
-    photoRooms.forEach((room,i)=>{
-      window._srSlideNarrations.push(narrations[i]?.narration||room.label);
-    });
-    // Empty rooms get empty narration
-    ROOMS.filter(r=>!r.photos||!r.photos.length).forEach(()=>window._srSlideNarrations.push(''));
-    window._srSlideNarrations.push(data.closingTagline||'');  // outro
 
     // stagingData for buildViewer captions
     stagingData={
@@ -1039,15 +1017,14 @@ async function fetchStaging(){
       rooms:ROOMS.map((r,ri)=>{
         const photoIdx=photoRooms.indexOf(r);
         const slide=photoIdx>=0?narrations[photoIdx]:null;
-        return {id:r.id,voiceover:slide?.narration||r.style,staged:r.style,roomLabel:slide?.roomLabel||r.label};
+        return {id:r.id,voiceover:slide?.narration||r.label,staged:'',roomLabel:slide?.roomLabel||r.label};
       })
     };
   } catch(err){
     console.warn('API failed, fallback:',err.message);
-    window._srSlideNarrations=[];
     stagingData={
       intro:`Welcome to this exceptional property at ${address}`,
-      rooms:ROOMS.map(r=>({id:r.id,voiceover:r.label+' — '+r.style,staged:r.style})),
+      rooms:ROOMS.map(r=>({id:r.id,voiceover:r.label,staged:''})),
       outro:`Contact ${v('b_name')||'your agent'} to schedule a private showing`
     };
   }
@@ -1063,12 +1040,12 @@ function buildViewer(){
   isl.innerHTML=`<div class="intro-sl"><div class="intro-lbl">Presented Exclusively</div><div class="intro-ttl">${stagingData.intro||'Welcome to this remarkable property.'}</div><div class="intro-addr">${v('f_addr')}</div></div>`;
   stage.appendChild(isl);slides.push(isl);
   ROOMS.forEach(room=>{
-    const rd=(stagingData.rooms||[]).find(r=>r.id===room.id)||{};const sl=mk('div');sl.className='vslide';const sv=getSV(room.style);
+    const rd=(stagingData.rooms||[]).find(r=>r.id===room.id)||{};const sl=mk('div');sl.className='vslide';
     const photo=getRoomPhoto(room);
     if(photo){
       const pu=photo.url;
-      sl.innerHTML=`<div class="ba" id="ba_${room.id}"><div class="ba-b"><img src="${pu}" alt="before"></div><div class="ba-a" id="baa_${room.id}"><img src="${pu}" alt="after" style="filter:${sv.filter};"><div style="position:absolute;inset:0;background:${sv.overlay};pointer-events:none;"></div></div><div class="ba-line" id="bal_${room.id}"></div><div class="ba-knob" id="bak_${room.id}">↔</div><div class="ba-tag-b">Before</div><div class="ba-tag-a">${room.style}</div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.voiceover||room.style}</div></div></div>`;
-    }else{sl.innerHTML=`<div class="placeholder-sl" style="width:100%;height:100%;"><div style="font-size:2rem;opacity:.22;">${room.icon}</div><div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;">${room.label}</div><div style="font-size:.66rem;color:var(--gold);opacity:.45;margin-top:4px;">${room.style}</div></div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.voiceover||room.style}</div></div>`;}
+      sl.innerHTML=`<div class="photo-sl"><img src="${pu}" alt="${room.label}"><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.voiceover||room.label}</div></div></div>`;
+    }else{sl.innerHTML=`<div class="placeholder-sl" style="width:100%;height:100%;"><div style="font-size:2rem;opacity:.22;">${room.icon}</div><div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;">${room.label}</div></div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.voiceover||room.label}</div></div>`;}
     stage.appendChild(sl);slides.push(sl);
   });
   const ph=v('b_phone'),em=v('b_email'),wb=v('b_web'),tg=v('b_tag');
@@ -1076,7 +1053,6 @@ function buildViewer(){
   esl.innerHTML=`<div class="end-sl" style="width:100%;height:100%;"><div class="end-name">${v('b_name')||'Agent Name'}</div><div class="end-titl">${v('b_title')||'Realtor'}</div><div class="end-rule"></div><div class="end-contact">${ph?`<div>📞 ${ph}</div>`:''}${em?`<div>✉ ${em}</div>`:''}${wb?`<div>🌐 ${wb}</div>`:''}</div>${tg?`<div class="end-tag">"${tg}"</div>`:''}<div class="end-outro">${stagingData.outro||''}</div></div>`;
   stage.appendChild(esl);slides.push(esl);
   slides.forEach((_,i)=>{const d=mk('div');d.className='vdot'+(i===0?' on':'');d.onclick=()=>showSlide(i);dots.appendChild(d);});
-  ROOMS.forEach(r=>{if(r.photos&&r.photos.length)setupBA(r.id);});
   const lines=[stagingData.intro,...(stagingData.rooms||[]).map(r=>r.voiceover),stagingData.outro].filter(Boolean).join('\n\n');
   document.getElementById('scriptTxt').textContent=lines;
   updateHeader();showSlide(0);
@@ -1099,99 +1075,17 @@ function togglePlay(){
   if(playing){
     playing=false;btn.textContent='▶ Play';
     clearTimeout(playTimer);clearInterval(playTimer);
-    if(window._srAudio){window._srAudio.pause();window._srAudio.currentTime=0;}
-    if(window.speechSynthesis)window.speechSynthesis.cancel();
     return;
   }
   playing=true;btn.textContent='⏸ Pause';
-
-  if(window._srAudio&&window._srAudio.src){
-    // ── ElevenLabs audio: divide total duration evenly across photo slides ──
-    // slides[]: [intro, room0, room1, ..., outro]
-    // audio covers: room narrations + closing tagline (NOT the title card)
-    const audio=window._srAudio;
-    audio.currentTime=0;
-    showSlide(0);  // show intro title card immediately (silent)
-
-    const startAudioPlayback=()=>{
-      const photoSlideCount=slides.length-2;  // exclude intro+outro
-      const perSlide=photoSlideCount>0?(audio.duration/photoSlideCount)*1000:5000;
-
-      // After 2s on intro, start audio + advance to slide 1
-      playTimer=setTimeout(()=>{
-        if(!playing)return;
-        audio.play().catch(e=>console.warn('audio play:',e));
-        showSlide(1);
-        let si=1;
-        const advance=()=>{
-          si++;
-          if(!playing)return;
-          if(si<slides.length){showSlide(si);playTimer=setTimeout(advance,perSlide);}
-          else{playing=false;btn.textContent='▶ Play';}
-        };
-        playTimer=setTimeout(advance,perSlide);
-        audio.onended=()=>{
-          clearTimeout(playTimer);
-          if(playing&&curSlide<slides.length-1){showSlide(slides.length-1);}
-          setTimeout(()=>{playing=false;btn.textContent='▶ Play';},3000);
-        };
-      },2000);
-    };
-
-    if(audio.readyState>=1){startAudioPlayback();}
-    else{audio.addEventListener('loadedmetadata',startAudioPlayback,{once:true});}
-
-  } else {
-    // ── No ElevenLabs: use per-slide Web Speech API narration ──
-    showSlide(0);
-    const narrations=window._srSlideNarrations||[];
-
-    const speakSlide=(idx)=>{
-      if(!playing)return;
-      const text=narrations[idx]||'';
-      if(text&&window.speechSynthesis){
-        // Ensure voices are loaded
-        const doSpeak=()=>{
-          window.speechSynthesis.cancel();
-          const utt=new SpeechSynthesisUtterance(text);
-          utt.rate=0.88;utt.pitch=1.05;utt.volume=1;
-          const voices=window.speechSynthesis.getVoices();
-          // Prefer high-quality voices
-          const pref=voices.find(vv=>/Samantha|Karen|Moira|Google US English Female|Ava/i.test(vv.name))
-            ||voices.find(vv=>/en[-_]US|en[-_]GB/i.test(vv.lang)&&!vv.localService)
-            ||voices.find(vv=>/en/i.test(vv.lang));
-          if(pref)utt.voice=pref;
-          utt.onend=()=>{
-            if(!playing)return;
-            const next=idx+1;
-            if(next<slides.length){showSlide(next);setTimeout(()=>speakSlide(next),300);}
-            else{playing=false;btn.textContent='▶ Play';}
-          };
-          utt.onerror=()=>{
-            // Fallback: advance after 5s if speech fails
-            playTimer=setTimeout(()=>{
-              if(!playing)return;
-              const next=idx+1;
-              if(next<slides.length){showSlide(next);speakSlide(next);}
-              else{playing=false;btn.textContent='▶ Play';}
-            },5000);
-          };
-          window.speechSynthesis.speak(utt);
-        };
-        if(window.speechSynthesis.getVoices().length){doSpeak();}
-        else{window.speechSynthesis.addEventListener('voiceschanged',doSpeak,{once:true});}
-      } else {
-        // No text or no speech — timed fallback
-        playTimer=setTimeout(()=>{
-          if(!playing)return;
-          const next=idx+1;
-          if(next<slides.length){showSlide(next);speakSlide(next);}
-          else{playing=false;btn.textContent='▶ Play';}
-        },idx===0?3000:5000);
-      }
-    };
-    speakSlide(0);
-  }
+  showSlide(0);
+  const advance=()=>{
+    if(!playing)return;
+    const next=curSlide+1;
+    if(next<slides.length){showSlide(next);playTimer=setTimeout(advance,next===slides.length-1?4200:3800);}
+    else{playing=false;btn.textContent='▶ Play';}
+  };
+  playTimer=setTimeout(advance,2800);
 }
 
 
@@ -1264,14 +1158,6 @@ async function createExportAudioMix(durationSeconds){
   const start=()=>{
     if(ctx.state==='suspended')ctx.resume();
     startMusicBed(ctx,master,durationSeconds);
-    if(window._srAudio?.src){
-      const narration=new Audio(window._srAudio.src);
-      narration.volume=1;
-      const gain=ctx.createGain();gain.gain.value=.9;gain.connect(master);
-      const source=ctx.createMediaElementSource(narration);source.connect(gain);
-      setTimeout(()=>narration.play().catch(()=>{}),900);
-      stops.push(()=>{narration.pause();narration.src='';});
-    }
   };
   const stop=()=>{stops.forEach(fn=>fn());setTimeout(()=>ctx.close().catch(()=>{}),250);};
   return {stream:dest.stream,start,stop};
@@ -1306,7 +1192,7 @@ function startMusicBed(ctx,out,durationSeconds){
 async function renderSlideToCanvas(ctx2,slide,W,H,dur){
   const FRAMES=Math.round(dur/1000*30);
   const FRAME_MS=dur/FRAMES;
-  // Find if this slide has a before/after element
+  // Older generated slides may still contain a comparison element.
   const baEl=slide.querySelector('.ba');
   const baAEl=slide.querySelector('[id^="baa_"]');
   const baLEl=slide.querySelector('[id^="bal_"]');
@@ -1487,7 +1373,7 @@ async function claude(prompt) {
   }
 }
 
-updateHeader();buildRooms();buildStyles();
+updateHeader();buildRooms();
 </script>
 </body>
 </html>
