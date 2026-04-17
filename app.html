@@ -528,7 +528,6 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
             <div class="vdots" id="vdots"></div>
             <div class="vbtns">
               <button class="vbtn vbtn-play" id="playBtn" onclick="togglePlay()">▶ Play</button>
-              <button class="vbtn vbtn-play" id="musicBtn" onclick="toggleMusicPreview()" style="background:var(--surface);color:rgba(255,255,255,.5);">♫ Music</button>
               <button class="vbtn vbtn-export" id="exportBtn" onclick="doExport()">⬇ Export MP4</button>
             </div>
           </div>
@@ -537,37 +536,12 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
     </div>
     <div class="script-wrap" id="scriptWrap">
       <div class="script-box">
-        <div class="script-lbl">♫ Background Music</div>
-        <div class="music-tracks" id="musicTracks">
-          <div class="mtrack on" data-track="ambient" onclick="pickTrack(this,'ambient')">
-            <div class="mtrack-icon">🌊</div>
-            <div class="mtrack-info"><div class="mtrack-name">Ambient Luxury</div><div class="mtrack-desc">Cinematic, calm</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-          <div class="mtrack" data-track="upbeat" onclick="pickTrack(this,'upbeat')">
-            <div class="mtrack-icon">✨</div>
-            <div class="mtrack-info"><div class="mtrack-name">Modern Lifestyle</div><div class="mtrack-desc">Bright, energetic</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-          <div class="mtrack" data-track="classical" onclick="pickTrack(this,'classical')">
-            <div class="mtrack-icon">🎹</div>
-            <div class="mtrack-info"><div class="mtrack-name">Classical Elegance</div><div class="mtrack-desc">Piano, sophisticated</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-          <div class="mtrack" data-track="none" onclick="pickTrack(this,'none')">
-            <div class="mtrack-icon">—</div>
-            <div class="mtrack-info"><div class="mtrack-name">No Music</div><div class="mtrack-desc">Silent export</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-        </div>
+        <div class="script-lbl">Voiceover Script</div>
+        <div class="script-txt" id="scriptTxt"></div>
         <div id="exportStatus" style="display:none;margin-top:14px;">
           <div class="gtrack"><div class="gfill" id="exportFill"></div></div>
           <div class="gstatus" id="exportStatusTxt">Preparing export…</div>
         </div>
-      </div>
-      <div class="script-box" style="border-top:1px solid var(--border);">
-        <div class="script-lbl">Voiceover Script</div>
-        <div class="script-txt" id="scriptTxt"></div>
       </div>
     </div>
   </div>
@@ -1067,7 +1041,7 @@ function togglePlay(){
     playing=false;btn.textContent='▶ Play';
     clearTimeout(playTimer);clearInterval(playTimer);
     if(window._srAudio){window._srAudio.pause();window._srAudio.currentTime=0;}
-    stopMusic();if(window.speechSynthesis)window.speechSynthesis.cancel();
+    if(window.speechSynthesis)window.speechSynthesis.cancel();
     return;
   }
   playing=true;btn.textContent='⏸ Pause';
@@ -1110,7 +1084,6 @@ function togglePlay(){
 
   } else {
     // ── No ElevenLabs: use per-slide Web Speech API narration ──
-    if(selectedTrack!=='none')startMusic();
     showSlide(0);
     const narrations=window._srSlideNarrations||[];
 
@@ -1162,63 +1135,6 @@ function togglePlay(){
   }
 }
 
-function pickTrack(el, track){
-  selectedTrack=track;
-  document.querySelectorAll('.mtrack').forEach(m=>m.classList.remove('on'));
-  el.classList.add('on');
-  if(musicPlaying){stopMusic();if(track!=='none')startMusic();}
-}
-
-function getAudioCtx(){
-  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function startMusic(){
-  if(selectedTrack==='none'||musicPlaying)return;
-  const cfg=TRACK_CONFIGS[selectedTrack];if(!cfg)return;
-  const ctx=getAudioCtx();
-  musicGain=ctx.createGain();musicGain.gain.setValueAtTime(0,ctx.currentTime);
-  musicGain.gain.linearRampToValueAtTime(0.18,ctx.currentTime+1.5);
-  musicGain.connect(ctx.destination);
-  musicPlaying=true;
-  playMusicLoop(ctx,cfg,musicGain,0);
-}
-
-function playMusicLoop(ctx,cfg,gain,offset){
-  if(!musicPlaying)return;
-  const beat=60/cfg.tempo;
-  const seq=cfg.chord
-    ?[...cfg.notes,...cfg.notes.slice().reverse()]
-    :cfg.notes.concat(cfg.notes.slice(1,-1).reverse());
-  seq.forEach((freq,i)=>{
-    const t=ctx.currentTime+offset+i*beat;
-    const osc=ctx.createOscillator();
-    const env=ctx.createGain();
-    osc.type=cfg.wave;
-    osc.frequency.setValueAtTime(freq,t);
-    if(cfg.chord&&i>2)osc.frequency.setValueAtTime(freq*1.5,t);
-    env.gain.setValueAtTime(0,t);
-    env.gain.linearRampToValueAtTime(0.12,t+0.04);
-    env.gain.exponentialRampToValueAtTime(0.001,t+cfg.release);
-    osc.connect(env);env.connect(gain);
-    osc.start(t);osc.stop(t+cfg.release+0.1);
-  });
-  const loopDur=beat*seq.length;
-  setTimeout(()=>playMusicLoop(ctx,cfg,gain,0),offset*1000+loopDur*1000-200);
-}
-
-function stopMusic(){
-  if(!musicPlaying)return;
-  musicPlaying=false;
-  if(musicGain){musicGain.gain.linearRampToValueAtTime(0,getAudioCtx().currentTime+0.8);}
-}
-
-function toggleMusicPreview(){
-  const btn=document.getElementById('musicBtn');
-  if(musicPlaying){stopMusic();btn.textContent='♫ Music';btn.style.background='var(--surface)';}
-  else{if(selectedTrack==='none'){toast('Select a music track below first.');return;}startMusic();btn.textContent='⏹ Stop';btn.style.background='var(--gold)';btn.style.color='var(--ink)';}
-}
 
 /* ── CANVAS EXPORT ── */
 async function doExport(){
@@ -1232,21 +1148,6 @@ async function doExport(){
 
   // Set up MediaRecorder
   const stream=canvas.captureStream(30);
-  let audioStream=null;
-
-  // Add audio to stream if track selected
-  if(selectedTrack!=='none'){
-    try{
-      const actx=getAudioCtx();
-      const dest=actx.createMediaStreamDestination();
-      const expGain=actx.createGain();expGain.gain.value=0.22;
-      expGain.connect(dest);
-      // Play export music into destination node
-      playExportMusic(actx,expGain,TRACK_CONFIGS[selectedTrack]);
-      audioStream=dest.stream;
-      audioStream.getAudioTracks().forEach(t=>stream.addTrack(t));
-    }catch(e){console.warn('Audio capture not supported:',e);}
-  }
 
   const mimeType=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
   const rec=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:8000000});
@@ -1277,8 +1178,6 @@ async function doExport(){
   rec.stop();
 
   await new Promise(r=>{rec.onstop=r;});
-  stopMusic();
-
   const blob=new Blob(chunks,{type:mimeType});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
@@ -1292,25 +1191,6 @@ async function doExport(){
   toast('✓ Download started!');
 }
 
-function playExportMusic(actx,gain,cfg){
-  if(!cfg)return;
-  let t=actx.currentTime+0.1;
-  const beat=60/cfg.tempo;
-  const totalSlides=slides.length;
-  const totalDur=totalSlides*3.8+2;
-  const seq=cfg.chord?[...cfg.notes,...cfg.notes.slice().reverse()]:cfg.notes.concat(cfg.notes.slice(1,-1).reverse());
-  const loops=Math.ceil(totalDur/(beat*seq.length));
-  for(let loop=0;loop<loops;loop++){
-    seq.forEach((freq,i)=>{
-      const nt=t+loop*beat*seq.length+i*beat;
-      const osc=actx.createOscillator();const env=actx.createGain();
-      osc.type=cfg.wave;osc.frequency.value=freq;
-      env.gain.setValueAtTime(0,nt);env.gain.linearRampToValueAtTime(0.15,nt+0.04);
-      env.gain.exponentialRampToValueAtTime(0.001,nt+cfg.release);
-      osc.connect(env);env.connect(gain);osc.start(nt);osc.stop(nt+cfg.release+0.1);
-    });
-  }
-}
 
 async function renderSlideToCanvas(ctx2,slide,W,H,dur){
   const FRAMES=Math.round(dur/1000*30);
