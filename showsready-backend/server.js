@@ -19,8 +19,13 @@ const replicate = new Replicate({
 
 // ── Stripe webhook MUST receive raw body — register BEFORE express.json()
 app.use('/webhook', express.raw({ type: 'application/json' }));
-app.use(express.json({ limit: '50mb' })); // Increased for base64 images
-app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(cors({
+  origin: process.env.CLIENT_URL
+    ? [process.env.CLIENT_URL, 'https://showsready.com', 'https://www.showsready.com']
+    : 'https://showsready.com',
+  credentials: true,
+}));
 
 // ============================================================
 // STAGING STYLE PROMPTS
@@ -238,7 +243,7 @@ const PLANS = {
     listings:     1,
     watermark:    false,
     aiStaging:    true,
-    stripe_price: process.env.STRIPE_PRICE_SINGLE || 'price_SINGLE_LISTING_ID',
+    stripe_price: process.env.STRIPE_PRICE_SINGLE,
     type:         'payment',
   },
   pro: {
@@ -247,7 +252,7 @@ const PLANS = {
     listings:     10,
     watermark:    false,
     aiStaging:    true,
-    stripe_price: process.env.STRIPE_PRICE_PRO || 'price_PRO_AGENT_MONTHLY_ID',
+    stripe_price: process.env.STRIPE_PRICE_PRO,
     type:         'subscription',
   },
   elite: {
@@ -256,7 +261,7 @@ const PLANS = {
     listings:     30,
     watermark:    false,
     aiStaging:    true,
-    stripe_price: process.env.STRIPE_PRICE_ELITE || 'price_ELITE_AGENT_MONTHLY_ID',
+    stripe_price: process.env.STRIPE_PRICE_ELITE,
     type:         'subscription',
   },
 };

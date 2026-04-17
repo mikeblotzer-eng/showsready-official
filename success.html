@@ -658,10 +658,11 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 <div class="toast" id="toast"></div>
 
 <script>
-/* ── API BASE ── */
-const SR_API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+/* ── API BASE — update PROD_API if your Render service URL changes ── */
+const PROD_API = 'https://showsready-backend.onrender.com';
+const SR_API   = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:3001'
-  : 'https://showsready-backend.onrender.com';
+  : PROD_API;
 
 /* ── STRIPE ── */
 const STRIPE_PK = 'pk_live_51T8dnNDwB0tBPUZ7nXTbDCYLHzWDKU39HDBlgFbCse5ViH9GdU4nV295tz1aXYZrW7qAEtFQID3gCUtI6TFnWoIR00QTFs8B8z';
