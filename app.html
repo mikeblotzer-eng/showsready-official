@@ -565,6 +565,10 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
           <div class="gstatus" id="exportStatusTxt">Preparing export…</div>
         </div>
       </div>
+      <div class="script-box" style="border-top:1px solid var(--border);">
+        <div class="script-lbl">Voiceover Script</div>
+        <div class="script-txt" id="scriptTxt"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -918,14 +922,25 @@ async function doGenerate(){
     await sleep(ms);
     document.getElementById(STEPS[i]).className='gstep done';document.getElementById(STEPS[i]).querySelector('.gdot').textContent='✓';
   };
-  // First 3 steps run while API is processing
   await activateStep(0,600);
   await activateStep(1,800);
   await activateStep(2,700);
-  // Launch API call — remaining steps animate as it runs
   const stagingPromise=fetchStaging();
   await activateStep(3,900);
-  await stagingPromise; // wait for real API here
+
+  // Countdown while waiting for AI response
+  const EST=18;
+  const apiStart=Date.now();
+  const statusEl=document.getElementById('gstatus');
+  const timerInterval=setInterval(()=>{
+    const elapsed=Math.floor((Date.now()-apiStart)/1000);
+    const rem=Math.max(0,EST-elapsed);
+    statusEl.textContent=rem>0?`Writing script — about ${rem}s remaining…`:`Writing script — almost done…`;
+  },1000);
+
+  await stagingPromise;
+  clearInterval(timerInterval);
+
   await activateStep(4,500);
   await activateStep(5,400);
   document.getElementById('gstatus').textContent='✓ Complete';
