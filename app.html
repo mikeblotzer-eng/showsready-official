@@ -925,28 +925,32 @@ async function doGenerate(){
   await activateStep(0,600);
   await activateStep(1,800);
   await activateStep(2,700);
-  const stagingPromise=fetchStaging();
-  await activateStep(3,900);
 
-  // Countdown while waiting for AI response
-  const EST=18;
+  // Start API call and countdown timer together
+  const stagingPromise=fetchStaging();
   const apiStart=Date.now();
   const statusEl=document.getElementById('gstatus');
   const timerInterval=setInterval(()=>{
     const elapsed=Math.floor((Date.now()-apiStart)/1000);
-    const rem=Math.max(0,EST-elapsed);
+    const rem=Math.max(0,20-elapsed);
     statusEl.textContent=rem>0?`Writing script — about ${rem}s remaining…`:`Writing script — almost done…`;
-  },1000);
+  },500);
 
+  await activateStep(3,900);
   await stagingPromise;
   clearInterval(timerInterval);
 
   await activateStep(4,500);
   await activateStep(5,400);
   document.getElementById('gstatus').textContent='✓ Complete';
-  buildViewer();
+
+  // Show viewer first, then populate it — viewer always appears even if buildViewer throws
+  document.getElementById('previewPH').style.display='none';
+  document.getElementById('viewer').classList.add('on');
+  document.getElementById('scriptWrap').classList.add('on');
+  try{buildViewer();}catch(err){console.error('[buildViewer]',err);}
+
   user.used++;updateHeader();
-  document.getElementById('previewPH').style.display='none';document.getElementById('viewer').classList.add('on');document.getElementById('scriptWrap').classList.add('on');
   btn.innerHTML='✓ Generated';btn.style.background='var(--green)';btn.style.color='white';
   toast('Walkthrough ready — press Play to preview');
 }
