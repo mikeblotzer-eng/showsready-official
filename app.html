@@ -135,7 +135,11 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 .dropz-txt strong{color:var(--ink);font-weight:500;}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:12px;}
 .pcell{position:relative;aspect-ratio:4/3;border-radius:2px;overflow:hidden;border:1px solid var(--border);animation:fadeUp .22s ease;}
+.pcell{cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .15s;}
+.pcell.selected{border-color:var(--gold);box-shadow:0 0 0 2px rgba(184,147,90,.28);transform:translateY(-1px);}
 .pcell img{width:100%;height:100%;object-fit:cover;display:block;}
+.puse{position:absolute;left:4px;bottom:4px;background:rgba(26,23,20,.72);color:white;border:1px solid rgba(255,255,255,.14);border-radius:2px;padding:2px 6px;font-size:.52rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:opacity .15s;}
+.pcell.selected .puse{opacity:1;background:rgba(184,147,90,.92);color:var(--ink);}
 .pdel{position:absolute;top:3px;right:3px;width:17px;height:17px;background:rgba(26,23,20,.65);color:white;border:none;border-radius:50%;font-size:.52rem;cursor:pointer;opacity:0;transition:opacity .15s;display:flex;align-items:center;justify-content:center;}
 .pcell:hover .pdel{opacity:1;}
 
@@ -464,6 +468,14 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
           <label class="m-label" style="display:block;margin-bottom:6px;">Agent Photo / Logo</label>
           <div class="logo-drop"><input type="file" accept="image/*" onchange="handleLogo(event)"><div id="logoDrop"><div class="logo-drop-txt">Drop photo or brokerage logo here</div></div></div>
         </div>
+        <div>
+          <label class="m-label" style="display:block;margin-bottom:6px;">Background Music</label>
+          <div class="music-tracks">
+            <div class="mtrack on" id="music_luxury" onclick="pickMusic('luxury')"><div class="mtrack-icon">♪</div><div class="mtrack-info"><div class="mtrack-name">Luxury Pulse</div><div class="mtrack-desc">Polished, warm, restrained</div></div><div class="mtrack-check">✓</div></div>
+            <div class="mtrack" id="music_coastal" onclick="pickMusic('coastal')"><div class="mtrack-icon">♪</div><div class="mtrack-info"><div class="mtrack-name">Coastal Air</div><div class="mtrack-desc">Light, open, calm</div></div><div class="mtrack-check">✓</div></div>
+            <div class="mtrack" id="music_modern" onclick="pickMusic('modern')"><div class="mtrack-icon">♪</div><div class="mtrack-info"><div class="mtrack-name">Modern Lift</div><div class="mtrack-desc">Clean, confident, upbeat</div></div><div class="mtrack-check">✓</div></div>
+          </div>
+        </div>
       </div>
       <div>
         <div style="font-size:.6rem;font-weight:600;letter-spacing:.19em;text-transform:uppercase;color:var(--mid);margin-bottom:12px;">Live End Card Preview</div>
@@ -528,7 +540,6 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
             <div class="vdots" id="vdots"></div>
             <div class="vbtns">
               <button class="vbtn vbtn-play" id="playBtn" onclick="togglePlay()">▶ Play</button>
-              <button class="vbtn vbtn-play" id="musicBtn" onclick="toggleMusicPreview()" style="background:var(--surface);color:rgba(255,255,255,.5);">♫ Music</button>
               <button class="vbtn vbtn-export" id="exportBtn" onclick="doExport()">⬇ Export MP4</button>
             </div>
           </div>
@@ -537,37 +548,12 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
     </div>
     <div class="script-wrap" id="scriptWrap">
       <div class="script-box">
-        <div class="script-lbl">♫ Background Music</div>
-        <div class="music-tracks" id="musicTracks">
-          <div class="mtrack on" data-track="ambient" onclick="pickTrack(this,'ambient')">
-            <div class="mtrack-icon">🌊</div>
-            <div class="mtrack-info"><div class="mtrack-name">Ambient Luxury</div><div class="mtrack-desc">Cinematic, calm</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-          <div class="mtrack" data-track="upbeat" onclick="pickTrack(this,'upbeat')">
-            <div class="mtrack-icon">✨</div>
-            <div class="mtrack-info"><div class="mtrack-name">Modern Lifestyle</div><div class="mtrack-desc">Bright, energetic</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-          <div class="mtrack" data-track="classical" onclick="pickTrack(this,'classical')">
-            <div class="mtrack-icon">🎹</div>
-            <div class="mtrack-info"><div class="mtrack-name">Classical Elegance</div><div class="mtrack-desc">Piano, sophisticated</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-          <div class="mtrack" data-track="none" onclick="pickTrack(this,'none')">
-            <div class="mtrack-icon">—</div>
-            <div class="mtrack-info"><div class="mtrack-name">No Music</div><div class="mtrack-desc">Silent export</div></div>
-            <div class="mtrack-check">✓</div>
-          </div>
-        </div>
+        <div class="script-lbl">Voiceover Script</div>
+        <div class="script-txt" id="scriptTxt"></div>
         <div id="exportStatus" style="display:none;margin-top:14px;">
           <div class="gtrack"><div class="gfill" id="exportFill"></div></div>
           <div class="gstatus" id="exportStatusTxt">Preparing export…</div>
         </div>
-      </div>
-      <div class="script-box" style="border-top:1px solid var(--border);">
-        <div class="script-lbl">Voiceover Script</div>
-        <div class="script-txt" id="scriptTxt"></div>
       </div>
     </div>
   </div>
@@ -640,7 +626,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
       </div>
       <div class="m-field"><label class="m-label">Full Name</label><input type="text" class="m-input" id="m_name" placeholder="Sarah Mitchell"></div>
       <div class="m-field"><label class="m-label">Email</label><input type="email" class="m-input" id="m_email" placeholder="sarah@compass.com"></div>
-      <div class="m-field"><label class="m-label">Card Details</label><div id="stripe-el"></div><div id="card-err"></div></div>
+      <div class="m-field"><label class="m-label">Secure Payment</label><div id="stripe-el"><div style="font-size:.8rem;color:#8c8274;padding:4px 0;">Card details open on Stripe Checkout.</div></div><div id="card-err"></div></div>
       <button class="m-submit" id="ck_btn" onclick="handleCheckout()"><span id="ck_btn_txt">Complete Purchase</span></button>
       <div class="m-note">🔒 Stripe · Cancel anytime · 14-day money-back guarantee</div>
     </div>
@@ -755,7 +741,19 @@ const STYLE_VISUALS = {
   'Texas Transitional':{filter:'saturate(1.1) brightness(1.07) contrast(1.05)',overlay:'rgba(225,215,200,0.1)',swatch:'#c8b888'},
   'DEFAULT':{filter:'saturate(1.2) brightness(1.07) contrast(1.04)',overlay:'rgba(215,215,210,0.1)',swatch:'#aaa898'},
 };
-function getSV(s){return STYLE_VISUALS[s]||STYLE_VISUALS['DEFAULT'];}
+function getSV(s){
+  if(STYLE_VISUALS[s]) return STYLE_VISUALS[s];
+  const palettes=[
+    {swatch:'#7ab5c8',overlay:'rgba(122,181,200,.16)',filter:'saturate(1.28) brightness(1.08) contrast(1.04)'},
+    {swatch:'#8ab57f',overlay:'rgba(138,181,127,.16)',filter:'saturate(1.34) brightness(1.07) contrast(1.05)'},
+    {swatch:'#c8a96a',overlay:'rgba(200,169,106,.15)',filter:'saturate(1.18) sepia(.08) brightness(1.06) contrast(1.06)'},
+    {swatch:'#8f9aaa',overlay:'rgba(143,154,170,.17)',filter:'saturate(.94) brightness(1.09) contrast(1.08)'},
+    {swatch:'#c77f73',overlay:'rgba(199,127,115,.13)',filter:'saturate(1.22) sepia(.05) brightness(1.04) contrast(1.07)'},
+    {swatch:'#92b7a6',overlay:'rgba(146,183,166,.16)',filter:'saturate(1.08) brightness(1.12) contrast(1.03)'},
+  ];
+  let hash=0;String(s||'').split('').forEach(ch=>{hash=(hash*31+ch.charCodeAt(0))>>>0;});
+  return palettes[hash%palettes.length];
+}
 
 const ROOMS=[
   {id:'ext',icon:'🏡',label:'Exterior / Curb Appeal',hint:'Front of house, driveway, entry',style:''},
@@ -770,6 +768,12 @@ let detectedMarket='National';
 let stagingData={};
 let slides=[],curSlide=0,playing=false,playTimer;
 let curPage=1;
+const MUSIC_TRACKS={
+  luxury:{name:'Luxury Pulse',notes:[196,246.94,293.66,369.99],tempo:96,volume:.055},
+  coastal:{name:'Coastal Air',notes:[174.61,220,261.63,329.63],tempo:82,volume:.05},
+  modern:{name:'Modern Lift',notes:[220,277.18,329.63,415.3],tempo:104,volume:.045},
+};
+let selectedMusic='luxury';
 
 /* ── NAV ── */
 function nav(n){
@@ -821,6 +825,7 @@ function buildRooms(){
   const stack=document.getElementById('roomStack');stack.innerHTML='';
   ROOMS.forEach((room,i)=>{
     if(!room.photos)room.photos=[];
+    if(room.selectedPhotoIndex==null)room.selectedPhotoIndex=0;
     const row=mk('div');row.className='rrow';
     row.innerHTML=`<div class="rrow-head" onclick="toggleRoom('${room.id}')"><div class="rrow-left"><div class="ricon">${room.icon}</div><div><div class="rname">${room.label}</div><div class="rhint">${room.hint}</div></div></div><div class="rbadge" id="rbadge_${room.id}">No photos</div></div><div class="rrow-body" id="rbody_${room.id}" style="display:${i===0?'block':'none'};"><div class="dropz" id="dz_${room.id}" ondragover="dov(event,'${room.id}')" ondragleave="dlv(event,'${room.id}')" ondrop="ddrop(event,'${room.id}')"><input type="file" accept="image/*" multiple onchange="addPhotos('${room.id}',Array.from(event.target.files))"><div class="dropz-icon">↑</div><div class="dropz-txt"><strong>Click</strong> or drag · 1–3 photos</div></div><div class="pgrid" id="pgrid_${room.id}"></div></div>`;
     stack.appendChild(row);
@@ -835,17 +840,39 @@ function addPhotos(roomId,files){
   const grid=document.getElementById(`pgrid_${roomId}`),badge=document.getElementById(`rbadge_${roomId}`);
   files.slice(0,3-room.photos.length).forEach(f=>{
     const url=URL.createObjectURL(f);room.photos.push({file:f,url});
-    const idx=room.photos.length-1;const cell=mk('div');cell.className='pcell';
-    cell.innerHTML=`<img src="${url}" alt=""><button class="pdel" onclick="delPhoto('${roomId}',${idx},this)">✕</button>`;
-    grid.appendChild(cell);
   });
+  if(room.selectedPhotoIndex==null||room.selectedPhotoIndex>=room.photos.length)room.selectedPhotoIndex=0;
+  renderPhotoGrid(roomId);
   const n=room.photos.length;badge.textContent=n?`${n} photo${n>1?'s':''}`:'No photos';badge.className=n?'rbadge ready':'rbadge';
   refreshPreview(roomId);
 }
 function delPhoto(roomId,idx,btn){
-  const room=ROOMS.find(r=>r.id===roomId);room.photos.splice(idx,1);btn.closest('.pcell').remove();
+  if(window.event)window.event.stopPropagation();
+  const room=ROOMS.find(r=>r.id===roomId);room.photos.splice(idx,1);
+  if(room.selectedPhotoIndex>=room.photos.length)room.selectedPhotoIndex=Math.max(0,room.photos.length-1);
+  renderPhotoGrid(roomId);
   const n=room.photos.length;document.getElementById(`rbadge_${roomId}`).textContent=n?`${n} photo${n>1?'s':''}`:'No photos';document.getElementById(`rbadge_${roomId}`).className=n?'rbadge ready':'rbadge';
   refreshPreview(roomId);
+}
+function renderPhotoGrid(roomId){
+  const room=ROOMS.find(r=>r.id===roomId),grid=document.getElementById(`pgrid_${roomId}`);
+  if(!room||!grid)return;
+  grid.innerHTML='';
+  (room.photos||[]).forEach((p,idx)=>{
+    const cell=mk('div');cell.className='pcell'+(idx===(room.selectedPhotoIndex||0)?' selected':'');
+    cell.onclick=()=>selectPhoto(roomId,idx);
+    cell.innerHTML=`<img src="${p.url}" alt=""><div class="puse">Used</div><button class="pdel" onclick="delPhoto('${roomId}',${idx},this)">✕</button>`;
+    grid.appendChild(cell);
+  });
+}
+function selectPhoto(roomId,idx){
+  const room=ROOMS.find(r=>r.id===roomId);if(!room||!room.photos?.[idx])return;
+  room.selectedPhotoIndex=idx;renderPhotoGrid(roomId);refreshPreview(roomId);
+}
+function getRoomPhoto(room){
+  if(!room||!room.photos||!room.photos.length)return null;
+  const idx=Math.min(room.photos.length-1,Math.max(0,room.selectedPhotoIndex||0));
+  return room.photos[idx];
 }
 
 /* ── PG 3 ── */
@@ -855,7 +882,8 @@ function buildStyles(){
   ROOMS.forEach(room=>{
     const opts=ms[room.id]||ms['living'];if(!room.style)room.style=opts[0];
     const sec=mk('div');sec.style.cssText='background:white;padding:20px 22px;';
-    sec.innerHTML=`<div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;"><div class="ricon">${room.icon}</div><div><div class="rname">${room.label}</div><div class="rhint">Market: <strong style="color:var(--gold);">${detectedMarket}</strong></div></div></div><div class="style-section"><div class="style-section-lbl">Staging Style — click to preview</div><div class="style-chips" id="chips_${room.id}">${opts.map((s,i)=>{const sv=getSV(s);return`<div class="schip ${i===0?'on':''}" onclick="pickStyle('${room.id}','${s}',this)"><div class="schip-swatch" style="background:${sv.swatch}"></div>${s}</div>`;}).join('')}</div></div><div class="style-preview-wrap ${room.photos&&room.photos.length?'on':''}" id="spv_${room.id}"><div class="spv-header"><span id="spv_lbl_${room.id}">Preview: ${room.style}</span><span style="font-size:.6rem;color:rgba(255,255,255,.3);">Drag slider to compare</span></div><div class="spv-body"><div class="spv-before" id="spvB_${room.id}">${room.photos&&room.photos.length?`<img src="${room.photos[0].url}" id="spvBImg_${room.id}" alt="before">`:'<div style="width:100%;height:100%;background:var(--char);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:rgba(255,255,255,.25);">Upload photo in Step 2</div>'}<div class="spv-label spv-label-b">Before</div></div><div class="spv-divider"></div><div class="spv-after" id="spvA_${room.id}">${room.photos&&room.photos.length?`<img src="${room.photos[0].url}" id="spvAImg_${room.id}" alt="after" style="filter:${getSV(room.style).filter};">`:'<div style="width:100%;height:100%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:rgba(255,255,255,.25);">Upload photo to preview</div>'}<div class="spv-after-overlay" id="spvOvl_${room.id}" style="background:${getSV(room.style).overlay};"></div><div class="spv-label spv-label-a" id="spvTag_${room.id}">${room.style}</div></div><div class="spv-desc"><div class="spv-style-name" id="spvName_${room.id}">${room.style}</div><div id="spvDesc_${room.id}" style="font-size:.76rem;color:rgba(255,255,255,.5);line-height:1.65;">${getStyleDesc(room.style)}</div><div class="spv-ai-badge">✦ AI Staged Preview</div></div></div></div><input type="text" class="snote" id="note_${room.id}" placeholder="Additional direction — e.g. keep the fireplace, neutral tones only…">`;
+    const photo=getRoomPhoto(room);
+    sec.innerHTML=`<div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;"><div class="ricon">${room.icon}</div><div><div class="rname">${room.label}</div><div class="rhint">Market: <strong style="color:var(--gold);">${detectedMarket}</strong></div></div></div><div class="style-section"><div class="style-section-lbl">Staging Style — click to preview</div><div class="style-chips" id="chips_${room.id}">${opts.map(s=>{const sv=getSV(s);return`<div class="schip ${s===room.style?'on':''}" onclick="pickStyle('${room.id}','${s}',this)"><div class="schip-swatch" style="background:${sv.swatch}"></div>${s}</div>`;}).join('')}</div></div><div class="style-preview-wrap ${photo?'on':''}" id="spv_${room.id}"><div class="spv-header"><span id="spv_lbl_${room.id}">Preview: ${room.style}</span><span style="font-size:.6rem;color:rgba(255,255,255,.3);">Selected photo preview</span></div><div class="spv-body"><div class="spv-before" id="spvB_${room.id}">${photo?`<img src="${photo.url}" id="spvBImg_${room.id}" alt="before">`:'<div style="width:100%;height:100%;background:var(--char);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:rgba(255,255,255,.25);">Upload photo in Step 2</div>'}<div class="spv-label spv-label-b">Before</div></div><div class="spv-divider"></div><div class="spv-after" id="spvA_${room.id}">${photo?`<img src="${photo.url}" id="spvAImg_${room.id}" alt="after" style="filter:${getSV(room.style).filter};">`:'<div style="width:100%;height:100%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:rgba(255,255,255,.25);">Upload photo to preview</div>'}<div class="spv-after-overlay" id="spvOvl_${room.id}" style="background:${getSV(room.style).overlay};"></div><div class="spv-label spv-label-a" id="spvTag_${room.id}">${room.style}</div></div><div class="spv-desc"><div class="spv-style-name" id="spvName_${room.id}">${room.style}</div><div id="spvDesc_${room.id}" style="font-size:.76rem;color:rgba(255,255,255,.5);line-height:1.65;">${getStyleDesc(room.style)}</div><div class="spv-ai-badge">✦ AI Staged Preview</div></div></div></div><input type="text" class="snote" id="note_${room.id}" placeholder="Additional direction — e.g. keep the fireplace, neutral tones only…">`;
     container.appendChild(sec);
   });
 }
@@ -886,7 +914,7 @@ function pickStyle(roomId,style,el){
 
 function refreshPreview(roomId){
   const room=ROOMS.find(r=>r.id===roomId);if(!room||!room.photos||!room.photos.length)return;
-  const url=room.photos[0].url,sv=getSV(room.style);
+  const photo=getRoomPhoto(room),url=photo.url,sv=getSV(room.style);
   const bImg=document.getElementById(`spvBImg_${roomId}`);
   const aImg=document.getElementById(`spvAImg_${roomId}`);
   if(bImg)bImg.src=url;else{const bEl=document.getElementById(`spvB_${roomId}`);if(bEl)bEl.innerHTML=`<img src="${url}" id="spvBImg_${roomId}" alt="before"><div class="spv-label spv-label-b">Before</div>`;}
@@ -906,6 +934,10 @@ function syncCard(){
   document.getElementById('pc_phone').textContent=ph?`📞 ${ph}`:'';document.getElementById('pc_email').textContent=em?`✉ ${em}`:'';
   document.getElementById('pc_web').textContent=wb?`🌐 ${wb}`:'';document.getElementById('pc_tag').textContent=tg?`"${tg}"`:'';}
 function handleLogo(e){const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);document.getElementById('logoDrop').innerHTML=`<img src="${url}" style="max-height:60px;border-radius:2px;object-fit:contain;">`;}
+function pickMusic(track){
+  selectedMusic=track;
+  Object.keys(MUSIC_TRACKS).forEach(k=>document.getElementById(`music_${k}`)?.classList.toggle('on',k===track));
+}
 
 /* ── PG 5 ── */
 async function doGenerate(){
@@ -925,28 +957,32 @@ async function doGenerate(){
   await activateStep(0,600);
   await activateStep(1,800);
   await activateStep(2,700);
-  const stagingPromise=fetchStaging();
-  await activateStep(3,900);
 
-  // Countdown while waiting for AI response
-  const EST=18;
+  // Start API call and countdown timer together
+  const stagingPromise=fetchStaging();
   const apiStart=Date.now();
   const statusEl=document.getElementById('gstatus');
   const timerInterval=setInterval(()=>{
     const elapsed=Math.floor((Date.now()-apiStart)/1000);
-    const rem=Math.max(0,EST-elapsed);
+    const rem=Math.max(0,20-elapsed);
     statusEl.textContent=rem>0?`Writing script — about ${rem}s remaining…`:`Writing script — almost done…`;
-  },1000);
+  },500);
 
+  await activateStep(3,900);
   await stagingPromise;
   clearInterval(timerInterval);
 
   await activateStep(4,500);
   await activateStep(5,400);
   document.getElementById('gstatus').textContent='✓ Complete';
-  buildViewer();
+
+  // Show viewer first, then populate it — viewer always appears even if buildViewer throws
+  document.getElementById('previewPH').style.display='none';
+  document.getElementById('viewer').classList.add('on');
+  document.getElementById('scriptWrap').classList.add('on');
+  try{buildViewer();}catch(err){console.error('[buildViewer]',err);}
+
   user.used++;updateHeader();
-  document.getElementById('previewPH').style.display='none';document.getElementById('viewer').classList.add('on');document.getElementById('scriptWrap').classList.add('on');
   btn.innerHTML='✓ Generated';btn.style.background='var(--green)';btn.style.color='white';
   toast('Walkthrough ready — press Play to preview');
 }
@@ -957,12 +993,12 @@ async function fetchStaging(){
   // Collect ONLY rooms that have photos, preserving ROOMS order
   const photoRooms=ROOMS.filter(r=>r.photos&&r.photos.length);
 
-  // Convert each room's first photo to base64 (one per room = one slide each)
+  // Convert each room's selected photo to base64 (one per room = one slide each)
   const images=await Promise.all(photoRooms.map(r=>new Promise((res,rej)=>{
     const reader=new FileReader();
     reader.onload=()=>res(reader.result.split(',')[1]);
     reader.onerror=rej;
-    reader.readAsDataURL(r.photos[0].file);
+    reader.readAsDataURL(getRoomPhoto(r).file);
   })));
 
   // Reset
@@ -1028,8 +1064,9 @@ function buildViewer(){
   stage.appendChild(isl);slides.push(isl);
   ROOMS.forEach(room=>{
     const rd=(stagingData.rooms||[]).find(r=>r.id===room.id)||{};const sl=mk('div');sl.className='vslide';const sv=getSV(room.style);
-    if(room.photos&&room.photos.length){
-      const pu=room.photos[0].url;
+    const photo=getRoomPhoto(room);
+    if(photo){
+      const pu=photo.url;
       sl.innerHTML=`<div class="ba" id="ba_${room.id}"><div class="ba-b"><img src="${pu}" alt="before"></div><div class="ba-a" id="baa_${room.id}"><img src="${pu}" alt="after" style="filter:${sv.filter};"><div style="position:absolute;inset:0;background:${sv.overlay};pointer-events:none;"></div></div><div class="ba-line" id="bal_${room.id}"></div><div class="ba-knob" id="bak_${room.id}">↔</div><div class="ba-tag-b">Before</div><div class="ba-tag-a">${room.style}</div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.voiceover||room.style}</div></div></div>`;
     }else{sl.innerHTML=`<div class="placeholder-sl" style="width:100%;height:100%;"><div style="font-size:2rem;opacity:.22;">${room.icon}</div><div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;">${room.label}</div><div style="font-size:.66rem;color:var(--gold);opacity:.45;margin-top:4px;">${room.style}</div></div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.voiceover||room.style}</div></div>`;}
     stage.appendChild(sl);slides.push(sl);
@@ -1063,7 +1100,7 @@ function togglePlay(){
     playing=false;btn.textContent='▶ Play';
     clearTimeout(playTimer);clearInterval(playTimer);
     if(window._srAudio){window._srAudio.pause();window._srAudio.currentTime=0;}
-    stopMusic();if(window.speechSynthesis)window.speechSynthesis.cancel();
+    if(window.speechSynthesis)window.speechSynthesis.cancel();
     return;
   }
   playing=true;btn.textContent='⏸ Pause';
@@ -1106,7 +1143,6 @@ function togglePlay(){
 
   } else {
     // ── No ElevenLabs: use per-slide Web Speech API narration ──
-    if(selectedTrack!=='none')startMusic();
     showSlide(0);
     const narrations=window._srSlideNarrations||[];
 
@@ -1158,91 +1194,21 @@ function togglePlay(){
   }
 }
 
-function pickTrack(el, track){
-  selectedTrack=track;
-  document.querySelectorAll('.mtrack').forEach(m=>m.classList.remove('on'));
-  el.classList.add('on');
-  if(musicPlaying){stopMusic();if(track!=='none')startMusic();}
-}
-
-function getAudioCtx(){
-  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function startMusic(){
-  if(selectedTrack==='none'||musicPlaying)return;
-  const cfg=TRACK_CONFIGS[selectedTrack];if(!cfg)return;
-  const ctx=getAudioCtx();
-  musicGain=ctx.createGain();musicGain.gain.setValueAtTime(0,ctx.currentTime);
-  musicGain.gain.linearRampToValueAtTime(0.18,ctx.currentTime+1.5);
-  musicGain.connect(ctx.destination);
-  musicPlaying=true;
-  playMusicLoop(ctx,cfg,musicGain,0);
-}
-
-function playMusicLoop(ctx,cfg,gain,offset){
-  if(!musicPlaying)return;
-  const beat=60/cfg.tempo;
-  const seq=cfg.chord
-    ?[...cfg.notes,...cfg.notes.slice().reverse()]
-    :cfg.notes.concat(cfg.notes.slice(1,-1).reverse());
-  seq.forEach((freq,i)=>{
-    const t=ctx.currentTime+offset+i*beat;
-    const osc=ctx.createOscillator();
-    const env=ctx.createGain();
-    osc.type=cfg.wave;
-    osc.frequency.setValueAtTime(freq,t);
-    if(cfg.chord&&i>2)osc.frequency.setValueAtTime(freq*1.5,t);
-    env.gain.setValueAtTime(0,t);
-    env.gain.linearRampToValueAtTime(0.12,t+0.04);
-    env.gain.exponentialRampToValueAtTime(0.001,t+cfg.release);
-    osc.connect(env);env.connect(gain);
-    osc.start(t);osc.stop(t+cfg.release+0.1);
-  });
-  const loopDur=beat*seq.length;
-  setTimeout(()=>playMusicLoop(ctx,cfg,gain,0),offset*1000+loopDur*1000-200);
-}
-
-function stopMusic(){
-  if(!musicPlaying)return;
-  musicPlaying=false;
-  if(musicGain){musicGain.gain.linearRampToValueAtTime(0,getAudioCtx().currentTime+0.8);}
-}
-
-function toggleMusicPreview(){
-  const btn=document.getElementById('musicBtn');
-  if(musicPlaying){stopMusic();btn.textContent='♫ Music';btn.style.background='var(--surface)';}
-  else{if(selectedTrack==='none'){toast('Select a music track below first.');return;}startMusic();btn.textContent='⏹ Stop';btn.style.background='var(--gold)';btn.style.color='var(--ink)';}
-}
 
 /* ── CANVAS EXPORT ── */
 async function doExport(){
   if(PLANS[user.plan].watermark){toast('Upgrade to Pro Agent or Elite Agent to export without watermark.');setTimeout(()=>openUpgrade(),800);return;}
   if(!slides.length){toast('Generate a walkthrough first.');return;}
 
-  const SLIDE_DUR=3800; // ms per slide — matches togglePlay
+  const SLIDE_DUR=3800; // ms per slide
   const W=1280,H=720;
   const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
   const ctx2=canvas.getContext('2d');
 
   // Set up MediaRecorder
   const stream=canvas.captureStream(30);
-  let audioStream=null;
-
-  // Add audio to stream if track selected
-  if(selectedTrack!=='none'){
-    try{
-      const actx=getAudioCtx();
-      const dest=actx.createMediaStreamDestination();
-      const expGain=actx.createGain();expGain.gain.value=0.22;
-      expGain.connect(dest);
-      // Play export music into destination node
-      playExportMusic(actx,expGain,TRACK_CONFIGS[selectedTrack]);
-      audioStream=dest.stream;
-      audioStream.getAudioTracks().forEach(t=>stream.addTrack(t));
-    }catch(e){console.warn('Audio capture not supported:',e);}
-  }
+  const audioMix=await createExportAudioMix(slides.length*SLIDE_DUR/1000);
+  if(audioMix?.stream)audioMix.stream.getAudioTracks().forEach(track=>stream.addTrack(track));
 
   const mimeType=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
   const rec=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:8000000});
@@ -1258,6 +1224,7 @@ async function doExport(){
   btn.disabled=true;btn.textContent='⏳ Recording…';
 
   rec.start(100);
+  audioMix?.start();
 
   // Render each slide to canvas
   for(let i=0;i<slides.length;i++){
@@ -1270,11 +1237,10 @@ async function doExport(){
 
   exportFill.style.width='100%';
   exportStatusTxt.textContent='Finalizing…';
+  audioMix?.stop();
   rec.stop();
 
   await new Promise(r=>{rec.onstop=r;});
-  stopMusic();
-
   const blob=new Blob(chunks,{type:mimeType});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
@@ -1288,25 +1254,54 @@ async function doExport(){
   toast('✓ Download started!');
 }
 
-function playExportMusic(actx,gain,cfg){
-  if(!cfg)return;
-  let t=actx.currentTime+0.1;
-  const beat=60/cfg.tempo;
-  const totalSlides=slides.length;
-  const totalDur=totalSlides*3.8+2;
-  const seq=cfg.chord?[...cfg.notes,...cfg.notes.slice().reverse()]:cfg.notes.concat(cfg.notes.slice(1,-1).reverse());
-  const loops=Math.ceil(totalDur/(beat*seq.length));
-  for(let loop=0;loop<loops;loop++){
-    seq.forEach((freq,i)=>{
-      const nt=t+loop*beat*seq.length+i*beat;
-      const osc=actx.createOscillator();const env=actx.createGain();
-      osc.type=cfg.wave;osc.frequency.value=freq;
-      env.gain.setValueAtTime(0,nt);env.gain.linearRampToValueAtTime(0.15,nt+0.04);
-      env.gain.exponentialRampToValueAtTime(0.001,nt+cfg.release);
-      osc.connect(env);env.connect(gain);osc.start(nt);osc.stop(nt+cfg.release+0.1);
-    });
-  }
+async function createExportAudioMix(durationSeconds){
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)return null;
+  const ctx=new AudioCtx();
+  const dest=ctx.createMediaStreamDestination();
+  const master=ctx.createGain();master.gain.value=.95;master.connect(dest);
+  const stops=[];
+  const start=()=>{
+    if(ctx.state==='suspended')ctx.resume();
+    startMusicBed(ctx,master,durationSeconds);
+    if(window._srAudio?.src){
+      const narration=new Audio(window._srAudio.src);
+      narration.volume=1;
+      const gain=ctx.createGain();gain.gain.value=.9;gain.connect(master);
+      const source=ctx.createMediaElementSource(narration);source.connect(gain);
+      setTimeout(()=>narration.play().catch(()=>{}),900);
+      stops.push(()=>{narration.pause();narration.src='';});
+    }
+  };
+  const stop=()=>{stops.forEach(fn=>fn());setTimeout(()=>ctx.close().catch(()=>{}),250);};
+  return {stream:dest.stream,start,stop};
 }
+
+function startMusicBed(ctx,out,durationSeconds){
+  const track=MUSIC_TRACKS[selectedMusic]||MUSIC_TRACKS.luxury;
+  const musicGain=ctx.createGain();
+  musicGain.gain.setValueAtTime(0,ctx.currentTime);
+  musicGain.gain.linearRampToValueAtTime(track.volume,ctx.currentTime+1.2);
+  musicGain.gain.setValueAtTime(track.volume,ctx.currentTime+Math.max(1,durationSeconds-2));
+  musicGain.gain.linearRampToValueAtTime(0,ctx.currentTime+Math.max(2,durationSeconds-.2));
+  musicGain.connect(out);
+  const beat=60/track.tempo;
+  track.notes.forEach((freq,i)=>{
+    for(let t=0;t<durationSeconds;t+=beat*track.notes.length){
+      const start=ctx.currentTime+t+i*beat;
+      const osc=ctx.createOscillator();
+      const noteGain=ctx.createGain();
+      osc.type=i%2?'triangle':'sine';
+      osc.frequency.value=freq;
+      noteGain.gain.setValueAtTime(0,start);
+      noteGain.gain.linearRampToValueAtTime(.55,start+.04);
+      noteGain.gain.exponentialRampToValueAtTime(.001,start+beat*1.6);
+      osc.connect(noteGain);noteGain.connect(musicGain);
+      osc.start(start);osc.stop(start+beat*1.7);
+    }
+  });
+}
+
 
 async function renderSlideToCanvas(ctx2,slide,W,H,dur){
   const FRAMES=Math.round(dur/1000*30);
@@ -1422,7 +1417,8 @@ function goToCheckout(){
   const l=labels[selectedPlan];
   document.getElementById('ck_title').textContent=l.name.split('—')[0].trim();document.getElementById('ck_plan_name').textContent=l.name;document.getElementById('ck_plan_desc').textContent=l.desc;
   document.getElementById('ck_btn_txt').textContent=selectedPlan==='single'?'Complete Purchase':'Start Subscription';
-  showStep('stepCheckout');mountStripe();
+  document.getElementById('stripe-el').innerHTML='<div style="font-size:.8rem;color:#8c8274;padding:4px 0;">Card details open on Stripe Checkout.</div>';
+  showStep('stepCheckout');
 }
 function backToPlan(){showStep('stepPlan');}
 // Direct Stripe Payment Links — no backend required for checkout
@@ -1451,8 +1447,11 @@ async function handleCheckout(){
   }catch(err){
     // Backend unavailable — use direct payment links
     const link=STRIPE_PAYMENT_LINKS[selectedPlan];
-    if(link&&!link.includes('test_28o3cT')){window.location.href=link;}
-    else{toast('Redirecting to Stripe…');setTimeout(()=>{window.location.href=`https://buy.stripe.com/?prefilled_email=${encodeURIComponent(email)}`;},800);}
+    if(link&&!link.includes('REPLACE_')){window.location.href=link;}
+    else{
+      document.getElementById('card-err').textContent='Checkout is not configured yet. Confirm the backend Stripe environment variables or add real Stripe Payment Links.';
+      btn.disabled=false;document.getElementById('ck_btn_txt').textContent=selectedPlan==='single'?'Complete Purchase':'Start Subscription';
+    }
   }
 }
 
