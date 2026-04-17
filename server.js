@@ -229,6 +229,33 @@ Generate exactly ${n} slide object${n !== 1 ? 's' : ''}. Vary the room labels na
 
       const raw  = await callClaude(prompt, 600);
       const json = JSON.parse(raw.trim());
+
+      // ElevenLabs voiceover — narrations + closing tagline as one continuous read
+      if (process.env.ELEVENLABS_API_KEY) {
+        try {
+          const voiceId  = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM';
+          const narLines = (json.slides || []).map(s => s.narration).filter(Boolean);
+          const script   = [...narLines, json.closingTagline].filter(Boolean).join('. ');
+          const elRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'xi-api-key': process.env.ELEVENLABS_API_KEY },
+            body: JSON.stringify({
+              text:          script,
+              model_id:      'eleven_turbo_v2',
+              voice_settings:{ stability: 0.45, similarity_boost: 0.80, style: 0.15, use_speaker_boost: true },
+            }),
+          });
+          if (elRes.ok) {
+            const buf = await elRes.arrayBuffer();
+            json.audio = `data:audio/mpeg;base64,${Buffer.from(buf).toString('base64')}`;
+          } else {
+            console.warn('[elevenlabs]', elRes.status, await elRes.text());
+          }
+        } catch (err) {
+          console.warn('[elevenlabs]', err.message);
+        }
+      }
+
       return res.json(json);
     }
 
