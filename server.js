@@ -536,6 +536,9 @@ app.post('/webhook', async (req, res) => {
 
 // ── CHECKOUT SESSION FACTORY ──────────────────────────────────────────────────
 async function createCheckoutSession({ email, name, plan, user }) {
+  if (!stripe) {
+    throw new Error('Stripe is not configured. Set STRIPE_SECRET_KEY before accepting paid checkout.');
+  }
   const planData = PLANS[plan];
 
   let customerId = user?.stripe_customer_id;

@@ -287,7 +287,7 @@ footer{background:var(--char);border-top:1px solid rgba(184,147,90,.12);padding:
       <div class="m-plan-box"><div class="m-plan-name" id="ck_name">Pro Agent</div><div class="m-plan-price" id="ck_price">$49.99<span>/month</span></div><div class="m-plan-desc" id="ck_desc">10 listings / 30 days · No watermark · Begins today</div><span class="m-plan-change" onclick="backToChoose()">Change plan</span></div>
       <div class="m-field"><label class="m-label">Full Name</label><input type="text" class="m-input" id="m_name" placeholder="Sarah Mitchell"></div>
       <div class="m-field"><label class="m-label">Email</label><input type="email" class="m-input" id="m_email" placeholder="sarah@compass.com"></div>
-      <div class="m-field" id="cardWrap"><label class="m-label">Card Details</label><div id="stripe-el"></div><div id="card-err"></div></div>
+      <div class="m-field" id="cardWrap"><label class="m-label">Secure Payment</label><div id="stripe-el"><div style="font-size:.78rem;color:#8c8274;padding:3px 0;">Card details open on Stripe Checkout.</div></div><div id="card-err"></div></div>
       <button class="m-submit" id="ck_btn" onclick="handleCheckout()"><span id="ck_btn_txt">Complete Purchase</span></button>
       <div class="m-note">🔒 Secured by Stripe · Cancel anytime · 14-day guarantee</div>
     </div>
@@ -323,15 +323,22 @@ function goCheckout(){
   document.getElementById('ck_name').textContent=p.name;document.getElementById('ck_price').innerHTML=`${p.price}<span>${p.per}</span>`;
   document.getElementById('ck_desc').textContent=p.desc;document.getElementById('ck_btn_txt').textContent=p.btnTxt;
   document.getElementById('cardWrap').style.display=selPlan==='free'?'none':'block';
-  showStep('mCheckout');if(selPlan!=='free')mountStripe();
+  showStep('mCheckout');
 }
 async function handleCheckout(){
   const btn=document.getElementById('ck_btn'),name=document.getElementById('m_name').value.trim(),email=document.getElementById('m_email').value.trim();
   if(!name||!email){toast('Please fill in your name and email.');return;}
-  btn.disabled=true;document.getElementById('ck_btn_txt').innerHTML='<span class="spin"></span>&nbsp;Processing…';
+  if(selPlan==='free'){
+    localStorage.setItem('sr_email',email);
+    const p=PLAN_INFO[selPlan];document.getElementById('ck_success_txt').textContent=`${p.name} is active for ${email}.`;showStep('mSuccess');
+    return;
+  }
+  btn.disabled=true;document.getElementById('ck_btn_txt').innerHTML='<span class="spin"></span>&nbsp;Redirecting…';
   try{
-    await new Promise(r=>setTimeout(r,1700));
-    const p=PLAN_INFO[selPlan];document.getElementById('ck_success_txt').textContent=`${p.name} is now active for ${email}. A receipt has been sent to your inbox.`;showStep('mSuccess');
+    const res=await fetch(`${SR_API}/api/checkout`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,name,plan:selPlan})});
+    const data=await res.json();
+    if(!res.ok||!data.checkoutUrl)throw new Error(data.error||'Checkout is unavailable.');
+    window.location.href=data.checkoutUrl;
   }catch(err){document.getElementById('card-err').textContent=err.message||'Payment failed. Please try again.';btn.disabled=false;document.getElementById('ck_btn_txt').textContent=PLAN_INFO[selPlan].btnTxt;}
 }
 function goToApp(){closeModal();window.location.href='app.html';}
@@ -340,6 +347,9 @@ const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersec
 document.querySelectorAll('.reveal').forEach(r=>obs.observe(r));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3600);}
+const SR_API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3001'
+  : 'https://showsready-official-0c70.onrender.com';
 </script>
 </body>
 </html>
