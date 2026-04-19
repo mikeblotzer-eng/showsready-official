@@ -6,6 +6,12 @@
   NODE_VERSION = "22"
 
 [[redirects]]
+  from = "https://www.showsready.com/*"
+  to = "https://showsready.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/app"
   to = "/app.html"
   status = 200
@@ -18,6 +24,26 @@
 [[redirects]]
   from = "/success"
   to = "/success.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+
+[[redirects]]
+  from = "/terms"
+  to = "/terms.html"
+  status = 200
+
+[[redirects]]
+  from = "/refund"
+  to = "/refund.html"
+  status = 200
+
+[[redirects]]
+  from = "/contact"
+  to = "/contact.html"
   status = 200
 
 [[redirects]]
