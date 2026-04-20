@@ -208,7 +208,7 @@ app.post('/api/ai', async (req, res) => {
 
 app.post('/api/generate', async (req, res) => {
   try {
-    const { address, price, type, condition, buyer, notes, market, rooms = [], images, photoCount } = req.body;
+    const { address, price, type, condition, buyer, notes, market, rooms = [], images, photoCount, styleName, zoneName } = req.body;
     if (!address) return res.status(400).json({ error: 'address is required.' });
 
     // New format: image-based walkthrough generation
@@ -216,16 +216,23 @@ app.post('/api/generate', async (req, res) => {
       const n = images.length || photoCount || 1;
       const prompt = `You are a luxury real estate marketing copywriter. Generate a walkthrough video script for a property at ${address} in the ${market || 'US'} market. The video has ${n} photo slide${n !== 1 ? 's' : ''}.
 
+Target buyer: ${buyer || 'general buyers'}
+Regional style morph: ${styleName || 'clean contemporary'}
+Style zone: ${zoneName || market || 'National'}
+
 Return ONLY raw JSON (no markdown, no code fences):
 {
   "propertyHeadline": "One compelling 12-18 word opening sentence welcoming viewers",
   "closingTagline": "One 10-14 word call-to-action closing sentence",
   "slides": [
     {"narration": "One vivid 12-16 word sentence describing this room/space", "roomLabel": "Room Name"}
+  ],
+  "recapSlides": [
+    {"id": "same room id or simple room key", "caption": "One vivid 12-18 word lifestyle recap sentence showing how the selected style supports the target buyer"}
   ]
 }
 
-Generate exactly ${n} slide object${n !== 1 ? 's' : ''}. Vary the room labels naturally (e.g. Living Room, Kitchen, Master Suite, Primary Bath, Outdoor Terrace, etc.). Be evocative and specific to the ${market || 'local'} market. No filler phrases.`;
+Generate exactly ${n} slide object${n !== 1 ? 's' : ''} and exactly ${n} recapSlides object${n !== 1 ? 's' : ''}. Vary the room labels naturally (e.g. Exterior, Living Room, Kitchen, Master Suite, Primary Bath, Outdoor Terrace, etc.). For recapSlides, describe a concrete lifestyle moment using the selected style and target buyer, such as nighttime exterior lighting, family movie night, hosting, work-from-home, quiet retreat, or weekend outdoor living. No filler phrases.`;
 
       const raw  = await callClaude(prompt, 600);
       const json = JSON.parse(raw.trim());

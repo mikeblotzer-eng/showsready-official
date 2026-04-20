@@ -242,6 +242,10 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 .ba-tag-a{right:12px;background:rgba(184,147,90,.85);color:var(--ink);}
 .photo-sl{position:relative;width:100%;height:100%;background:var(--ink);overflow:hidden;}
 .photo-sl img{width:100%;height:100%;object-fit:cover;display:block;}
+.morph-sl{position:relative;width:100%;height:100%;background:var(--ink);overflow:hidden;}
+.morph-sl img{width:100%;height:100%;object-fit:cover;display:block;filter:var(--morph-filter,saturate(1.12) contrast(1.04) brightness(.92));}
+.morph-overlay{position:absolute;inset:0;background:var(--morph-overlay,linear-gradient(135deg,rgba(20,16,12,.4),rgba(184,147,90,.16)));pointer-events:none;}
+.morph-badge{position:absolute;top:13px;left:13px;z-index:6;background:rgba(17,16,16,.68);border:1px solid rgba(184,147,90,.32);color:var(--gold-l);font-size:.56rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:5px 10px;border-radius:2px;}
 .slide-cap{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,23,20,.72));padding:34px 22px 17px;z-index:7;}
 .cap-room{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-l);font-weight:500;}
 .cap-line{font-size:.86rem;color:rgba(255,255,255,.88);margin-top:3px;font-weight:300;}
@@ -303,6 +307,18 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 .plan-radio{width:15px;height:15px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:3px;transition:all .15s;display:flex;align-items:center;justify-content:center;}
 .plan-card.on .plan-radio{border-color:var(--ink);background:var(--ink);}
 .plan-card.on .plan-radio::after{content:'';width:5px;height:5px;background:white;border-radius:50%;}
+.zone-panel{background:var(--white);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.zone-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:18px;}
+.zone-name{font-family:'Libre Baskerville',serif;font-size:1.15rem;color:var(--ink);}
+.zone-meta{font-size:.74rem;font-weight:300;color:var(--mid);line-height:1.65;margin-top:5px;}
+.style-global-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:20px 24px 24px;}
+.style-global-card{border:1px solid var(--border);border-radius:4px;padding:18px 16px;cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s;background:var(--ivory);min-height:158px;}
+.style-global-card:hover{border-color:var(--gold);transform:translateY(-1px);}
+.style-global-card.on{border-color:var(--ink);box-shadow:0 0 0 2px rgba(17,16,16,.08);background:white;}
+.style-swatch{width:34px;height:4px;border-radius:2px;margin-bottom:14px;background:var(--gold);}
+.style-name{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:7px;}
+.style-desc{font-size:.74rem;font-weight:300;color:var(--mid);line-height:1.55;}
+.style-note{font-size:.72rem;color:var(--mid);padding:0 24px 22px;line-height:1.65;}
 .m-field{margin-bottom:13px;}
 .m-label{display:block;font-size:.6rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);margin-bottom:5px;}
 .m-input{width:100%;font-family:'Jost',sans-serif;font-size:.85rem;font-weight:300;background:var(--ivory);border:1px solid var(--border);color:var(--ink);border-radius:2px;padding:10px 12px;outline:none;transition:border-color .2s;}
@@ -330,6 +346,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
   .fg{grid-template-columns:1fr 1fr;}
   .fld.s3{grid-column:span 2;}
   .brand-grid,.gen-layout{grid-template-columns:1fr;}
+  .style-global-grid{grid-template-columns:1fr;}
   .spv-body{flex-direction:column;height:auto;}
   .spv-desc{flex:0 0 auto;border-left:none;border-top:1px solid rgba(255,255,255,.06);}
 }
@@ -361,9 +378,9 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 <div class="rail">
   <div class="rs active" id="r1" onclick="nav(1)"><div class="rs-num">1</div>Listing</div>
   <div class="rs" id="r2" onclick="nav(2)"><div class="rs-num">2</div>Photos</div>
-  <div class="rs" id="r3" onclick="nav(3)" style="display:none;"><div class="rs-num">3</div>Styles</div>
-  <div class="rs" id="r4" onclick="nav(4)"><div class="rs-num">3</div>Branding</div>
-  <div class="rs" id="r5" onclick="nav(5)"><div class="rs-num">4</div>Generate</div>
+  <div class="rs" id="r3" onclick="nav(3)"><div class="rs-num">3</div>Style Morph</div>
+  <div class="rs" id="r4" onclick="nav(4)"><div class="rs-num">4</div>Branding</div>
+  <div class="rs" id="r5" onclick="nav(5)"><div class="rs-num">5</div>Generate</div>
 </div>
 
 <!-- PG 1 -->
@@ -426,7 +443,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
       <div class="pg-title">Upload Room Photos</div>
       <div class="pg-sub" style="margin-bottom:0">Upload 1-3 photos per room. Click a thumbnail to choose which photo appears in the walkthrough.</div>
     </div>
-    <button class="btn btn-dark" onclick="nav(4)">Agent Branding →</button>
+    <button class="btn btn-dark" onclick="nav(3)">Style Morph →</button>
   </div>
   <div class="rooms-stack" id="roomStack"></div>
 </div>
@@ -438,12 +455,12 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
   <div class="step-bar">
     <div class="step-bar-left">
       <div class="eyebrow">Step 3 of 5</div>
-      <div class="pg-title">Step Temporarily Disabled</div>
-      <div class="pg-sub" style="margin-bottom:0">This step is temporarily removed.</div>
+      <div class="pg-title">Style Morph</div>
+      <div class="pg-sub" style="margin-bottom:0">Choose one regional style for the full listing. ShowsReady pairs it with the target buyer to create a lifestyle recap after the standard walkthrough.</div>
     </div>
     <button class="btn btn-dark" onclick="nav(4)">Agent Branding →</button>
   </div>
-  <div id="stylesContainer" style="display:flex;flex-direction:column;gap:1px;border:1px solid var(--border);border-radius:4px;overflow:hidden;background:var(--border);"></div>
+  <div id="styleMorphContainer"></div>
 </div>
 </div>
 
@@ -452,7 +469,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 <div class="canvas">
   <div class="step-bar">
     <div class="step-bar-left">
-      <div class="eyebrow">Step 3 of 4</div>
+      <div class="eyebrow">Step 4 of 5</div>
       <div class="pg-title">Agent Branding</div>
       <div class="pg-sub" style="margin-bottom:0">Your end card closes every walkthrough. Make it memorable.</div>
     </div>
@@ -502,7 +519,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 <div class="canvas">
   <div class="step-bar">
     <div class="step-bar-left">
-      <div class="eyebrow">Step 4 of 4</div>
+      <div class="eyebrow">Step 5 of 5</div>
       <div class="pg-title">Generate Walkthrough</div>
       <div class="pg-sub" style="margin-bottom:0">ShowsReady assembles your selected photos, captions, music, and branded end card.</div>
     </div>
@@ -758,6 +775,53 @@ function getSV(s){
   return palettes[hash%palettes.length];
 }
 
+const STYLE_ZONES = {
+  coastal:{name:'Coastal Markets',hint:'California coast, Florida waterfront, Hawaii, and beach-focused listings.',styles:[
+    {id:'coastal-modern',name:'Coastal Modern',swatch:'#6aaec0',desc:'Bright whites, natural wood, linen textures, and open-air entertaining.',filter:'saturate(1.16) brightness(1.07) contrast(1.03)',overlay:'linear-gradient(135deg,rgba(92,170,190,.18),rgba(255,255,255,.08))'},
+    {id:'resort-luxury',name:'Resort Luxury',swatch:'#b8935a',desc:'Hotel polish, poolside glow, sculptural lighting, and elevated outdoor moments.',filter:'saturate(1.2) brightness(1.02) contrast(1.08)',overlay:'linear-gradient(135deg,rgba(184,147,90,.24),rgba(18,16,16,.22))'},
+    {id:'organic-retreat',name:'Organic Retreat',swatch:'#8ab5a0',desc:'Rattan, greenery, warm neutrals, and calm indoor-outdoor living.',filter:'saturate(1.12) brightness(1.06) contrast(1.02)',overlay:'linear-gradient(135deg,rgba(138,181,160,.22),rgba(235,225,210,.1))'}
+  ]},
+  mountain:{name:'Mountain & Rockies',hint:'Denver, Boulder, Aspen, Park City, Salt Lake, and alpine-adjacent listings.',styles:[
+    {id:'mountain-rustic',name:'Mountain Rustic',swatch:'#a07850',desc:'Stone, timber, firelight, leather, and cozy family gathering moments.',filter:'saturate(1.08) brightness(.92) contrast(1.12)',overlay:'linear-gradient(135deg,rgba(90,58,34,.36),rgba(184,147,90,.16))'},
+    {id:'alpine-modern',name:'Alpine Modern',swatch:'#8898a8',desc:'Clean mountain architecture, steel accents, warm woods, and panoramic calm.',filter:'saturate(.98) brightness(1.02) contrast(1.1)',overlay:'linear-gradient(135deg,rgba(90,108,120,.28),rgba(17,16,16,.18))'},
+    {id:'lodge-luxe',name:'Lodge Luxe',swatch:'#c4a070',desc:'Upscale ski-lodge atmosphere with dramatic lighting and refined entertaining.',filter:'saturate(1.15) brightness(.96) contrast(1.12)',overlay:'linear-gradient(135deg,rgba(196,160,112,.26),rgba(26,20,16,.28))'}
+  ]},
+  desert:{name:'Desert Southwest',hint:'Phoenix, Scottsdale, Tucson, Sedona, Palm Springs, and desert lifestyle markets.',styles:[
+    {id:'desert-modern',name:'Desert Modern',swatch:'#c77f73',desc:'Warm stone, sculptural shadows, sunset tones, and clean resort lines.',filter:'saturate(1.18) brightness(1.02) contrast(1.08)',overlay:'linear-gradient(135deg,rgba(199,127,115,.24),rgba(184,147,90,.12))'},
+    {id:'southwest-luxe',name:'Southwest Luxe',swatch:'#b8935a',desc:'Textured plaster, leather, woven accents, and golden evening light.',filter:'saturate(1.2) brightness(.98) contrast(1.1)',overlay:'linear-gradient(135deg,rgba(184,147,90,.25),rgba(92,54,35,.22))'},
+    {id:'spa-minimal',name:'Spa Minimal',swatch:'#d0cfc0',desc:'Quiet neutrals, natural stone, softened light, and retreat-like calm.',filter:'saturate(.9) brightness(1.08) contrast(1.03)',overlay:'linear-gradient(135deg,rgba(220,215,198,.2),rgba(255,255,255,.06))'}
+  ]},
+  metro:{name:'Metro & Northeast',hint:'New York, Boston, Chicago, DC, and dense urban or historic markets.',styles:[
+    {id:'urban-classic',name:'Urban Classic',swatch:'#b0a090',desc:'Tailored rooms, gallery lighting, refined millwork, and polished city living.',filter:'saturate(.95) brightness(.98) contrast(1.12)',overlay:'linear-gradient(135deg,rgba(176,160,144,.22),rgba(17,16,16,.22))'},
+    {id:'modern-loft',name:'Modern Loft',swatch:'#8f9aaa',desc:'Clean lines, contrast, artful lighting, and flexible work-from-home energy.',filter:'saturate(1.02) brightness(1.02) contrast(1.14)',overlay:'linear-gradient(135deg,rgba(80,90,100,.26),rgba(255,255,255,.06))'},
+    {id:'transitional-luxe',name:'Transitional Luxe',swatch:'#c8b89a',desc:'Soft neutrals, premium finishes, calm bedrooms, and elevated entertaining.',filter:'saturate(1.04) brightness(1.04) contrast(1.06)',overlay:'linear-gradient(135deg,rgba(200,184,154,.22),rgba(255,255,255,.07))'}
+  ]},
+  heartland:{name:'Texas, Midwest & Southeast',hint:'Texas, Nashville, Atlanta, Charlotte, Raleigh, and family-driven suburban markets.',styles:[
+    {id:'warm-transitional',name:'Warm Transitional',swatch:'#c8b888',desc:'Approachable luxury, layered neutrals, family rooms, and everyday comfort.',filter:'saturate(1.1) brightness(1.04) contrast(1.06)',overlay:'linear-gradient(135deg,rgba(200,184,136,.22),rgba(255,255,255,.08))'},
+    {id:'modern-farmhouse',name:'Modern Farmhouse',swatch:'#d8d0c0',desc:'White oak, black accents, relaxed kitchens, and practical family warmth.',filter:'saturate(.96) brightness(1.08) contrast(1.06)',overlay:'linear-gradient(135deg,rgba(216,208,192,.2),rgba(17,16,16,.08))'},
+    {id:'southern-polished',name:'Southern Polished',swatch:'#8ab57f',desc:'Welcoming porches, classic details, soft greenery, and gracious entertaining.',filter:'saturate(1.12) brightness(1.05) contrast(1.04)',overlay:'linear-gradient(135deg,rgba(138,181,127,.2),rgba(184,147,90,.1))'}
+  ]},
+  national:{name:'National Default',hint:'Balanced options for markets that do not fit one clear regional profile.',styles:[
+    {id:'clean-contemporary',name:'Clean Contemporary',swatch:'#8f9aaa',desc:'Fresh, bright, uncluttered rooms with broad buyer appeal.',filter:'saturate(1.05) brightness(1.07) contrast(1.05)',overlay:'linear-gradient(135deg,rgba(143,154,170,.18),rgba(255,255,255,.08))'},
+    {id:'classic-comfort',name:'Classic Comfort',swatch:'#c8b888',desc:'Warm, familiar spaces that help buyers picture daily life quickly.',filter:'saturate(1.08) brightness(1.04) contrast(1.05)',overlay:'linear-gradient(135deg,rgba(200,184,136,.2),rgba(255,255,255,.07))'},
+    {id:'elevated-neutral',name:'Elevated Neutral',swatch:'#d0cfc0',desc:'Soft modern neutrals, calm bedrooms, and lightly luxurious presentation.',filter:'saturate(.96) brightness(1.09) contrast(1.04)',overlay:'linear-gradient(135deg,rgba(208,207,192,.2),rgba(255,255,255,.08))'}
+  ]}
+};
+
+function getStyleZoneKey(market){
+  if(['SoCal Luxury Coast','Orange County Coast','San Diego','Florida Luxury','Hawaii','Northern California'].includes(market))return 'coastal';
+  if(['Mountain West','Pacific Northwest'].includes(market))return 'mountain';
+  if(market==='Desert Southwest')return 'desert';
+  if(['New York Metro','Chicago Metro','New England','Southeast / Mid-Atlantic'].includes(market))return 'metro';
+  if(market==='Texas')return 'heartland';
+  return 'national';
+}
+function getCurrentStyleZone(){return STYLE_ZONES[getStyleZoneKey(detectedMarket)]||STYLE_ZONES.national;}
+function getSelectedStyle(){
+  const zone=getCurrentStyleZone();
+  return zone.styles.find(s=>s.id===selectedStyleId)||zone.styles[0];
+}
+
 const ROOMS=[
   {id:'ext',icon:'🏡',label:'Exterior / Curb Appeal',hint:'Front of house, driveway, entry',style:''},
   {id:'living',icon:'🛋',label:'Living Room',hint:'Main entertaining space',style:''},
@@ -771,6 +835,7 @@ let detectedMarket='National';
 let stagingData={};
 let slides=[],curSlide=0,playing=false,playTimer;
 let curPage=1;
+let selectedStyleId='';
 const MUSIC_TRACKS={
   luxury:{name:'Luxury Pulse',notes:[196,246.94,293.66,369.99],tempo:96,volume:.055},
   coastal:{name:'Coastal Air',notes:[174.61,220,261.63,329.63],tempo:82,volume:.05},
@@ -787,6 +852,7 @@ function nav(n){
   document.getElementById(`pg${n}`).classList.add('on');
   document.getElementById(`r${n}`).className='rs active';
   window.scrollTo({top:0,behavior:'smooth'});
+  if(n===3)buildStyleMorph();
 }
 function showGate(){
   const p=PLANS[user.plan];
@@ -818,7 +884,9 @@ async function doAnalyze(){
   // Always re-enable and advance — regardless of API status
   await sleep(400);
   btn.disabled=false;btn.innerHTML='Analyze Market →';
-  buildRooms();nav(2);
+  const zone=getCurrentStyleZone();
+  selectedStyleId=zone.styles[0].id;
+  buildRooms();buildStyleMorph();nav(2);
 }
 
 /* ── PG 2 ── */
@@ -875,56 +943,14 @@ function getRoomPhoto(room){
 }
 
 /* ── PG 3 ── */
-function buildStyles(){
-  const container=document.getElementById('stylesContainer');container.innerHTML='';
-  const ms=MARKET_STYLES[detectedMarket]||MARKET_STYLES['National'];
-  ROOMS.forEach(room=>{
-    const opts=ms[room.id]||ms['living'];if(!room.style)room.style=opts[0];
-    const sec=mk('div');sec.style.cssText='background:white;padding:20px 22px;';
-    const photo=getRoomPhoto(room);
-    sec.innerHTML=`<div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;"><div class="ricon">${room.icon}</div><div><div class="rname">${room.label}</div><div class="rhint">Market: <strong style="color:var(--gold);">${detectedMarket}</strong></div></div></div><div class="style-section"><div class="style-section-lbl">Staging Style — click to preview</div><div class="style-chips" id="chips_${room.id}">${opts.map(s=>{const sv=getSV(s);return`<div class="schip ${s===room.style?'on':''}" onclick="pickStyle('${room.id}','${s}',this)"><div class="schip-swatch" style="background:${sv.swatch}"></div>${s}</div>`;}).join('')}</div></div><div class="style-preview-wrap ${photo?'on':''}" id="spv_${room.id}"><div class="spv-header"><span id="spv_lbl_${room.id}">Preview: ${room.style}</span><span style="font-size:.6rem;color:rgba(255,255,255,.3);">Selected photo preview</span></div><div class="spv-body"><div class="spv-before" id="spvB_${room.id}">${photo?`<img src="${photo.url}" id="spvBImg_${room.id}" alt="before">`:'<div style="width:100%;height:100%;background:var(--char);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:rgba(255,255,255,.25);">Upload photo in Step 2</div>'}<div class="spv-label spv-label-b">Before</div></div><div class="spv-divider"></div><div class="spv-after" id="spvA_${room.id}">${photo?`<img src="${photo.url}" id="spvAImg_${room.id}" alt="after" style="filter:${getSV(room.style).filter};">`:'<div style="width:100%;height:100%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:rgba(255,255,255,.25);">Upload photo to preview</div>'}<div class="spv-after-overlay" id="spvOvl_${room.id}" style="background:${getSV(room.style).overlay};"></div><div class="spv-label spv-label-a" id="spvTag_${room.id}">${room.style}</div></div><div class="spv-desc"><div class="spv-style-name" id="spvName_${room.id}">${room.style}</div><div id="spvDesc_${room.id}" style="font-size:.76rem;color:rgba(255,255,255,.5);line-height:1.65;">${getStyleDesc(room.style)}</div><div class="spv-ai-badge">✦ AI Staged Preview</div></div></div></div><input type="text" class="snote" id="note_${room.id}" placeholder="Additional direction — e.g. keep the fireplace, neutral tones only…">`;
-    container.appendChild(sec);
-  });
+function buildStyleMorph(){
+  const container=document.getElementById('styleMorphContainer');if(!container)return;
+  const zone=getCurrentStyleZone();
+  if(!selectedStyleId||!zone.styles.some(s=>s.id===selectedStyleId))selectedStyleId=zone.styles[0].id;
+  const buyer=v('f_buyer')||'Target buyer';
+  container.innerHTML=`<div class="zone-panel"><div class="zone-head"><div><div class="zone-name">${zone.name}</div><div class="zone-meta">Detected market: <strong>${detectedMarket}</strong><br>Target buyer: <strong>${buyer}</strong></div></div><button class="btn btn-ghost" onclick="nav(1)">Change Listing</button></div><div class="style-global-grid">${zone.styles.map(s=>`<div class="style-global-card ${s.id===selectedStyleId?'on':''}" onclick="pickGlobalStyle('${s.id}')"><div class="style-swatch" style="background:${s.swatch}"></div><div class="style-name">${s.name}</div><div class="style-desc">${s.desc}</div></div>`).join('')}</div><div class="style-note">The first pass shows the selected listing photos. The recap reuses those same photos with a consistent regional look and buyer-specific lifestyle captions.</div></div>`;
 }
-
-function pickStyle(roomId,style,el){
-  const room=ROOMS.find(r=>r.id===roomId);room.style=style;
-  document.querySelectorAll(`#chips_${roomId} .schip`).forEach(c=>c.classList.remove('on'));el.classList.add('on');
-  const sv=getSV(style);
-  const aImg=document.getElementById(`spvAImg_${roomId}`);
-  const ovl=document.getElementById(`spvOvl_${roomId}`);
-  const tag=document.getElementById(`spvTag_${roomId}`);
-  const lbl=document.getElementById(`spv_lbl_${roomId}`);
-  const name=document.getElementById(`spvName_${roomId}`);
-  const desc=document.getElementById(`spvDesc_${roomId}`);
-  if(aImg){
-    aImg.style.filter=sv.filter;
-  } else if(room.photos&&room.photos.length){
-    // img doesn't exist yet — rebuild the preview with the photo
-    refreshPreview(roomId);
-    // then apply the new filter after a tick
-    setTimeout(()=>{const img=document.getElementById(`spvAImg_${roomId}`);if(img)img.style.filter=sv.filter;},50);
-  }
-  if(ovl)ovl.style.background=sv.overlay;
-  if(tag)tag.textContent=style;if(lbl)lbl.textContent=`Preview: ${style}`;
-  if(name)name.textContent=style;if(desc)desc.textContent=getStyleDesc(style);
-  document.getElementById(`spv_${roomId}`)?.classList.add('on');
-}
-
-function refreshPreview(roomId){
-  const room=ROOMS.find(r=>r.id===roomId);if(!room||!room.photos||!room.photos.length)return;
-  const photo=getRoomPhoto(room),url=photo.url,sv=getSV(room.style);
-  const bImg=document.getElementById(`spvBImg_${roomId}`);
-  const aImg=document.getElementById(`spvAImg_${roomId}`);
-  if(bImg)bImg.src=url;else{const bEl=document.getElementById(`spvB_${roomId}`);if(bEl)bEl.innerHTML=`<img src="${url}" id="spvBImg_${roomId}" alt="before"><div class="spv-label spv-label-b">Before</div>`;}
-  if(aImg){aImg.src=url;aImg.style.filter=sv.filter;}else{const aEl=document.getElementById(`spvA_${roomId}`);if(aEl)aEl.innerHTML=`<img src="${url}" id="spvAImg_${roomId}" alt="after" style="filter:${sv.filter};"><div class="spv-after-overlay" id="spvOvl_${roomId}" style="background:${sv.overlay};"></div><div class="spv-label spv-label-a" id="spvTag_${roomId}">${room.style}</div>`;}
-  document.getElementById(`spv_${roomId}`)?.classList.add('on');
-}
-
-function getStyleDesc(style){
-  const d={'California Coastal Modern':'Clean lines, white oak, natural stone, ocean-facing light. Minimal clutter, curated organic accents.','Organic Coastal Luxury':'Warm textures — linen, rattan, bleached wood. Brings the outside in with botanical touches.','Bespoke Contemporary':'Tailored, high-contrast finishes. Custom millwork feel with a polished, editorial edge.','Coastal Retreat':'Light, breezy palette with coastal art, layered blues and whites. Feels effortlessly livable.','Spa Sanctuary':'Serene neutrals, natural stone textures, candlelit warmth. Zero visual noise.','Resort Outdoor Living':'Lush greenery, teak or concrete furniture, dramatic lighting. Pool-season ready.','Hollywood Regency':'Bold pattern, lacquered surfaces, gold accents. Glamorous and confident.','Warm Minimalist':'Warm whites, natural wood, intentional negative space. Elevated everyday living.','Modern Farmhouse':'Shiplap, open shelving, black hardware, warm wood. Approachable yet polished.','Tropical Oasis':'Saturated greens, woven textures, bold tropical botanicals. Vibrant and resort-like.','Mountain Lodge Luxe':'Reclaimed wood, stone fireplace accents, leather and plaid. Cozy mountain prestige.','Mountain Modern':'Clean alpine lines with warm wood and steel. Minimalism meets mountain lifestyle.','Park Avenue Classic':'Rich moldings, neutral silk, traditional furniture with a modern edit. Timeless prestige.','Texas Transitional':'Warm neutrals, natural leather, subtle southwestern touches. Approachable Texas luxury.'};
-  return d[style]||'Professional staging transformation calibrated to your local market and buyer profile.';
-}
+function pickGlobalStyle(id){selectedStyleId=id;buildStyleMorph();}
 
 /* ── PG 4 ── */
 function syncCard(){
@@ -988,6 +1014,9 @@ async function doGenerate(){
 
 async function fetchStaging(){
   const address=v('f_addr')||'the property';
+  const buyer=v('f_buyer')||'Target buyers';
+  const style=getSelectedStyle();
+  const zone=getCurrentStyleZone();
 
   // Collect ONLY rooms that have photos, preserving ROOMS order
   const photoRooms=ROOMS.filter(r=>r.photos&&r.photos.length);
@@ -1004,31 +1033,67 @@ async function fetchStaging(){
     const res=await fetch(`${SR_API}/api/generate`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({images,address,market:detectedMarket,photoCount:images.length})
+      body:JSON.stringify({images,address,market:detectedMarket,photoCount:images.length,buyer,styleName:style.name,styleId:style.id,zoneName:zone.name})
     });
     const data=await res.json();
     if(!res.ok) throw new Error(data.error||'API error');
 
     const narrations=data.slides||[];
+    const recapSource=data.recapSlides||[];
+    const recap=photoRooms.map((room,i)=>({id:room.id,caption:recapSource[i]?.caption||getMorphCaption(room,buyer,style)}));
 
     // stagingData for buildViewer captions
     stagingData={
       intro:data.propertyHeadline||`Welcome to ${address}`,
       outro:data.closingTagline||`Contact ${v('b_name')||'your agent'} to schedule a showing`,
+      selectedStyle:style,
+      zoneName:zone.name,
       rooms:ROOMS.map((r,ri)=>{
         const photoIdx=photoRooms.indexOf(r);
         const slide=photoIdx>=0?narrations[photoIdx]:null;
         return {id:r.id,voiceover:slide?.narration||r.label,staged:'',roomLabel:slide?.roomLabel||r.label};
-      })
+      }),
+      recap
     };
   } catch(err){
     console.warn('API failed, fallback:',err.message);
     stagingData={
       intro:`Welcome to this exceptional property at ${address}`,
+      selectedStyle:style,
+      zoneName:zone.name,
       rooms:ROOMS.map(r=>({id:r.id,voiceover:r.label,staged:''})),
+      recap:photoRooms.map(r=>({id:r.id,caption:getMorphCaption(r,buyer,style)})),
       outro:`Contact ${v('b_name')||'your agent'} to schedule a private showing`
     };
   }
+}
+
+function getMorphCaption(room,buyer,style){
+  const b=(buyer||'').toLowerCase(),s=(style?.name||'').toLowerCase();
+  const family=/family|first-time|young/.test(b);
+  const luxury=/luxury|high-net|international|vacation/.test(b);
+  const investor=/investment|rental/.test(b);
+  const roomId=room.id;
+  if(roomId==='ext'){
+    if(s.includes('mountain')||s.includes('lodge'))return 'Evening exterior lighting frames the home like a warm mountain retreat after a day outside.';
+    if(s.includes('desert')||s.includes('southwest'))return 'Golden-hour lighting, desert textures, and a calm entry sequence create resort arrival energy.';
+    if(s.includes('coastal')||s.includes('resort'))return 'Soft dusk lighting and polished landscaping shift the curb appeal into a waterfront welcome.';
+    return 'Warm exterior lighting and a cleaner entry moment help buyers imagine arriving home.';
+  }
+  if(roomId==='living'){
+    if(family)return 'The living room becomes a relaxed movie-night scene with warm lighting and everyone gathered in.';
+    if(luxury)return 'The living area shifts into an elevated hosting moment with layered lighting and a refined lounge feel.';
+    return 'The living room recap emphasizes comfort, scale, and an easy everyday gathering space.';
+  }
+  if(roomId==='kitchen'){
+    if(family)return 'The kitchen reads as the daily hub, with breakfast, homework, and weeknight routines all feeling natural.';
+    if(investor)return 'The kitchen recap highlights durable appeal and broad rental-friendly functionality.';
+    return 'The kitchen becomes a polished entertaining moment with warm counters, clear prep space, and easy flow.';
+  }
+  if(roomId==='master')return family?'The primary suite becomes a quiet reset after a full family day.':'The primary suite is recast as a calm, private retreat with softened light.';
+  if(roomId==='bath')return 'The bath recap leans into spa calm, clean surfaces, and a more restorative daily routine.';
+  if(roomId==='outdoor')return family?'The outdoor space becomes weekend-ready, with room for play, dinner, and relaxed evenings.':'The outdoor recap frames the space for sunset hosting, quiet mornings, and stronger lifestyle pull.';
+  return `The recap applies ${style?.name||'the selected style'} for ${buyer||'the target buyer'}.`;
 }
 
 function buildViewer(){
@@ -1049,12 +1114,27 @@ function buildViewer(){
     }else{sl.innerHTML=`<div class="placeholder-sl" style="width:100%;height:100%;"><div style="font-size:2rem;opacity:.22;">${room.icon}</div><div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;">${room.label}</div></div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.voiceover||room.label}</div></div>`;}
     stage.appendChild(sl);slides.push(sl);
   });
+  const recapItems=stagingData.recap||[];
+  if(recapItems.length){
+    const title=mk('div');title.className='vslide';
+    title.innerHTML=`<div class="intro-sl"><div class="intro-lbl">Style Morph Recap</div><div class="intro-ttl">${stagingData.selectedStyle?.name||'Selected Style'} for ${v('f_buyer')||'the target buyer'}</div><div class="intro-addr">${stagingData.zoneName||detectedMarket}</div></div>`;
+    stage.appendChild(title);slides.push(title);
+    recapItems.forEach(item=>{
+      const room=ROOMS.find(r=>r.id===item.id);if(!room)return;
+      const photo=getRoomPhoto(room);if(!photo)return;
+      const style=stagingData.selectedStyle||getSelectedStyle();
+      const sl=mk('div');sl.className='vslide';
+      sl.innerHTML=`<div class="morph-sl" style="--morph-filter:${style.filter};--morph-overlay:${style.overlay};"><img src="${photo.url}" alt="${room.label} style morph" style="filter:${style.filter};"><div class="morph-overlay"></div><div class="morph-badge">${style.name}</div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label} · Recap</div><div class="cap-line">${item.caption||getMorphCaption(room,v('f_buyer'),style)}</div></div></div>`;
+      stage.appendChild(sl);slides.push(sl);
+    });
+  }
   const ph=v('b_phone'),em=v('b_email'),wb=v('b_web'),tg=v('b_tag');
   const esl=mk('div');esl.className='vslide';
   esl.innerHTML=`<div class="end-sl" style="width:100%;height:100%;"><div class="end-name">${v('b_name')||'Agent Name'}</div><div class="end-titl">${v('b_title')||'Realtor'}</div><div class="end-rule"></div><div class="end-contact">${ph?`<div>📞 ${ph}</div>`:''}${em?`<div>✉ ${em}</div>`:''}${wb?`<div>🌐 ${wb}</div>`:''}</div>${tg?`<div class="end-tag">"${tg}"</div>`:''}<div class="end-outro">${stagingData.outro||''}</div></div>`;
   stage.appendChild(esl);slides.push(esl);
   slides.forEach((_,i)=>{const d=mk('div');d.className='vdot'+(i===0?' on':'');d.onclick=()=>showSlide(i);dots.appendChild(d);});
-  const lines=[stagingData.intro,...(stagingData.rooms||[]).map(r=>r.voiceover),stagingData.outro].filter(Boolean).join('\n\n');
+  const recapLines=(stagingData.recap||[]).map(r=>r.caption);
+  const lines=[stagingData.intro,...(stagingData.rooms||[]).map(r=>r.voiceover),'Style Morph Recap',...recapLines,stagingData.outro].filter(Boolean).join('\n\n');
   document.getElementById('scriptTxt').textContent=lines;
   updateHeader();showSlide(0);
 }
@@ -1250,6 +1330,16 @@ async function drawDomToCanvas(ctx2,el,W,H){
     try{ctx2.drawImage(img,sx,sy,sw,sh);}catch(e){}
     if(afterPanel&&afterPanel.style.clipPath)ctx2.restore();
     ctx2.filter='none';
+  }
+  if(el.querySelector('.morph-sl')){
+    ctx2.fillStyle='rgba(35,25,18,0.26)';ctx2.fillRect(0,0,W,H);
+    ctx2.fillStyle='rgba(184,147,90,0.13)';ctx2.fillRect(0,0,W,H);
+    const badge=el.querySelector('.morph-badge');
+    if(badge){
+      ctx2.fillStyle='rgba(17,16,16,0.68)';ctx2.fillRect(W*.035,H*.04,W*.22,H*.045);
+      ctx2.fillStyle='#d4af72';ctx2.font=`700 ${W*0.011}px Jost,sans-serif`;ctx2.textAlign='left';
+      ctx2.fillText(badge.textContent.toUpperCase(),W*.047,H*.069);
+    }
   }
 
   // Draw text overlays
