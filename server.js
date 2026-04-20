@@ -55,6 +55,7 @@ app.use(express.json({ limit: '50mb' }));
 const PLANS = {
   free: {
     name:         'Free Preview',
+    description:  'Browser-based real estate listing video tool that turns uploaded property photos into a watermarked walkthrough video with captions, regional Style Morph recap, music, and an agent end card.',
     price_cents:  0,
     listings:     1,
     watermark:    true,
@@ -63,6 +64,7 @@ const PLANS = {
   },
   single: {
     name:         'Per Listing',
+    description:  'One watermark-free real estate listing walkthrough video created from uploaded property photos, including listing captions, regional Style Morph recap, background music, branded agent end card, and MP4 export.',
     price_cents:  2999,
     listings:     1,
     watermark:    false,
@@ -71,6 +73,7 @@ const PLANS = {
   },
   pro: {
     name:         'Pro Agent',
+    description:  'Monthly subscription for active real estate agents to create up to 10 watermark-free listing walkthrough videos every 30 days from uploaded property photos, with captions, regional Style Morph recaps, music, branded agent end cards, and MP4 exports.',
     price_cents:  4999,
     listings:     10,
     watermark:    false,
@@ -79,6 +82,7 @@ const PLANS = {
   },
   elite: {
     name:         'Elite Agent',
+    description:  'Monthly subscription for high-volume real estate agents to create up to 30 watermark-free listing walkthrough videos every 30 days from uploaded property photos, with captions, regional Style Morph recaps, music, branded agent end cards, and MP4 exports.',
     price_cents:  9999,
     listings:     30,
     watermark:    false,
@@ -553,7 +557,7 @@ async function createCheckoutSession({ email, name, plan, user }) {
         unit_amount:  planData.price_cents,
         product_data: {
           name:        `ShowsReady — ${planData.name}`,
-          description: '1 listing walkthrough video · No watermark · Branded end card',
+          description: planData.description,
         },
       },
       quantity: 1,
