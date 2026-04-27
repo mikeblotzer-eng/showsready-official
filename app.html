@@ -319,6 +319,21 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 .style-name{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:7px;}
 .style-desc{font-size:.74rem;font-weight:300;color:var(--mid);line-height:1.55;}
 .style-note{font-size:.72rem;color:var(--mid);padding:0 24px 22px;line-height:1.65;}
+.style-preview-panel{border-top:1px solid var(--border);background:var(--ivory);padding:20px 24px 24px;}
+.style-preview-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:14px;}
+.style-preview-title{font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);}
+.style-preview-meta{font-size:.72rem;font-weight:300;color:var(--mid);line-height:1.5;text-align:right;}
+.style-preview-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.style-room-card{background:var(--white);border:1px solid var(--border);border-radius:3px;overflow:hidden;}
+.style-room-label{padding:10px 12px;border-bottom:1px solid var(--border);font-size:.66rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--mid);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.style-room-label span:last-child{color:var(--gold);font-weight:600;white-space:nowrap;}
+.style-room-stage{display:grid;grid-template-columns:1fr 1fr;min-height:156px;background:var(--ink);}
+.style-room-before,.style-room-after{position:relative;overflow:hidden;min-height:156px;}
+.style-room-before img,.style-room-after img{width:100%;height:100%;object-fit:cover;display:block;}
+.style-room-after::after{content:'';position:absolute;inset:0;background:var(--preview-overlay);pointer-events:none;}
+.style-room-chip{position:absolute;left:8px;bottom:8px;background:rgba(17,16,16,.64);color:rgba(255,255,255,.78);font-size:.55rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border-radius:1px;}
+.style-room-after .style-room-chip{background:rgba(184,147,90,.88);color:var(--ink);}
+.style-empty{background:var(--white);border:1px dashed var(--border);border-radius:3px;padding:18px;font-size:.78rem;font-weight:300;color:var(--mid);line-height:1.6;}
 .m-field{margin-bottom:13px;}
 .m-label{display:block;font-size:.6rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);margin-bottom:5px;}
 .m-input{width:100%;font-family:'Jost',sans-serif;font-size:.85rem;font-weight:300;background:var(--ivory);border:1px solid var(--border);color:var(--ink);border-radius:2px;padding:10px 12px;outline:none;transition:border-color .2s;}
@@ -347,6 +362,9 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
   .fld.s3{grid-column:span 2;}
   .brand-grid,.gen-layout{grid-template-columns:1fr;}
   .style-global-grid{grid-template-columns:1fr;}
+  .style-preview-head{align-items:flex-start;flex-direction:column;}
+  .style-preview-meta{text-align:left;}
+  .style-preview-grid{grid-template-columns:1fr;}
   .spv-body{flex-direction:column;height:auto;}
   .spv-desc{flex:0 0 auto;border-left:none;border-top:1px solid rgba(255,255,255,.06);}
 }
@@ -948,7 +966,15 @@ function buildStyleMorph(){
   const zone=getCurrentStyleZone();
   if(!selectedStyleId||!zone.styles.some(s=>s.id===selectedStyleId))selectedStyleId=zone.styles[0].id;
   const buyer=v('f_buyer')||'Target buyer';
-  container.innerHTML=`<div class="zone-panel"><div class="zone-head"><div><div class="zone-name">${zone.name}</div><div class="zone-meta">Detected market: <strong>${detectedMarket}</strong><br>Target buyer: <strong>${buyer}</strong></div></div><button class="btn btn-ghost" onclick="nav(1)">Change Listing</button></div><div class="style-global-grid">${zone.styles.map(s=>`<div class="style-global-card ${s.id===selectedStyleId?'on':''}" onclick="pickGlobalStyle('${s.id}')"><div class="style-swatch" style="background:${s.swatch}"></div><div class="style-name">${s.name}</div><div class="style-desc">${s.desc}</div></div>`).join('')}</div><div class="style-note">The first pass shows the selected listing photos. The recap reuses those same photos with a consistent regional look and buyer-specific lifestyle captions.</div></div>`;
+  const style=getSelectedStyle();
+  const previewRooms=ROOMS.filter(r=>r.photos&&r.photos.length).slice(0,4);
+  const previews=previewRooms.length
+    ? `<div class="style-preview-grid">${previewRooms.map(room=>{
+        const photo=getRoomPhoto(room);
+        return `<div class="style-room-card"><div class="style-room-label"><span>${room.icon} ${room.label}</span><span>${style.name}</span></div><div class="style-room-stage"><div class="style-room-before"><img src="${photo.url}" alt="${room.label} before"><div class="style-room-chip">Original</div></div><div class="style-room-after" style="--preview-overlay:${style.overlay};"><img src="${photo.url}" alt="${room.label} ${style.name}" style="filter:${style.filter};"><div class="style-room-chip">Style Morph</div></div></div></div>`;
+      }).join('')}</div>`
+    : `<div class="style-empty">Upload at least one room photo in Step 2 and the selected style preview will appear here using that actual listing photo.</div>`;
+  container.innerHTML=`<div class="zone-panel"><div class="zone-head"><div><div class="zone-name">${zone.name}</div><div class="zone-meta">Detected market: <strong>${detectedMarket}</strong><br>Target buyer: <strong>${buyer}</strong></div></div><button class="btn btn-ghost" onclick="nav(1)">Change Listing</button></div><div class="style-global-grid">${zone.styles.map(s=>`<div class="style-global-card ${s.id===selectedStyleId?'on':''}" onclick="pickGlobalStyle('${s.id}')"><div class="style-swatch" style="background:${s.swatch}"></div><div class="style-name">${s.name}</div><div class="style-desc">${s.desc}</div></div>`).join('')}</div><div class="style-preview-panel"><div class="style-preview-head"><div class="style-preview-title">Live Style Preview</div><div class="style-preview-meta">Previewing <strong>${style.name}</strong><br>Applied to selected uploaded photos</div></div>${previews}</div><div class="style-note">The generated walkthrough keeps the original photo pass, then adds a Style Morph recap with the selected regional look and buyer-specific captions.</div></div>`;
 }
 function pickGlobalStyle(id){selectedStyleId=id;buildStyleMorph();}
 

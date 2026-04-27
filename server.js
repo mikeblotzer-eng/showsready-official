@@ -160,6 +160,57 @@ async function callClaude(prompt, maxTokens = 400) {
   return data.content?.[0]?.text || '';
 }
 
+function roomLabelForIndex(index) {
+  return ['Exterior', 'Living Room', 'Kitchen', 'Primary Suite', 'Primary Bath', 'Outdoor Space'][index] || `Featured Space ${index + 1}`;
+}
+
+function fallbackImageScript({ address, market, buyer, styleName, zoneName, count }) {
+  const n = Math.max(1, count || 1);
+  const style = styleName || 'Clean Contemporary';
+  const audience = buyer || 'target buyers';
+  return {
+    propertyHeadline: `A polished ${market || 'national'} listing story for ${address}, styled for ${audience}.`,
+    closingTagline: `Schedule a private showing and see how this home fits your next move.`,
+    slides: Array.from({ length: n }, (_, i) => {
+      const label = roomLabelForIndex(i);
+      return {
+        narration: `${label} presentation highlights scale, light, and buyer-ready everyday function.`,
+        roomLabel: label,
+      };
+    }),
+    recapSlides: Array.from({ length: n }, (_, i) => {
+      const label = roomLabelForIndex(i);
+      return {
+        id: label.toLowerCase().replace(/\s+/g, '-'),
+        caption: `${style} gives the ${label.toLowerCase()} a clearer lifestyle read for ${audience}.`,
+      };
+    }),
+    fallback: true,
+    fallbackReason: 'ai_unavailable',
+    zoneName: zoneName || market || 'National',
+  };
+}
+
+function fallbackLegacyScript({ address, buyer, market, rooms }) {
+  const roomItems = rooms.length ? rooms : [
+    { id: 'ext', label: 'Exterior', style: 'Clean Contemporary' },
+    { id: 'living', label: 'Living Room', style: 'Warm Transitional' },
+    { id: 'kitchen', label: 'Kitchen', style: 'Bright Contemporary' },
+  ];
+  const json = {
+    intro: `Welcome to ${address}, a ${market || 'well-positioned'} property presented for ${buyer || 'today\'s buyers'}.`,
+    rooms: roomItems.map(r => ({
+      id: r.id,
+      voiceover: `${r.label || r.id} is framed with ${r.style || 'clean styling'} to show practical buyer appeal.`,
+    })),
+    outro: 'Reach out today to schedule a private showing and review next steps.',
+    fallback: true,
+    fallbackReason: 'ai_unavailable',
+  };
+  json.script = [json.intro, ...json.rooms.map(r => r.voiceover), json.outro].join('\n\n');
+  return json;
+}
+
 // ── STARTUP VALIDATION ────────────────────────────────────────────────────────
 function validateEnv() {
   const critical = ['STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'ANTHROPIC_API_KEY', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
@@ -206,7 +257,11 @@ app.post('/api/ai', async (req, res) => {
     res.json({ text });
   } catch (err) {
     console.error('[api/ai]', err.message);
-    res.status(500).json({ error: err.message });
+    res.json({
+      text: 'The local market is rewarding clean presentation, strong first impressions, and clear lifestyle storytelling. Buyers respond best when listing photos make rooms feel bright, current, and easy to understand quickly. Choose a style that supports the likely buyer profile, then keep the final walkthrough focused on light, flow, and everyday use.',
+      fallback: true,
+      fallbackReason: err.message,
+    });
   }
 });
 
@@ -238,8 +293,14 @@ Return ONLY raw JSON (no markdown, no code fences):
 
 Generate exactly ${n} slide object${n !== 1 ? 's' : ''} and exactly ${n} recapSlides object${n !== 1 ? 's' : ''}. Vary the room labels naturally (e.g. Exterior, Living Room, Kitchen, Master Suite, Primary Bath, Outdoor Terrace, etc.). For recapSlides, describe a concrete lifestyle moment using the selected style and target buyer, such as nighttime exterior lighting, family movie night, hosting, work-from-home, quiet retreat, or weekend outdoor living. No filler phrases.`;
 
-      const raw  = await callClaude(prompt, 600);
-      const json = JSON.parse(raw.trim());
+      let json;
+      try {
+        const raw = await callClaude(prompt, 600);
+        json = JSON.parse(raw.trim());
+      } catch (err) {
+        console.error('[api/generate:image-fallback]', err.message);
+        json = fallbackImageScript({ address, market, buyer, styleName, zoneName, count: n });
+      }
 
       return res.json(json);
     }
@@ -273,8 +334,14 @@ Write in this exact JSON format (no markdown, no code fences, just raw JSON):
 
 Only include room IDs that are in the showcased rooms list. Be evocative, specific to this property's market and buyer profile. No generic phrases.`;
 
-    const raw  = await callClaude(prompt, 600);
-    const json = JSON.parse(raw.trim());
+    let json;
+    try {
+      const raw = await callClaude(prompt, 600);
+      json = JSON.parse(raw.trim());
+    } catch (err) {
+      console.error('[api/generate:legacy-fallback]', err.message);
+      json = fallbackLegacyScript({ address, buyer, market, rooms });
+    }
     const lines = [json.intro, ...(json.rooms || []).map(r => r.voiceover), json.outro].filter(Boolean);
     json.script = lines.join('\n\n');
     res.json(json);
