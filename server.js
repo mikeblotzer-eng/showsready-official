@@ -92,26 +92,60 @@ const PLANS = {
 };
 
 // ── USER STORE (Supabase) ─────────────────────────────────────────────────────
+function fallbackUser(email, name = '') {
+  return {
+    email:                  email.toLowerCase(),
+    name,
+    plan:                   'free',
+    listings_used:          0,
+    listings_limit:         1,
+    watermark:              true,
+    stripe_customer_id:     null,
+    stripe_subscription_id: null,
+    cancel_at_period_end:   false,
+    plan_start:             new Date().toISOString(),
+    plan_end:               null,
+    transient:              true,
+  };
+}
+
 async function getUser(email) {
-  if (!supabase) throw new Error('Database not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
-  const { data } = await supabase
-    .from('users')
-    .select('*')
-    .eq('email', email.toLowerCase())
-    .maybeSingle();
-  return data || null;
+  if (!supabase) {
+    console.warn('[db] Supabase not configured; continuing without persisted user lookup.');
+    return null;
+  }
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .maybeSingle();
+    if (error) throw error;
+    return data || null;
+  } catch (err) {
+    console.error('[db:getUser]', err.message);
+    return null;
+  }
 }
 
 async function upsertUser(email, data) {
-  if (!supabase) throw new Error('Database not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
+  if (!supabase) {
+    console.warn('[db] Supabase not configured; using transient user state.');
+    return fallbackUser(email, data?.name);
+  }
   const key = email.toLowerCase();
-  const { data: updated, error } = await supabase
-    .from('users')
-    .upsert({ ...data, email: key, updated_at: new Date().toISOString() }, { onConflict: 'email' })
-    .select()
-    .single();
-  if (error) throw error;
-  return updated;
+  try {
+    const { data: updated, error } = await supabase
+      .from('users')
+      .upsert({ ...data, email: key, updated_at: new Date().toISOString() }, { onConflict: 'email' })
+      .select()
+      .single();
+    if (error) throw error;
+    return updated;
+  } catch (err) {
+    console.error('[db:upsertUser]', err.message);
+    return fallbackUser(email, data?.name);
+  }
 }
 
 async function newUser(email, name) {
@@ -224,14 +258,29 @@ function validateEnv() {
 
 // ── ROUTES ────────────────────────────────────────────────────────────────────
 
-app.get('/health', (_req, res) => {
+app.get('/health', async (_req, res) => {
+  let database = !!supabase;
+  if (supabase) {
+    try {
+      const probe = supabase.from('users').select('email', { count: 'exact', head: true });
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Supabase health probe timed out')), 5000)
+      );
+      const { error } = await Promise.race([probe, timeout]);
+      if (error) throw error;
+    } catch (err) {
+      database = false;
+      console.error('[health:database]', err.message);
+    }
+  }
+
   res.json({
-    status:    'ok',
+    status:    database ? 'ok' : 'degraded',
     service:   'showsready-api',
     timestamp: new Date().toISOString(),
     stripe:    !!process.env.STRIPE_SECRET_KEY,
     ai:        !!process.env.ANTHROPIC_API_KEY,
-    database:  !!supabase,
+    database,
   });
 });
 
