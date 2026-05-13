@@ -13,6 +13,19 @@ const supabase = (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_
 const app  = express();
 const PORT = process.env.PORT || 3001;
 
+const FALLBACK_STRIPE_PRICES = {
+  pro:   'price_1TWUoPRUZwmjaBpqOAHgWptN',
+  elite: 'price_1TWUoQRUZwmjaBpqzqLUMPHH',
+};
+
+function configuredStripePrice(plan, envKey) {
+  const value = process.env[envKey];
+  if (value && /^price_[A-Za-z0-9]+$/.test(value) && !value.includes('xxxxx')) {
+    return value;
+  }
+  return FALLBACK_STRIPE_PRICES[plan] || null;
+}
+
 // ── CORS ─────────────────────────────────────────────────────────────────────
 const PROD_ORIGINS = [
   'https://showsready.com',
@@ -77,7 +90,7 @@ const PLANS = {
     price_cents:  4999,
     listings:     10,
     watermark:    false,
-    stripe_price: process.env.STRIPE_PRICE_PRO,
+    stripe_price: configuredStripePrice('pro', 'STRIPE_PRICE_PRO'),
     type:         'subscription',
   },
   elite: {
@@ -86,7 +99,7 @@ const PLANS = {
     price_cents:  9999,
     listings:     30,
     watermark:    false,
-    stripe_price: process.env.STRIPE_PRICE_ELITE,
+    stripe_price: configuredStripePrice('elite', 'STRIPE_PRICE_ELITE'),
     type:         'subscription',
   },
 };
