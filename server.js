@@ -68,7 +68,7 @@ app.use(express.json({ limit: '50mb' }));
 const PLANS = {
   free: {
     name:         'Free Preview',
-    description:  'Browser-based real estate listing video tool that turns uploaded property photos into a watermarked walkthrough video with captions, regional Style Morph recap, and an agent end card.',
+    description:  'Browser-based real estate listing video tool that turns uploaded property photos into a watermarked walkthrough video with captions and an agent end card.',
     price_cents:  0,
     listings:     1,
     watermark:    true,
@@ -77,7 +77,7 @@ const PLANS = {
   },
   single: {
     name:         'Per Listing',
-    description:  'One watermark-free real estate listing walkthrough video created from uploaded property photos, including listing captions, regional Style Morph recap, branded agent end card, and downloadable video export.',
+    description:  'One watermark-free real estate listing walkthrough video created from uploaded property photos, including listing captions, branded agent end card, and downloadable video export.',
     price_cents:  2999,
     listings:     1,
     watermark:    false,
@@ -86,7 +86,7 @@ const PLANS = {
   },
   pro: {
     name:         'Pro Agent',
-    description:  'Monthly subscription for active real estate agents to create up to 10 watermark-free listing walkthrough videos every 30 days from uploaded property photos, with captions, regional Style Morph recaps, branded agent end cards, and downloadable video exports.',
+    description:  'Monthly subscription for active real estate agents to create up to 10 watermark-free listing walkthrough videos every 30 days from uploaded property photos, with captions, branded agent end cards, and downloadable video exports.',
     price_cents:  4999,
     listings:     10,
     watermark:    false,
@@ -95,7 +95,7 @@ const PLANS = {
   },
   elite: {
     name:         'Elite Agent',
-    description:  'Monthly subscription for high-volume real estate agents to create up to 30 watermark-free listing walkthrough videos every 30 days from uploaded property photos, with captions, regional Style Morph recaps, branded agent end cards, and downloadable video exports.',
+    description:  'Monthly subscription for high-volume real estate agents to create up to 30 watermark-free listing walkthrough videos every 30 days from uploaded property photos, with captions, branded agent end cards, and downloadable video exports.',
     price_cents:  9999,
     listings:     30,
     watermark:    false,
@@ -211,30 +211,18 @@ function roomLabelForIndex(index) {
   return ['Exterior', 'Living Room', 'Kitchen', 'Primary Suite', 'Primary Bath', 'Outdoor Space'][index] || `Featured Space ${index + 1}`;
 }
 
-function fallbackImageScript({ address, market, buyer, styleName, zoneName, count }) {
+function imageCaptionPayload({ address, count }) {
   const n = Math.max(1, count || 1);
-  const style = styleName || 'Clean Contemporary';
-  const audience = buyer || 'target buyers';
   return {
-    propertyHeadline: `A polished ${market || 'national'} listing story for ${address}, styled for ${audience}.`,
+    propertyHeadline: `A focused walkthrough of ${address || 'this property'}.`,
     closingTagline: `Schedule a private showing and see how this home fits your next move.`,
     slides: Array.from({ length: n }, (_, i) => {
       const label = roomLabelForIndex(i);
       return {
-        narration: `${label} presentation highlights scale, light, and buyer-ready everyday function.`,
+        caption: `${label} is presented clearly for buyers reviewing the home online.`,
         roomLabel: label,
       };
     }),
-    recapSlides: Array.from({ length: n }, (_, i) => {
-      const label = roomLabelForIndex(i);
-      return {
-        id: label.toLowerCase().replace(/\s+/g, '-'),
-        caption: `${style} gives the ${label.toLowerCase()} a clearer lifestyle read for ${audience}.`,
-      };
-    }),
-    fallback: true,
-    fallbackReason: 'ai_unavailable',
-    zoneName: zoneName || market || 'National',
   };
 }
 
@@ -248,13 +236,13 @@ function fallbackLegacyScript({ address, buyer, market, rooms }) {
     intro: `Welcome to ${address}, a ${market || 'well-positioned'} property presented for ${buyer || 'today\'s buyers'}.`,
     rooms: roomItems.map(r => ({
       id: r.id,
-      voiceover: `${r.label || r.id} is framed with ${r.style || 'clean styling'} to show practical buyer appeal.`,
+      caption: `${r.label || r.id} is presented clearly for practical buyer review.`,
     })),
     outro: 'Reach out today to schedule a private showing and review next steps.',
     fallback: true,
     fallbackReason: 'ai_unavailable',
   };
-  json.script = [json.intro, ...json.rooms.map(r => r.voiceover), json.outro].join('\n\n');
+  json.script = [json.intro, ...json.rooms.map(r => r.caption), json.outro].join('\n\n');
   return json;
 }
 
@@ -326,7 +314,7 @@ app.post('/api/ai', async (req, res) => {
   } catch (err) {
     console.error('[api/ai]', err.message);
     res.json({
-      text: 'The local market is rewarding clean presentation, strong first impressions, and clear lifestyle storytelling. Buyers respond best when listing photos make rooms feel bright, current, and easy to understand quickly. Choose a style that supports the likely buyer profile, then keep the final walkthrough focused on light, flow, and everyday use.',
+      text: 'The local market is rewarding clean presentation, strong first impressions, and clear property storytelling. Buyers respond best when listing photos make rooms feel bright, current, and easy to understand quickly. Keep the final walkthrough focused on light, flow, and everyday use.',
       fallback: true,
       fallbackReason: err.message,
     });
@@ -335,47 +323,18 @@ app.post('/api/ai', async (req, res) => {
 
 app.post('/api/generate', async (req, res) => {
   try {
-    const { address, price, type, condition, buyer, notes, market, rooms = [], images, photoCount, styleName, zoneName } = req.body;
+    const { address, price, type, condition, buyer, notes, market, rooms = [], images, photoCount } = req.body;
     if (!address) return res.status(400).json({ error: 'address is required.' });
 
     // New format: image-based walkthrough generation
     if (images && Array.isArray(images)) {
       const n = images.length || photoCount || 1;
-      const prompt = `You are a luxury real estate marketing copywriter. Generate a walkthrough video script for a property at ${address} in the ${market || 'US'} market. The video has ${n} photo slide${n !== 1 ? 's' : ''}.
-
-Target buyer: ${buyer || 'general buyers'}
-Regional style morph: ${styleName || 'clean contemporary'}
-Style zone: ${zoneName || market || 'National'}
-
-Return ONLY raw JSON (no markdown, no code fences):
-{
-  "propertyHeadline": "One compelling 12-18 word opening sentence welcoming viewers",
-  "closingTagline": "One 10-14 word call-to-action closing sentence",
-  "slides": [
-    {"narration": "One vivid 12-16 word sentence describing this room/space", "roomLabel": "Room Name"}
-  ],
-  "recapSlides": [
-    {"id": "same room id or simple room key", "caption": "One vivid 12-18 word lifestyle recap sentence showing how the selected style supports the target buyer"}
-  ]
-}
-
-Generate exactly ${n} slide object${n !== 1 ? 's' : ''} and exactly ${n} recapSlides object${n !== 1 ? 's' : ''}. Vary the room labels naturally (e.g. Exterior, Living Room, Kitchen, Master Suite, Primary Bath, Outdoor Terrace, etc.). For recapSlides, describe a concrete lifestyle moment using the selected style and target buyer, such as nighttime exterior lighting, family movie night, hosting, work-from-home, quiet retreat, or weekend outdoor living. No filler phrases.`;
-
-      let json;
-      try {
-        const raw = await callClaude(prompt, 600);
-        json = JSON.parse(raw.trim());
-      } catch (err) {
-        console.error('[api/generate:image-fallback]', err.message);
-        json = fallbackImageScript({ address, market, buyer, styleName, zoneName, count: n });
-      }
-
-      return res.json(json);
+      return res.json(imageCaptionPayload({ address, count: n }));
     }
 
     // Legacy format: text-only script generation
     const roomList = rooms.map(r => `${r.label} (${r.style})`).join(', ');
-    const prompt = `You are a luxury real estate marketing copywriter. Write a polished walkthrough video script for the following listing.
+    const prompt = `Write concise listing captions for the following real estate walkthrough.
 
 Property: ${address}
 Price: ${price}
@@ -390,17 +349,17 @@ Write in this exact JSON format (no markdown, no code fences, just raw JSON):
 {
   "intro": "One compelling opening sentence welcoming viewers to this property (15-20 words)",
   "rooms": [
-    {"id": "ext", "voiceover": "One vivid sentence about the exterior (12-16 words)"},
-    {"id": "living", "voiceover": "One vivid sentence about the living room (12-16 words)"},
-    {"id": "kitchen", "voiceover": "One vivid sentence about the kitchen (12-16 words)"},
-    {"id": "master", "voiceover": "One vivid sentence about the master bedroom (12-16 words)"},
-    {"id": "bath", "voiceover": "One vivid sentence about the bathroom (12-16 words)"},
-    {"id": "outdoor", "voiceover": "One vivid sentence about the outdoor space (12-16 words)"}
+    {"id": "ext", "caption": "One clean caption about the exterior (8-12 words)"},
+    {"id": "living", "caption": "One clean caption about the living room (8-12 words)"},
+    {"id": "kitchen", "caption": "One clean caption about the kitchen (8-12 words)"},
+    {"id": "master", "caption": "One clean caption about the primary bedroom (8-12 words)"},
+    {"id": "bath", "caption": "One clean caption about the bathroom (8-12 words)"},
+    {"id": "outdoor", "caption": "One clean caption about the outdoor space (8-12 words)"}
   ],
   "outro": "One closing call-to-action sentence (12-16 words)"
 }
 
-Only include room IDs that are in the showcased rooms list. Be evocative, specific to this property's market and buyer profile. No generic phrases.`;
+Only include room IDs that are in the showcased rooms list. Use plain professional language. No hype, no filler.`;
 
     let json;
     try {
@@ -410,7 +369,7 @@ Only include room IDs that are in the showcased rooms list. Be evocative, specif
       console.error('[api/generate:legacy-fallback]', err.message);
       json = fallbackLegacyScript({ address, buyer, market, rooms });
     }
-    const lines = [json.intro, ...(json.rooms || []).map(r => r.voiceover), json.outro].filter(Boolean);
+    const lines = [json.intro, ...(json.rooms || []).map(r => r.caption), json.outro].filter(Boolean);
     json.script = lines.join('\n\n');
     res.json(json);
   } catch (err) {
