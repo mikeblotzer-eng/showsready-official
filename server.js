@@ -68,7 +68,7 @@ app.use(express.json({ limit: '50mb' }));
 const PLANS = {
   free: {
     name:         'Free Preview',
-    description:  'Browser-based real estate listing video tool that turns uploaded property photos into a watermarked walkthrough video with captions, regional Style Morph recap, music, and an agent end card.',
+    description:  'Browser-based real estate listing video tool that turns uploaded property photos into a watermarked walkthrough video with captions, regional Style Morph recap, and an agent end card.',
     price_cents:  0,
     listings:     1,
     watermark:    true,
@@ -77,7 +77,7 @@ const PLANS = {
   },
   single: {
     name:         'Per Listing',
-    description:  'One watermark-free real estate listing walkthrough video created from uploaded property photos, including listing captions, regional Style Morph recap, background music, branded agent end card, and MP4 export.',
+    description:  'One watermark-free real estate listing walkthrough video created from uploaded property photos, including listing captions, regional Style Morph recap, branded agent end card, and downloadable video export.',
     price_cents:  2999,
     listings:     1,
     watermark:    false,
@@ -86,7 +86,7 @@ const PLANS = {
   },
   pro: {
     name:         'Pro Agent',
-    description:  'Monthly subscription for active real estate agents to create up to 10 watermark-free listing walkthrough videos every 30 days from uploaded property photos, with captions, regional Style Morph recaps, music, branded agent end cards, and MP4 exports.',
+    description:  'Monthly subscription for active real estate agents to create up to 10 watermark-free listing walkthrough videos every 30 days from uploaded property photos, with captions, regional Style Morph recaps, branded agent end cards, and downloadable video exports.',
     price_cents:  4999,
     listings:     10,
     watermark:    false,
@@ -95,7 +95,7 @@ const PLANS = {
   },
   elite: {
     name:         'Elite Agent',
-    description:  'Monthly subscription for high-volume real estate agents to create up to 30 watermark-free listing walkthrough videos every 30 days from uploaded property photos, with captions, regional Style Morph recaps, music, branded agent end cards, and MP4 exports.',
+    description:  'Monthly subscription for high-volume real estate agents to create up to 30 watermark-free listing walkthrough videos every 30 days from uploaded property photos, with captions, regional Style Morph recaps, branded agent end cards, and downloadable video exports.',
     price_cents:  9999,
     listings:     30,
     watermark:    false,
@@ -304,7 +304,13 @@ app.get('/api/session', async (req, res) => {
     if (!stripe) return res.status(503).json({ error: 'Stripe not configured.' });
     const session = await stripe.checkout.sessions.retrieve(session_id);
     const email = session.customer_details?.email || session.customer_email || null;
-    res.json({ email });
+    res.json({
+      email,
+      plan: session.metadata?.plan || null,
+      mode: session.mode || null,
+      paymentStatus: session.payment_status || null,
+      status: session.status || null,
+    });
   } catch (err) {
     console.error('[api/session]', err.message);
     res.status(500).json({ error: err.message });

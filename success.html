@@ -36,6 +36,11 @@ if (sessionId) {
     .then(data => {
       if (data.email) {
         localStorage.setItem('sr_email', data.email);
+        if (data.plan) {
+          localStorage.setItem('sr_plan', data.plan);
+          localStorage.setItem('sr_used', '0');
+          localStorage.setItem('sr_plan_activated_at', new Date().toISOString());
+        }
         document.getElementById('msg').textContent =
           `Plan activated for ${data.email}. You're ready to create walkthrough videos that win showings.`;
       }

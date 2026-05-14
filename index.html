@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ShowsReady — AI Walkthrough Videos for Real Estate Agents</title>
-<meta name="description" content="Create listing walkthrough videos with regional style morph recaps, captions, music, and agent branding. Built for real estate agents.">
+<meta name="description" content="Create listing walkthrough videos with regional style morph recaps, captions, and agent branding. Built for real estate agents.">
 <link rel="canonical" href="https://showsready.com/">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -151,7 +151,7 @@ footer{background:var(--char);padding:32px 48px;display:flex;align-items:center;
   <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;">
     <div class="hero-eyebrow">AI-Powered Real Estate Marketing</div>
     <h1 class="hero-title">Your listings,<br><em>shows ready</em> in minutes.</h1>
-    <p class="hero-sub">ShowsReady is a browser-based real estate listing video tool. Upload property photos and listing details to create a polished walkthrough video with captions, a regional Style Morph recap, music, and your branded contact card.</p>
+    <p class="hero-sub">ShowsReady is a browser-based real estate listing video tool. Upload property photos and listing details to create a polished walkthrough video with captions, a regional Style Morph recap, and your branded contact card.</p>
     <div class="hero-ctas">
       <a href="#" class="btn-hero-gold" onclick="openModal('free');return false;">Create Free Walkthrough</a>
       <a href="pricing.html" class="btn-hero-ghost">View Pricing →</a>
@@ -171,7 +171,7 @@ footer{background:var(--char);padding:32px 48px;display:flex;align-items:center;
       <div class="step"><div class="step-num">2</div><div class="step-title">Upload Room Photos</div><div class="step-desc">Drop in 1–3 photos per room. Exterior, living room, kitchen, master, bath, outdoor — all covered.</div></div>
       <div class="step"><div class="step-num">3</div><div class="step-title">Pick A Style Morph</div><div class="step-desc">Choose one regional style for the full listing, paired with your target buyer.</div></div>
       <div class="step"><div class="step-num">4</div><div class="step-title">Add Your Branding</div><div class="step-desc">Your name, title, brokerage, phone, email — assembled into a polished agent end card.</div></div>
-      <div class="step"><div class="step-num">5</div><div class="step-title">Export Your Video</div><div class="step-desc">Download a 1280x720 walkthrough with selected photos, a style morph recap, captions, branding, and music.</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-title">Export Your Video</div><div class="step-desc">Download a 1280x720 walkthrough with selected photos, a style morph recap, captions, and branding.</div></div>
     </div>
   </div>
 </section>
@@ -185,7 +185,7 @@ footer{background:var(--char);padding:32px 48px;display:flex;align-items:center;
     <div class="features">
       <div class="feat"><div class="feat-icon">🗺️</div><div class="feat-title">Regional Style Morph</div><div class="feat-desc">The country is grouped into simple zones with three style choices per region.</div></div>
       <div class="feat"><div class="feat-icon">↔️</div><div class="feat-title">Lifestyle Recap</div><div class="feat-desc">After the walkthrough, the video recaps the same photos with buyer-specific lifestyle moments.</div></div>
-      <div class="feat"><div class="feat-icon">🎵</div><div class="feat-title">Background Music</div><div class="feat-desc">Choose from Ambient Luxury, Modern Lifestyle, or Classical Elegance — or export silent for your own audio.</div></div>
+        <div class="feat"><div class="feat-icon">✦</div><div class="feat-title">Listing Captions</div><div class="feat-desc">Each generated walkthrough includes concise room captions and a polished closing line for the agent card.</div></div>
       <div class="feat"><div class="feat-icon">💼</div><div class="feat-title">Branded End Card</div><div class="feat-desc">Your name, photo, contact info, and tagline close every walkthrough in a premium agent card.</div></div>
       <div class="feat"><div class="feat-icon">⚡</div><div class="feat-title">Fast & Browser-Based</div><div class="feat-desc">No app to download. Works in any modern browser. Generate and export in under 5 minutes.</div></div>
       <div class="feat"><div class="feat-icon">🔒</div><div class="feat-title">Your Files Stay Yours</div><div class="feat-desc">Photos are processed locally in your browser. Nothing is stored on our servers without your permission.</div></div>
@@ -219,7 +219,7 @@ footer{background:var(--char);padding:32px 48px;display:flex;align-items:center;
         <ul class="pcard-feats">
           <li>1 listing walkthrough</li>
           <li>No watermark</li>
-          <li>Full MP4 export</li>
+          <li>HD video export</li>
           <li>Branded end card</li>
         </ul>
         <button class="pcard-btn pcard-btn-dark" onclick="openModal('single')">Buy Single Listing</button>
@@ -346,6 +346,8 @@ async function handleSignup() {
     if (data.user || data.success) {
       localStorage.setItem('sr_email', email);
       localStorage.setItem('sr_name', name);
+      localStorage.setItem('sr_plan', selectedPlan);
+      localStorage.setItem('sr_used', '0');
       window.location.href = 'app.html';
     }
   } catch (err) {

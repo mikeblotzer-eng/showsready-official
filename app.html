@@ -185,20 +185,6 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 .logo-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
 .logo-drop-txt{font-size:.72rem;font-weight:300;color:var(--mid);}
 
-/* ── MUSIC PICKER ── */
-.music-tracks{display:flex;flex-direction:column;gap:6px;}
-.mtrack{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-radius:2px;cursor:pointer;background:var(--white);transition:all .15s;}
-.mtrack:hover{border-color:var(--gold);background:rgba(184,147,90,.03);}
-.mtrack.on{border-color:var(--ink);background:var(--ink);}
-.mtrack-icon{font-size:1.1rem;width:22px;text-align:center;flex-shrink:0;}
-.mtrack-info{flex:1;}
-.mtrack-name{font-size:.8rem;font-weight:500;color:var(--ink);}
-.mtrack.on .mtrack-name{color:var(--ivory);}
-.mtrack-desc{font-size:.7rem;font-weight:300;color:var(--mid);}
-.mtrack.on .mtrack-desc{color:rgba(255,255,255,.4);}
-.mtrack-check{font-size:.75rem;color:var(--gold);opacity:0;transition:opacity .15s;}
-.mtrack.on .mtrack-check{opacity:1;}
-
 /* ── GENERATE ── */
 .gen-layout{padding:26px;display:grid;grid-template-columns:260px 1fr;gap:30px;}
 .gen-steps{display:flex;flex-direction:column;}
@@ -506,14 +492,6 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
           <label class="m-label" style="display:block;margin-bottom:6px;">Agent Photo / Logo</label>
           <div class="logo-drop"><input type="file" accept="image/*" onchange="handleLogo(event)"><div id="logoDrop"><div class="logo-drop-txt">Drop photo or brokerage logo here</div></div></div>
         </div>
-        <div>
-          <label class="m-label" style="display:block;margin-bottom:6px;">Background Music</label>
-          <div class="music-tracks">
-            <div class="mtrack on" id="music_luxury" onclick="pickMusic('luxury')"><div class="mtrack-icon">♪</div><div class="mtrack-info"><div class="mtrack-name">Luxury Pulse</div><div class="mtrack-desc">Polished, warm, restrained</div></div><div class="mtrack-check">✓</div></div>
-            <div class="mtrack" id="music_coastal" onclick="pickMusic('coastal')"><div class="mtrack-icon">♪</div><div class="mtrack-info"><div class="mtrack-name">Coastal Air</div><div class="mtrack-desc">Light, open, calm</div></div><div class="mtrack-check">✓</div></div>
-            <div class="mtrack" id="music_modern" onclick="pickMusic('modern')"><div class="mtrack-icon">♪</div><div class="mtrack-info"><div class="mtrack-name">Modern Lift</div><div class="mtrack-desc">Clean, confident, upbeat</div></div><div class="mtrack-check">✓</div></div>
-          </div>
-        </div>
       </div>
       <div>
         <div style="font-size:.6rem;font-weight:600;letter-spacing:.19em;text-transform:uppercase;color:var(--mid);margin-bottom:12px;">Live End Card Preview</div>
@@ -539,7 +517,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
     <div class="step-bar-left">
       <div class="eyebrow">Step 5 of 5</div>
       <div class="pg-title">Generate Walkthrough</div>
-      <div class="pg-sub" style="margin-bottom:0">ShowsReady assembles your selected photos, captions, music, and branded end card.</div>
+      <div class="pg-sub" style="margin-bottom:0">ShowsReady assembles your selected photos, captions, Style Morph recap, and branded end card.</div>
     </div>
     <div style="display:flex;gap:9px;">
       <button class="btn btn-ghost" onclick="nav(4)">← Branding</button>
@@ -578,7 +556,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
             <div class="vdots" id="vdots"></div>
             <div class="vbtns">
               <button class="vbtn vbtn-play" id="playBtn" onclick="togglePlay()">▶ Play</button>
-              <button class="vbtn vbtn-export" id="exportBtn" onclick="doExport()">⬇ Export MP4</button>
+              <button class="vbtn vbtn-export" id="exportBtn" onclick="doExport()">⬇ Export Video</button>
             </div>
           </div>
         </div>
@@ -624,7 +602,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
             <div style="flex:1;">
               <div class="pc-top"><div class="pc-name">Per Listing</div><div class="pc-price">$29.99</div></div>
               <div class="pc-desc">One walkthrough · no subscription · no watermark</div>
-              <div class="pc-feats"><div class="pc-feat-tag">1 listing</div><div class="pc-feat-tag">No watermark</div><div class="pc-feat-tag">MP4 export</div></div>
+              <div class="pc-feats"><div class="pc-feat-tag">1 listing</div><div class="pc-feat-tag">No watermark</div><div class="pc-feat-tag">Video export</div></div>
             </div>
           </div>
         </div>
@@ -710,6 +688,22 @@ const PLANS = {
 };
 let user = {plan:'free', used:0, email:'', name:''};
 
+function saveUserState(){
+  localStorage.setItem('sr_plan', user.plan);
+  localStorage.setItem('sr_used', String(user.used || 0));
+  if(user.email)localStorage.setItem('sr_email', user.email);
+  if(user.name)localStorage.setItem('sr_name', user.name);
+}
+
+function loadUserState(){
+  const plan=localStorage.getItem('sr_plan');
+  if(plan&&PLANS[plan])user.plan=plan;
+  const used=Number(localStorage.getItem('sr_used'));
+  user.used=Number.isFinite(used)&&used>0?used:0;
+  user.email=localStorage.getItem('sr_email')||'';
+  user.name=localStorage.getItem('sr_name')||'';
+}
+
 function updateHeader() {
   const p = PLANS[user.plan];
   const pill = document.getElementById('planPill');
@@ -724,6 +718,7 @@ function updateHeader() {
   if(wm) wm.style.display = p.watermark?'flex':'none';
   const eb = document.getElementById('exportBtn');
   if(eb){ eb.className = p.watermark?'vbtn vbtn-export locked':'vbtn vbtn-export'; eb.title = p.watermark?'Upgrade to export without watermark':''; }
+  saveUserState();
 }
 
 function showDashInfo(){ toast(`Plan: ${PLANS[user.plan].name} · ${user.used}/${PLANS[user.plan].listings} listings used`); }
@@ -854,12 +849,6 @@ let stagingData={};
 let slides=[],curSlide=0,playing=false,playTimer;
 let curPage=1;
 let selectedStyleId='';
-const MUSIC_TRACKS={
-  luxury:{name:'Luxury Pulse',notes:[196,246.94,293.66,369.99],tempo:96,volume:.055},
-  coastal:{name:'Coastal Air',notes:[174.61,220,261.63,329.63],tempo:82,volume:.05},
-  modern:{name:'Modern Lift',notes:[220,277.18,329.63,415.3],tempo:104,volume:.045},
-};
-let selectedMusic='luxury';
 
 /* ── NAV ── */
 function nav(n){
@@ -985,10 +974,6 @@ function syncCard(){
   document.getElementById('pc_phone').textContent=ph?`📞 ${ph}`:'';document.getElementById('pc_email').textContent=em?`✉ ${em}`:'';
   document.getElementById('pc_web').textContent=wb?`🌐 ${wb}`:'';document.getElementById('pc_tag').textContent=tg?`"${tg}"`:'';}
 function handleLogo(e){const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);document.getElementById('logoDrop').innerHTML=`<img src="${url}" style="max-height:60px;border-radius:2px;object-fit:contain;">`;}
-function pickMusic(track){
-  selectedMusic=track;
-  Object.keys(MUSIC_TRACKS).forEach(k=>document.getElementById(`music_${k}`)?.classList.toggle('on',k===track));
-}
 
 /* ── PG 5 ── */
 async function doGenerate(){
@@ -1208,8 +1193,6 @@ async function doExport(){
 
   // Set up MediaRecorder
   const stream=canvas.captureStream(30);
-  const audioMix=await createExportAudioMix(slides.length*SLIDE_DUR/1000);
-  if(audioMix?.stream)audioMix.stream.getAudioTracks().forEach(track=>stream.addTrack(track));
 
   const mimeType=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
   const rec=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:8000000});
@@ -1225,7 +1208,6 @@ async function doExport(){
   btn.disabled=true;btn.textContent='⏳ Recording…';
 
   rec.start(100);
-  audioMix?.start();
 
   // Render each slide to canvas
   for(let i=0;i<slides.length;i++){
@@ -1238,7 +1220,6 @@ async function doExport(){
 
   exportFill.style.width='100%';
   exportStatusTxt.textContent='Finalizing…';
-  audioMix?.stop();
   rec.stop();
 
   await new Promise(r=>{rec.onstop=r;});
@@ -1250,49 +1231,9 @@ async function doExport(){
   a.click();
   URL.revokeObjectURL(url);
 
-  btn.disabled=false;btn.textContent='⬇ Export MP4';
+  btn.disabled=false;btn.textContent='⬇ Export Video';
   exportStatus.style.display='none';
   toast('✓ Download started!');
-}
-
-async function createExportAudioMix(durationSeconds){
-  const AudioCtx=window.AudioContext||window.webkitAudioContext;
-  if(!AudioCtx)return null;
-  const ctx=new AudioCtx();
-  const dest=ctx.createMediaStreamDestination();
-  const master=ctx.createGain();master.gain.value=.95;master.connect(dest);
-  const stops=[];
-  const start=()=>{
-    if(ctx.state==='suspended')ctx.resume();
-    startMusicBed(ctx,master,durationSeconds);
-  };
-  const stop=()=>{stops.forEach(fn=>fn());setTimeout(()=>ctx.close().catch(()=>{}),250);};
-  return {stream:dest.stream,start,stop};
-}
-
-function startMusicBed(ctx,out,durationSeconds){
-  const track=MUSIC_TRACKS[selectedMusic]||MUSIC_TRACKS.luxury;
-  const musicGain=ctx.createGain();
-  musicGain.gain.setValueAtTime(0,ctx.currentTime);
-  musicGain.gain.linearRampToValueAtTime(track.volume,ctx.currentTime+1.2);
-  musicGain.gain.setValueAtTime(track.volume,ctx.currentTime+Math.max(1,durationSeconds-2));
-  musicGain.gain.linearRampToValueAtTime(0,ctx.currentTime+Math.max(2,durationSeconds-.2));
-  musicGain.connect(out);
-  const beat=60/track.tempo;
-  track.notes.forEach((freq,i)=>{
-    for(let t=0;t<durationSeconds;t+=beat*track.notes.length){
-      const start=ctx.currentTime+t+i*beat;
-      const osc=ctx.createOscillator();
-      const noteGain=ctx.createGain();
-      osc.type=i%2?'triangle':'sine';
-      osc.frequency.value=freq;
-      noteGain.gain.setValueAtTime(0,start);
-      noteGain.gain.linearRampToValueAtTime(.55,start+.04);
-      noteGain.gain.exponentialRampToValueAtTime(.001,start+beat*1.6);
-      osc.connect(noteGain);noteGain.connect(musicGain);
-      osc.start(start);osc.stop(start+beat*1.7);
-    }
-  });
 }
 
 
@@ -1424,37 +1365,21 @@ function goToCheckout(){
   showStep('stepCheckout');
 }
 function backToPlan(){showStep('stepPlan');}
-// Direct Stripe Payment Links — no backend required for checkout
-// ── Stripe Payment Links ──────────────────────────────────────────────────────
-// Create these at dashboard.stripe.com/payment-links (one per price ID)
-// Then replace the placeholder URLs below with the real pay.stripe.com/... URLs
-// Price IDs: single=price_1TGzNG... pro=price_1TGzOk... elite=price_1TGzQA...
-const STRIPE_PAYMENT_LINKS = {
-  single: 'https://buy.stripe.com/REPLACE_SINGLE_LINK',
-  pro:    'https://buy.stripe.com/REPLACE_PRO_LINK',
-  elite:  'https://buy.stripe.com/REPLACE_ELITE_LINK',
-};
 async function handleCheckout(){
   const btn=document.getElementById('ck_btn');
   const name=document.getElementById('m_name').value.trim();
   const email=document.getElementById('m_email').value.trim();
   if(!name||!email){toast('Please enter your name and email.');return;}
-  if(selectedPlan==='free'){user.plan='free';user.email=email;user.name=name;user.used=0;localStorage.setItem('sr_email',email);updateHeader();closeOver('upgradeOverlay');toast('Free plan active.');return;}
+  if(selectedPlan==='free'){user.plan='free';user.email=email;user.name=name;user.used=0;saveUserState();updateHeader();closeOver('upgradeOverlay');toast('Free plan active.');return;}
   btn.disabled=true;document.getElementById('ck_btn_txt').innerHTML='<span class="spin"></span>&nbsp;Redirecting to Stripe…';
-  // Try backend first, fall back to direct payment links
   try{
     const res=await fetch(`${SR_API}/api/checkout`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,name,plan:selectedPlan})});
     const data=await res.json();
-    if(data.checkoutUrl){window.location.href=data.checkoutUrl;return;}
-    throw new Error('No URL');
+    if(!res.ok||!data.checkoutUrl)throw new Error(data.error||'Checkout is unavailable.');
+    window.location.href=data.checkoutUrl;return;
   }catch(err){
-    // Backend unavailable — use direct payment links
-    const link=STRIPE_PAYMENT_LINKS[selectedPlan];
-    if(link&&!link.includes('REPLACE_')){window.location.href=link;}
-    else{
-      document.getElementById('card-err').textContent='Checkout is not configured yet. Confirm the backend Stripe environment variables or add real Stripe Payment Links.';
-      btn.disabled=false;document.getElementById('ck_btn_txt').textContent=selectedPlan==='single'?'Complete Purchase':'Start Subscription';
-    }
+    document.getElementById('card-err').textContent=err.message||'Checkout is unavailable. Please try again.';
+    btn.disabled=false;document.getElementById('ck_btn_txt').textContent=selectedPlan==='single'?'Complete Purchase':'Start Subscription';
   }
 }
 
@@ -1490,7 +1415,7 @@ async function claude(prompt) {
   }
 }
 
-updateHeader();buildRooms();
+loadUserState();updateHeader();buildRooms();
 </script>
 </body>
 </html>
