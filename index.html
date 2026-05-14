@@ -327,9 +327,18 @@ async function handleSignup() {
   const email = document.getElementById('s_email').value.trim();
   if (!name || !email) { toast('Please enter your name and email.'); return; }
 
+  if (selectedPlan === 'free') {
+    localStorage.setItem('sr_email', email);
+    localStorage.setItem('sr_name', name);
+    localStorage.setItem('sr_plan', 'free');
+    localStorage.setItem('sr_used', '0');
+    window.location.href = 'app.html';
+    return;
+  }
+
   const btn = document.getElementById('s_btn');
   btn.disabled = true;
-  document.getElementById('s_btn_txt').innerHTML = '<span class="spin"></span>&nbsp;Just a moment…';
+  document.getElementById('s_btn_txt').innerHTML = '<span class="spin"></span>&nbsp;Opening Stripe…';
 
   try {
     const res = await fetch(`${API_BASE}/api/signup`, {
