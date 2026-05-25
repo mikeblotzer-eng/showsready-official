@@ -1,10 +1,23 @@
 require('dotenv').config();
-const express = require('express');
-const cors    = require('cors');
-const stripe  = process.env.STRIPE_SECRET_KEY
+const express    = require('express');
+const cors       = require('cors');
+const { execFile } = require('child_process');
+const path       = require('path');
+const os         = require('os');
+const fs         = require('fs');
+const stripe     = process.env.STRIPE_SECRET_KEY
   ? require('stripe')(process.env.STRIPE_SECRET_KEY)
   : null;
 const { createClient } = require('@supabase/supabase-js');
+
+// Static ffmpeg binary — works on Render without system ffmpeg installed
+let ffmpegBin = null;
+try {
+  ffmpegBin = require('@ffmpeg-installer/ffmpeg').path;
+  console.log('[ffmpeg] binary at:', ffmpegBin);
+} catch (e) {
+  console.warn('[ffmpeg] @ffmpeg-installer/ffmpeg not found — MP4 conversion disabled');
+}
 
 const supabase = (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
   ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
@@ -61,6 +74,8 @@ const corsOptions = {
 
 // Stripe webhook MUST receive raw body — register BEFORE express.json()
 app.use('/webhook', express.raw({ type: 'application/json' }));
+// MP4 convert route receives raw binary — also register before express.json()
+app.use('/api/convert', express.raw({ type: ['video/webm', 'application/octet-stream'], limit: '500mb' }));
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 
@@ -321,6 +336,64 @@ app.post('/api/ai', async (req, res) => {
   }
 });
 
+// ── MP4 CONVERSION ────────────────────────────────────────────────────────────
+app.post('/api/convert', async (req, res) => {
+  if (!ffmpegBin) {
+    return res.status(503).json({ error: 'ffmpeg not available on this server.' });
+  }
+  if (!req.body || !req.body.length) {
+    return res.status(400).json({ error: 'No video data received.' });
+  }
+
+  const ts  = Date.now();
+  const inp = path.join(os.tmpdir(), `sr_${ts}_in.webm`);
+  const out = path.join(os.tmpdir(), `sr_${ts}_out.mp4`);
+
+  const cleanup = () => {
+    try { fs.unlinkSync(inp); } catch {}
+    try { fs.unlinkSync(out); } catch {}
+  };
+
+  try {
+    fs.writeFileSync(inp, req.body);
+
+    await new Promise((resolve, reject) => {
+      execFile(ffmpegBin, [
+        '-i',  inp,
+        '-c:v', 'libx264',
+        '-preset', 'fast',
+        '-crf',    '23',
+        '-pix_fmt','yuv420p',   // broadest compatibility (Safari, QuickTime, iOS)
+        '-movflags', '+faststart', // enables streaming / instant playback
+        '-an',                  // no audio track (source is silent)
+        '-y', out,
+      ], { maxBuffer: 512 * 1024 * 1024 }, (err, _stdout, stderr) => {
+        if (err) {
+          console.error('[convert] ffmpeg error:', stderr?.slice(-800));
+          reject(new Error(err.message));
+        } else {
+          resolve();
+        }
+      });
+    });
+
+    const stat = fs.statSync(out);
+    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Content-Length', stat.size);
+    res.setHeader('Content-Disposition', 'inline; filename="walkthrough.mp4"');
+    const stream = fs.createReadStream(out);
+    stream.pipe(res);
+    stream.on('end', cleanup);
+    stream.on('error', cleanup);
+
+    console.log(`[convert] OK — ${(req.body.length / 1e6).toFixed(1)} MB → ${(stat.size / 1e6).toFixed(1)} MB`);
+  } catch (err) {
+    cleanup();
+    console.error('[convert]', err.message);
+    res.status(500).json({ error: 'Conversion failed: ' + err.message });
+  }
+});
+
 app.post('/api/generate', async (req, res) => {
   try {
     const { address, price, type, condition, buyer, notes, market, rooms = [], images, photoCount } = req.body;
@@ -570,8 +643,20 @@ app.post('/webhook', async (req, res) => {
       }
 
       case 'customer.subscription.deleted': {
-        const sub   = event.data.object;
-        const email = sub.metadata?.email || sub.customer_email;
+        const sub = event.data.object;
+        let email = sub.metadata?.email;
+
+        // Stripe subscription objects don't carry customer_email directly —
+        // retrieve the Stripe customer to get the email when metadata is absent.
+        if (!email && sub.customer) {
+          try {
+            const customer = await stripe.customers.retrieve(sub.customer);
+            email = customer.email || null;
+          } catch (custErr) {
+            console.error('[webhook] Failed to retrieve customer for downgrade:', custErr.message);
+          }
+        }
+
         if (email) {
           await upsertUser(email, {
             plan:                   'free',
@@ -583,6 +668,8 @@ app.post('/webhook', async (req, res) => {
             plan_end:               new Date().toISOString(),
           });
           console.log(`[webhook] Downgraded to free: ${email}`);
+        } else {
+          console.warn('[webhook] customer.subscription.deleted — could not resolve email, skipping downgrade');
         }
         break;
       }

@@ -22,6 +22,7 @@
   --white:   #ffffff;
   --green:   #2d6a4f;
   --red:     #b84040;
+  --preview-overlay: transparent;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
@@ -218,8 +219,7 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 .ba{position:relative;width:100%;height:100%;overflow:hidden;cursor:ew-resize;}
 .ba-b,.ba-a{position:absolute;inset:0;}
 .ba-a{clip-path:inset(0 50% 0 0);}
-.ba-a img{filter:saturate(1.3) brightness(1.07) contrast(1.04);}
-.ba-a::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(184,147,90,.1),transparent);pointer-events:none;}
+/* ba-a image filter is set inline from the selected STYLE — do not override here */
 .ba-b img,.ba-a img{width:100%;height:100%;object-fit:cover;display:block;}
 .ba-line{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:1px;background:rgba(255,255,255,.72);pointer-events:none;z-index:5;}
 .ba-knob{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:white;z-index:6;display:flex;align-items:center;justify-content:center;font-size:.68rem;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.25);pointer-events:none;font-weight:700;}
@@ -658,22 +658,8 @@ header{position:sticky;top:0;z-index:400;height:58px;background:var(--ink);displ
 
 <script>
 /* ── STRIPE ── */
+// Checkout uses Stripe-hosted redirect (no Elements needed in this UI)
 const STRIPE_PK = 'pk_live_51T8dnNDwB0tBPUZ7nXTbDCYLHzWDKU39HDBlgFbCse5ViH9GdU4nV295tz1aXYZrW7qAEtFQID3gCUtI6TFnWoIR00QTFs8B8z';
-let stripe, stripeCard;
-const STRIPE_PRICES = { single:'price_1TDv7MDwB0tBPUZ7YEQ72lMx', pro:'price_1TDv8IDwB0tBPUZ7WYY9YNeR', elite:'price_1TDv8yDwB0tBPUZ7UGKcjzJz' };
-
-function mountStripe() {
-  if (stripe) return;
-  try {
-    stripe = Stripe(STRIPE_PK);
-    const els = stripe.elements({fonts:[{cssSrc:'https://fonts.googleapis.com/css2?family=Jost:wght@300;400&display=swap'}]});
-    stripeCard = els.create('card',{style:{base:{fontFamily:"'Jost',sans-serif",fontSize:'14px',fontWeight:'300',color:'#111010','::placeholder':{color:'#d2cabc'}},invalid:{color:'#b84040'}}});
-    stripeCard.mount('#stripe-el');
-    stripeCard.on('change',e=>{document.getElementById('card-err').textContent=e.error?e.error.message:'';});
-  } catch(e){
-    document.getElementById('stripe-el').innerHTML='<div style="font-size:.8rem;color:#8c8274;padding:4px 0;">Card field — add Stripe key to activate</div>';
-  }
-}
 
 /* ── USER STATE ── */
 const PLANS = {
@@ -739,14 +725,23 @@ function detectMarket(address) {
   return 'National';
 }
 
+/* ── STYLE DEFINITIONS ── */
+const STYLES = [
+  {id:'none',    name:'Original',          swatch:'#8c8274', desc:'No enhancement — present the photo as-is.',              filter:'none',                                           overlay:'transparent'},
+  {id:'bright',  name:'Bright & Airy',     swatch:'#f0e8d4', desc:'Light, open, elevated — broadest buyer appeal.',          filter:'brightness(1.14) saturate(0.9) contrast(0.96)',  overlay:'rgba(255,252,245,0.07)'},
+  {id:'warm',    name:'Warm Transitional', swatch:'#d4af72', desc:'Inviting warmth — ideal for move-in-ready homes.',        filter:'sepia(0.2) saturate(1.12) brightness(1.05)',     overlay:'rgba(212,175,114,0.08)'},
+  {id:'crisp',   name:'Clean Contemporary',swatch:'#b8c4cc', desc:'Sharp and minimal — modern luxury positioning.',          filter:'saturate(1.28) brightness(1.06) contrast(1.06)', overlay:'rgba(184,196,204,0.05)'},
+  {id:'moody',   name:'Moody Luxe',        swatch:'#6b5d4f', desc:'Rich depth and drama — premium, high-end listings.',      filter:'brightness(0.9) contrast(1.12) saturate(1.22)',  overlay:'rgba(26,16,12,0.13)'},
+];
+
 /* ── ROOM SETUP ── */
 const ROOMS=[
-  {id:'ext',icon:'🏡',label:'Exterior / Curb Appeal',hint:'Front of house, driveway, entry',style:''},
-  {id:'living',icon:'🛋',label:'Living Room',hint:'Main entertaining space',style:''},
-  {id:'kitchen',icon:'🍳',label:'Kitchen',hint:'Kitchen & dining area',style:''},
-  {id:'master',icon:'🛏',label:'Master Bedroom',hint:'Primary suite',style:''},
-  {id:'bath',icon:'🚿',label:'Master Bathroom',hint:'Primary bath & spa features',style:''},
-  {id:'outdoor',icon:'🌿',label:'Outdoor / Backyard',hint:'Patio, pool, garden, views',style:''},
+  {id:'ext',icon:'🏡',label:'Exterior / Curb Appeal',hint:'Front of house, driveway, entry',style:'none'},
+  {id:'living',icon:'🛋',label:'Living Room',hint:'Main entertaining space',style:'none'},
+  {id:'kitchen',icon:'🍳',label:'Kitchen',hint:'Kitchen & dining area',style:'none'},
+  {id:'master',icon:'🛏',label:'Master Bedroom',hint:'Primary suite',style:'none'},
+  {id:'bath',icon:'🚿',label:'Master Bathroom',hint:'Primary bath & spa features',style:'none'},
+  {id:'outdoor',icon:'🌿',label:'Outdoor / Backyard',hint:'Patio, pool, garden, views',style:'none'},
 ];
 
 let detectedMarket='National';
@@ -785,7 +780,7 @@ async function doAnalyze(){
   document.getElementById('insight').classList.add('on');
   await sleep(200);
   btn.disabled=false;btn.innerHTML='Analyze Market →';
-  buildRooms();buildPhotoReview();nav(2);
+  buildRooms();nav(2);
 }
 
 /* ── PG 2 ── */
@@ -794,8 +789,27 @@ function buildRooms(){
   ROOMS.forEach((room,i)=>{
     if(!room.photos)room.photos=[];
     if(room.selectedPhotoIndex==null)room.selectedPhotoIndex=0;
+    if(!room.style)room.style='none';
+    const styleChips=STYLES.map(s=>`<div class="schip${s.id===room.style?' on':''}" id="sch_${room.id}_${s.id}" onclick="selectStyle('${room.id}','${s.id}')"><div class="schip-swatch" style="background:${s.swatch}"></div>${s.name}</div>`).join('');
     const row=mk('div');row.className='rrow';
-    row.innerHTML=`<div class="rrow-head" onclick="toggleRoom('${room.id}')"><div class="rrow-left"><div class="ricon">${room.icon}</div><div><div class="rname">${room.label}</div><div class="rhint">${room.hint}</div></div></div><div class="rbadge" id="rbadge_${room.id}">No photos</div></div><div class="rrow-body" id="rbody_${room.id}" style="display:${i===0?'block':'none'};"><div class="dropz" id="dz_${room.id}" ondragover="dov(event,'${room.id}')" ondragleave="dlv(event,'${room.id}')" ondrop="ddrop(event,'${room.id}')"><input type="file" accept="image/*" multiple onchange="addPhotos('${room.id}',Array.from(event.target.files))"><div class="dropz-icon">↑</div><div class="dropz-txt"><strong>Click</strong> or drag · 1–3 photos</div></div><div class="pgrid" id="pgrid_${room.id}"></div></div>`;
+    row.innerHTML=`<div class="rrow-head" onclick="toggleRoom('${room.id}')"><div class="rrow-left"><div class="ricon">${room.icon}</div><div><div class="rname">${room.label}</div><div class="rhint">${room.hint}</div></div></div><div class="rbadge" id="rbadge_${room.id}">No photos</div></div>
+<div class="rrow-body" id="rbody_${room.id}" style="display:${i===0?'block':'none'};">
+  <div class="dropz" id="dz_${room.id}" ondragover="dov(event,'${room.id}')" ondragleave="dlv(event,'${room.id}')" ondrop="ddrop(event,'${room.id}')"><input type="file" accept="image/*" multiple onchange="addPhotos('${room.id}',Array.from(event.target.files))"><div class="dropz-icon">↑</div><div class="dropz-txt"><strong>Click</strong> or drag · 1–3 photos</div></div>
+  <div class="pgrid" id="pgrid_${room.id}"></div>
+  <div class="style-section">
+    <div class="style-section-lbl">Visual Style</div>
+    <div class="style-chips" id="sc_${room.id}">${styleChips}</div>
+    <div class="style-preview-wrap" id="spv_${room.id}">
+      <div class="spv-header"><span>Style Preview</span><span id="spv_stylename_${room.id}">Original</span></div>
+      <div class="spv-body">
+        <div class="spv-before"><img id="spv_b_${room.id}" src="" alt="Before"><span class="spv-label spv-label-b">Before</span></div>
+        <div class="spv-divider"></div>
+        <div class="spv-after"><img id="spv_a_${room.id}" src="" alt="Styled" style="filter:none"><div class="spv-after-overlay" id="spv_o_${room.id}" style="background:transparent"></div><span class="spv-label spv-label-a">Styled</span></div>
+        <div class="spv-desc"><div class="spv-style-name" id="spv_sn_${room.id}">Original</div><div id="spv_sd_${room.id}">No enhancement applied.</div><div class="spv-ai-badge">✦ Style Preview</div></div>
+      </div>
+    </div>
+  </div>
+</div>`;
     stack.appendChild(row);
   });
 }
@@ -812,6 +826,8 @@ function addPhotos(roomId,files){
   if(room.selectedPhotoIndex==null||room.selectedPhotoIndex>=room.photos.length)room.selectedPhotoIndex=0;
   renderPhotoGrid(roomId);
   const n=room.photos.length;badge.textContent=n?`${n} photo${n>1?'s':''}`:'No photos';badge.className=n?'rbadge ready':'rbadge';
+  // Refresh style preview if a style is already selected
+  if(room.style&&room.style!=='none')selectStyle(roomId,room.style);
 }
 function delPhoto(roomId,idx,btn){
   if(window.event)window.event.stopPropagation();
@@ -834,11 +850,42 @@ function renderPhotoGrid(roomId){
 function selectPhoto(roomId,idx){
   const room=ROOMS.find(r=>r.id===roomId);if(!room||!room.photos?.[idx])return;
   room.selectedPhotoIndex=idx;renderPhotoGrid(roomId);
+  // Refresh style preview with newly selected photo
+  if(room.style&&room.style!=='none')selectStyle(roomId,room.style);
 }
 function getRoomPhoto(room){
   if(!room||!room.photos||!room.photos.length)return null;
   const idx=Math.min(room.photos.length-1,Math.max(0,room.selectedPhotoIndex||0));
   return room.photos[idx];
+}
+
+/* ── STYLE MORPH ── */
+function selectStyle(roomId,styleId){
+  const room=ROOMS.find(r=>r.id===roomId);if(!room)return;
+  const style=STYLES.find(s=>s.id===styleId);if(!style)return;
+  room.style=styleId;
+  // Update chip states
+  STYLES.forEach(s=>{
+    const chip=document.getElementById(`sch_${roomId}_${s.id}`);
+    if(chip)chip.classList.toggle('on',s.id===styleId);
+  });
+  // Update preview panel
+  const wrap=document.getElementById(`spv_${roomId}`);if(!wrap)return;
+  const photo=getRoomPhoto(room);
+  if(!photo){wrap.classList.remove('on');return;}
+  wrap.classList.add('on');
+  const imgB=document.getElementById(`spv_b_${roomId}`);
+  const imgA=document.getElementById(`spv_a_${roomId}`);
+  const overlay=document.getElementById(`spv_o_${roomId}`);
+  const styleName=document.getElementById(`spv_stylename_${roomId}`);
+  const snEl=document.getElementById(`spv_sn_${roomId}`);
+  const sdEl=document.getElementById(`spv_sd_${roomId}`);
+  if(imgB){imgB.src=photo.url;imgB.alt=room.label;}
+  if(imgA){imgA.src=photo.url;imgA.alt=`${room.label} — ${style.name}`;imgA.style.filter=style.filter;}
+  if(overlay)overlay.style.background=style.overlay;
+  if(styleName)styleName.textContent=style.name;
+  if(snEl)snEl.textContent=style.name;
+  if(sdEl)sdEl.textContent=style.desc;
 }
 
 /* ── PG 3 ── */
@@ -947,11 +994,28 @@ function buildViewer(){
   ROOMS.forEach(room=>{
     const rd=(stagingData.rooms||[]).find(r=>r.id===room.id)||{};const sl=mk('div');sl.className='vslide';
     const photo=getRoomPhoto(room);
+    const style=STYLES.find(s=>s.id===(room.style||'none'))||STYLES[0];
     if(photo){
       const pu=photo.url;
-      sl.innerHTML=`<div class="photo-sl"><img src="${pu}" alt="${room.label}"><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.caption||cleanRoomCaption(room)}</div></div></div>`;
-    }else{sl.innerHTML=`<div class="placeholder-sl" style="width:100%;height:100%;"><div style="font-size:2rem;opacity:.22;">${room.icon}</div><div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;">${room.label}</div></div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.caption||cleanRoomCaption(room)}</div></div>`;}
-    stage.appendChild(sl);slides.push(sl);
+      const caption=rd.caption||cleanRoomCaption(room);
+      if(style.id!=='none'){
+        // Before/After style morph slide
+        sl.innerHTML=`<div class="ba" id="ba_${room.id}">
+          <div class="ba-b"><img src="${pu}" alt="${room.label}"></div>
+          <div class="ba-a" id="baa_${room.id}"><img src="${pu}" alt="${room.label} styled" style="filter:${style.filter}"><div style="position:absolute;inset:0;background:${style.overlay};pointer-events:none"></div></div>
+          <div class="ba-line" id="bal_${room.id}"></div>
+          <div class="ba-knob" id="bak_${room.id}">↔</div>
+          <div class="ba-tag-b">Before</div>
+          <div class="ba-tag-a">${style.name}</div>
+          <div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${caption}</div></div>
+        </div>`;
+        stage.appendChild(sl);slides.push(sl);
+        setTimeout(()=>setupBA(room.id),60);
+      }else{
+        sl.innerHTML=`<div class="photo-sl"><img src="${pu}" alt="${room.label}"><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${caption}</div></div></div>`;
+        stage.appendChild(sl);slides.push(sl);
+      }
+    }else{sl.innerHTML=`<div class="placeholder-sl" style="width:100%;height:100%;"><div style="font-size:2rem;opacity:.22;">${room.icon}</div><div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;">${room.label}</div></div><div class="slide-cap"><div class="cap-room">${room.icon} ${room.label}</div><div class="cap-line">${rd.caption||cleanRoomCaption(room)}</div></div>`;stage.appendChild(sl);slides.push(sl);}
   });
   const ph=v('b_phone'),em=v('b_email'),wb=v('b_web'),tg=v('b_tag');
   const esl=mk('div');esl.className='vslide';
@@ -1036,17 +1100,46 @@ async function doExport(){
   rec.stop();
 
   await new Promise(r=>{rec.onstop=r;});
-  const blob=new Blob(chunks,{type:mimeType});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
+  const webmBlob=new Blob(chunks,{type:mimeType});
   const addr=document.getElementById('f_addr')?.value||'listing';
-  a.href=url;a.download=`ShowsReady_${addr.replace(/[^a-z0-9]/gi,'_').slice(0,40)}.webm`;
-  a.click();
-  URL.revokeObjectURL(url);
+  const safeName=`ShowsReady_${addr.replace(/[^a-z0-9]/gi,'_').slice(0,40)}`;
 
-  btn.disabled=false;btn.textContent='⬇ Export Video';
-  exportStatus.style.display='none';
-  toast('✓ Download started!');
+  // ── Try server-side WebM → MP4 conversion ──────────────────────────────────
+  exportStatusTxt.textContent='Converting to MP4…';
+  exportFill.style.width='100%';
+  try {
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),120000); // 2-min max
+    const res=await fetch(`${SR_API}/api/convert`,{
+      method:'POST',
+      headers:{'Content-Type':'video/webm'},
+      body:webmBlob,
+      signal:controller.signal,
+    });
+    clearTimeout(timeout);
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      throw new Error(err.error||`HTTP ${res.status}`);
+    }
+    const mp4Blob=await res.blob();
+    const url=URL.createObjectURL(mp4Blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`${safeName}.mp4`;a.click();
+    URL.revokeObjectURL(url);
+    btn.disabled=false;btn.textContent='⬇ Export Video';
+    exportStatus.style.display='none';
+    toast('✓ MP4 download started!');
+  } catch(convErr) {
+    // ── Fallback: download the original WebM ───────────────────────────────
+    console.warn('[export] MP4 conversion failed, falling back to WebM:',convErr.message);
+    const url=URL.createObjectURL(webmBlob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`${safeName}.webm`;a.click();
+    URL.revokeObjectURL(url);
+    btn.disabled=false;btn.textContent='⬇ Export Video';
+    exportStatus.style.display='none';
+    toast('✓ Downloaded as WebM (MP4 conversion unavailable)');
+  }
 }
 
 
