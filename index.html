@@ -358,9 +358,11 @@ async function handleSignup() {
       localStorage.setItem('sr_plan', selectedPlan);
       localStorage.setItem('sr_used', '0');
       window.location.href = 'app.html';
+      return;
     }
+    throw new Error(data.error || 'Unexpected response from server.');
   } catch (err) {
-    toast('Something went wrong. Please try again.');
+    toast(err.message || 'Something went wrong. Please try again.');
     btn.disabled = false;
     document.getElementById('s_btn_txt').textContent = 'Continue →';
   }

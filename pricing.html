@@ -235,7 +235,6 @@ footer{background:var(--char);border-top:1px solid rgba(184,147,90,.12);padding:
         <tr><td>HD video export</td><td><span class="dash">—</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td></tr>
         <tr><td>All 6 room types</td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td></tr>
         <tr><td>Selected room photos</td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td></tr>
-        <tr><td>Selected room photos</td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td></tr>
         <tr><td>Listing captions</td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td></tr>
         <tr><td>Branded agent end card</td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td></tr>
         <tr><td>Priority generation</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="chk">✦</span></td><td><span class="chk">✦</span></td></tr>
@@ -311,11 +310,11 @@ footer{background:var(--char);border-top:1px solid rgba(184,147,90,.12);padding:
 <div class="toast" id="toast"></div>
 
 <script>
+const SR_API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3001'
+  : 'https://showsready-official-0c70.onrender.com';
 const PLAN_INFO={free:{name:'Free Preview',price:'$0',per:'',desc:'1 listing · watermarked export',btnTxt:'Start Free'},single:{name:'Per Listing',price:'$29.99',per:'',desc:'1 listing · no watermark · one-time',btnTxt:'Complete Purchase'},pro:{name:'Pro Agent',price:'$49.99',per:'/month',desc:'10 listings / 30 days · No watermark · Begins today',btnTxt:'Start Subscription'},elite:{name:'Elite Agent',price:'$99.99',per:'/month',desc:'30 listings / 30 days · No watermark · Begins today',btnTxt:'Start Subscription'}};
 let selPlan='pro';
-const STRIPE_PK='pk_live_51T8dnNDwB0tBPUZ7nXTbDCYLHzWDKU39HDBlgFbCse5ViH9GdU4nV295tz1aXYZrW7qAEtFQID3gCUtI6TFnWoIR00QTFs8B8z';
-let stripe,stripeCard;
-function mountStripe(){if(stripe)return;try{stripe=Stripe(STRIPE_PK);const els=stripe.elements({fonts:[{cssSrc:'https://fonts.googleapis.com/css2?family=Jost:wght@300;400&display=swap'}]});stripeCard=els.create('card',{style:{base:{fontFamily:"'Jost',sans-serif",fontSize:'14px',fontWeight:'300',color:'#111010','::placeholder':{color:'#d2cabc'}},invalid:{color:'#b84040'}}});stripeCard.mount('#stripe-el');stripeCard.on('change',e=>{document.getElementById('card-err').textContent=e.error?e.error.message:'';});}catch(e){document.getElementById('stripe-el').innerHTML='<div style="font-size:.78rem;color:#8c8274;padding:3px 0;">Card field — add Stripe key to activate</div>';}}
 function openModal(){showChoose();document.getElementById('mainOverlay').classList.add('on');}
 function openModalPlan(plan){selPlan=plan;chPlan(plan);showChoose();document.getElementById('mainOverlay').classList.add('on');}
 function closeModal(){document.getElementById('mainOverlay').classList.remove('on');}
@@ -356,11 +355,7 @@ function goToApp(){closeModal();window.location.href='app.html';}
 function notifyMe(e){e.preventDefault();const email=prompt('Enter your email to be notified when brokerage plans launch:');if(email){toast(`✓ You're on the list — we'll email ${email} at launch.`);}}
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');});},{threshold:.1});
 document.querySelectorAll('.reveal').forEach(r=>obs.observe(r));
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3600);}
-const SR_API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:3001'
-  : 'https://showsready-official-0c70.onrender.com';
 </script>
 </body>
 </html>
