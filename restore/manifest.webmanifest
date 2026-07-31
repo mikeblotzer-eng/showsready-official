@@ -1,0 +1,16 @@
+{
+  "name": "RestoreMap — Restoration Field App",
+  "short_name": "RestoreMap",
+  "description": "Floor plan sketching, moisture mapping, S500 equipment sizing, monitoring logs, drive tracking and job costing for water damage restoration technicians.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0e1116",
+  "theme_color": "#12161c",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

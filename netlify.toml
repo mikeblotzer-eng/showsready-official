@@ -46,7 +46,31 @@
   to = "/contact.html"
   status = 200
 
+# RestoreMap — the restoration field app. Must come before the catch-all so
+# its client-side routes never fall through to the marketing site.
+[[redirects]]
+  from = "/restore"
+  to = "/restore/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/restore/*"
+  to = "/restore/index.html"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# The service worker must never be served stale, or a deploy can leave a
+# device pinned to an old build indefinitely.
+[[headers]]
+  for = "/restore/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/restore/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="RestoreMap">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4d8dff"/>
+      <stop offset="1" stop-color="#0f9c8f"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#g)"/>
+  <!-- floor plan outline -->
+  <path d="M112 150h180v90h108v222H112z" fill="none" stroke="#fff" stroke-width="24" stroke-linejoin="round"/>
+  <path d="M292 240v222" stroke="#fff" stroke-width="16" opacity=".55"/>
+  <!-- moisture droplet -->
+  <path d="M196 300c26 30 40 50 40 68a40 40 0 0 1-80 0c0-18 14-38 40-68z" fill="#fff"/>
+  <!-- airflow arrow -->
+  <path d="M318 330h58m0 0-22-22m22 22-22 22" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
