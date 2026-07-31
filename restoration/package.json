@@ -1,0 +1,12 @@
+{
+  "name": "dryline-field",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DryLine Field — offline-first field app for water restoration technicians. Static PWA; this package.json exists only to scope ES modules for Node-based unit tests.",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/run.js",
+    "test:browser": "node tests/browser.mjs",
+    "icons": "node tools/make-icons.js"
+  }
+}
