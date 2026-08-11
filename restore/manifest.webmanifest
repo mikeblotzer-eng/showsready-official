@@ -1,0 +1,14 @@
+{
+  "name": "DryPlan — Restoration Field App",
+  "short_name": "DryPlan",
+  "description": "Floor plans, moisture mapping, drying calculations, monitoring, job costing and estimating for restoration technicians.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#060b16",
+  "theme_color": "#060b16",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

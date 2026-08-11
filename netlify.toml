@@ -47,6 +47,28 @@
   status = 200
 
 [[redirects]]
+  from = "/restore"
+  to = "/restore/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/restore/*"
+  to = "/restore/:splat"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# The service worker must never be served from a stale cache, or an update can
+# take days to reach a technician's phone.
+[[headers]]
+  for = "/restore/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/restore/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
